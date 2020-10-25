@@ -1,0 +1,7 @@
+"sal\nam"
+
+/*
+salam salam 
+*/
+
+12.0
