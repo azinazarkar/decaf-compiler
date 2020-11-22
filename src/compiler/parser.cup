@@ -3,37 +3,194 @@ import java_cup.runtime.*;
 
 
 parser code {:
-    // defining scanner here
-    private MyScanner scanner;
-    public parser (MyScanner scanner){
-        this.scanner = scanner;
-    }
+	// defining scanner here
+	private MyScanner scanner;
+	public parser (MyScanner scanner){
+		this.scanner = scanner;
+	}
 :}
 scan with {: return scanner.next_token(); :}
 // defining terminals here
-terminal PLUS, INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, WS, OPENPARENTHESIS, CLOSEPARENTHESIS, VOID,
-         CLASS, LESS, GREATER, EXTENDS, IMPLEMENTS ;
-terminal String IDENTIFIER, STRINGLITERAL;
+terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
+					LESS, LESSEQUAL, GREATER, GREATEREQUAL, EQUAL, NOTEQUAL, AND, OR, NOT, DOT,
+					INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, WS, OPENPARENTHESIS,
+					READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
+					DECIMAL, FLOATINGPOINT, BOOLEANLITERAL, NULL,
+					CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES, VOID, CLASS, INTERFACE,
+					EXTENDS, IMPLEMENTS, COMMA, SEMICOLON, PRIVATE, PROTECTED, PUBLIC, IF, ELSE, WHILE, FOR, RETURN,
+					BREAK, CONTINUE, PRINT, ASSIGN, THIS;
+terminal    String  IDENTIFIER, STRINGLITERAL;
 // defining nonterminals
-nonterminal Program, Decl, VariableDecl, FunctionDecl, ClassDecl, InterfaceDecl,
-            Variable, Type, Formals, StmtBlock;
+nonterminal         Program, Decl, VariableDecl, FunctionDecl, ClassDecl, InterfaceDecl,
+					Variable, Type, Formals, StmtBlock;
 // defining precedences
+precedence right
 //precedence left PLUS, MINUS;
 //precedence left TIMES, DIVIDE;
 // grammar
 /// PLUS CHEJOORI E
 
-Program ::= Decl Program | /* epsilon */;
-Decl ::= VariableDecl
-       | FunctionDecl
-       | ClassDecl
-       | InterfaceDecl;
-VariableDecl ::= Variable;
-Variable ::= Type IDENTIFIER;
-Type ::= INT | DOUBLE | BOOL | STRING | IDENTIFIER | Type OPENBRACKET CLOSEBRACKET;
+Program ::=             Decl DeclStar
+						| null
+						;
 
-FunctionDecl ::= Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
-               | VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock;
+DeclStar ::=            Decl DeclPlus
+						| null
+						;
 
-Formals ::= Variable Formals | /* epsilon */;
-//ClassDecl ::= CLASS IDENTIFIER LESS EXTENDS GREATER LESS IMPLEMENTS
+Decl ::=                VariableDecl
+						| FunctionDecl
+						| ClassDecl
+						| InterfaceDecl
+						;
+
+VariableDecl ::=        Variable;
+
+Variable ::=            Type IDENTIFIER;
+
+Type ::=                INT
+						| DOUBLE
+						| BOOL
+						| STRING
+						| IDENTIFIER |
+						Type OPENBRACKET CLOSEBRACKET
+						;
+
+FunctionDecl ::=        Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
+						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
+						;
+
+Formals ::=             Variable CommaVariables
+						| null
+						;
+CommaVariables ::=      COMMA Variable CommaVariables
+						| null
+						;
+
+ClassDecl ::=           CLASS IDENTIFIER ClassDeclExtends ClassDeclImplements OPENCURLYBRACES FieldStar CLOSECURLYBRACES;
+ClassDeclExtends ::=    EXTENDS IDENTIFIER
+						| null
+						;
+ClassDeclImplements ::= IMPLEMENTS IDENTIFIER CommaIdentifier
+						| null
+						;
+CommaIdentifiers ::=    COMMA IDENTIFIER CommaIdentifiers
+						| null
+						;
+FieldStar ::=           Field FieldStar
+						| null
+						;
+
+Field ::=               AccessMode VariableDecl
+						| AccessMode FunctionDecl
+						;
+
+AccessMode ::=          PRIVATE
+						| PROTECTED
+						| PUBLIC
+						| null
+						;
+
+InterfaceDecl ::=       INTERFACE IDENTIFIER OPENCURLYBRACES PrototypeStar CLOSECURLYBRACES;
+PrototypeStar ::=       Prototype PrototypeStar
+						| null
+						;
+
+Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
+						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
+						;
+
+StmtBlock ::=           OPENCURLYBRACES VariableDeclStar StmtStar CLOSECURLYBRACES;
+VariableDeclStar ::=    VariableDeclr VariableDeclStar
+						| null
+						;
+StmtStar ::=            Stmt StmtStar
+						| null
+						;
+
+Stmt ::=                ExprPrime SEMICOLON
+						| IfStmt
+						| WhileStmt
+						| ForStmt
+						| BreakStmt
+						| ContinueStmt
+						| ReturnStmt
+						| PrintStmt
+						| StmtBlock
+						;
+
+ExprPrime ::=           Expr
+						| null
+						;
+
+IfStmt ::=              IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt
+						| IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ELSE Stmt
+						;
+
+WhileStmt ::=           WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt;
+
+ForStmt ::=             FOR OPENPARENTHESIS ExprPrime SEMICOLON Expr SEMICOLON ExprPrime CLOSEPARENTHESIS Stmt;
+
+ReturnStmt ::=          RETURN ExprPrime;
+
+BreakStmt ::=           BREAK SEMICOLON;
+
+ContinueStmt ::=        CONTINUE SEMICOLON;
+
+PrintStmt ::=           PRINT OPENPARENTHESIS Expr CommaExpr CLOSEPARENTHESIS SEMICOLON;
+
+CommaExpr ::=           COMMA CommaExpr
+						| null
+						;
+
+Expr ::=                LValue ASSIGN Expr
+						| Constant
+						| LValue
+						| THIS
+						| Call
+						| OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| Expr PLUS Expr
+						| Expr MINUS Expr
+						| Expr MULTIPLY Expr
+						| Expr DIVIDE Expr
+						| Expr MOD Expr
+						| MINUS Expr
+						| Expr LESS Expr
+						| Expr LESSEQUAL Expr
+						| Expr GREATER Expr
+						| Expr GREATEREQUAL Expr
+						| Expr EQUAL Expr
+						| Expr NOTEQUAL Expr
+						| Expr AND Expr
+						| Expr OR Expr
+						| NOT Expr
+						| READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS
+						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS
+						| NEW IDENTIFIER
+						| NEWARRAY OPENPARENTHESIS Expr COMMA Type CLOSEPARENTHESIS
+						| ITOD OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| DTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| ITOB OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						;
+
+LValue ::=              IDENTIFIER
+						| Expr DOT IDENTIFIER
+						| Expr OPENBRACKET Expr CLOSEBRACKET
+						;
+
+Call ::=                IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
+						| Expr DOT IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
+						;
+
+Actuals ::=             Expr CommaExpr
+						| null
+						;
+
+Constant ::=            DECIMAL Constant
+						| FLOATINGPOINT Constant
+						| BOOLEANLITERAL Constant
+						| STRINGLITERAL Constant
+						| NULL
+						;
+
