@@ -21,10 +21,20 @@ terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
 					BREAK, CONTINUE, PRINT, ASSIGN, THIS;
 terminal    String  IDENTIFIER, STRINGLITERAL;
 // defining nonterminals
-nonterminal         Program, Decl, VariableDecl, FunctionDecl, ClassDecl, InterfaceDecl,
-					Variable, Type, Formals, StmtBlock;
+nonterminal         Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
+					ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdetifiers, FieldStar, Field,
+					AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, VariableDeclStar, StmtStar,
+					Stmt, ExprPrime, IfStmt, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
+					CommaExpr, Expr, LValue, Call, Actuals, Constant;
 // defining precedences
-precedence right
+precedence left     ASSIGN;
+precedence left     OR;
+precedence left     AND;
+precedence nonassoc EQUAL, NOTEQUAL;
+precedence nonassoc LESS, LESSEQUAL, GREATER, GREATEREQUAL;
+precedence left     PLUS, MINUS;
+precedence left     MULTIPLY, DIVIDE, MOD;
+precedence left     NOT;
 //precedence left PLUS, MINUS;
 //precedence left TIMES, DIVIDE;
 // grammar
