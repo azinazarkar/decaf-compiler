@@ -3,31 +3,12 @@
 // source: Scanner.flex
 
 package compiler;
-
+import java_cup.runtime.*;
 import java.io.*;
-
-class Symbol {
-
-	public String content;
-	public TokenType tokenType;
-	public String toPrint;
-
-	public Symbol( TokenType tokenType, String toPrint, String content ) {
-		this.content = content;
-		this.tokenType = tokenType;
-		this.toPrint = toPrint;
-	}
-
-}
-
-enum TokenType {
-    decimal, floatingPoint, id, EOF, WS, String , Char, comment
-}
-
 
 // See https://github.com/jflex-de/jflex/issues/222
 @SuppressWarnings("FallThrough")
-public class MyScanner {
+public class MyScanner implements java_cup.runtime.Scanner {
 
   /** This character denotes the end of file. */
   public static final int YYEOF = -1;
@@ -55,7 +36,7 @@ public class MyScanner {
   private static final int [] ZZ_CMAP_TOP = zzUnpackcmap_top();
 
   private static final String ZZ_CMAP_TOP_PACKED_0 =
-    "\1\0\37\u0100\1\u0200\267\u0100\10\u0300\u1020\u0100";
+    "\1\0\u10ff\u0100";
 
   private static int [] zzUnpackcmap_top() {
     int [] result = new int[4352];
@@ -83,14 +64,15 @@ public class MyScanner {
   private static final int [] ZZ_CMAP_BLOCKS = zzUnpackcmap_blocks();
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
-    "\11\0\1\1\1\2\2\3\1\4\22\0\1\1\1\0"+
-    "\1\5\7\0\1\6\1\7\1\0\1\7\1\10\1\11"+
-    "\12\12\7\0\4\13\1\14\25\13\4\0\1\15\1\0"+
-    "\4\13\1\14\25\13\12\0\1\3\u01a2\0\2\3\326\0"+
-    "\u0100\3";
+    "\11\0\1\1\1\2\1\0\1\1\1\3\22\0\1\1"+
+    "\12\0\1\4\4\0\12\5\7\0\32\6\1\7\1\0"+
+    "\1\10\1\0\1\5\1\0\1\6\1\11\1\6\1\12"+
+    "\1\13\1\6\1\14\1\6\1\15\2\6\1\16\1\6"+
+    "\1\17\1\20\2\6\1\21\1\22\1\23\1\24\5\6"+
+    "\u0185\0";
 
   private static int [] zzUnpackcmap_blocks() {
-    int [] result = new int[1024];
+    int [] result = new int[512];
     int offset = 0;
     offset = zzUnpackcmap_blocks(ZZ_CMAP_BLOCKS_PACKED_0, offset, result);
     return result;
@@ -114,11 +96,11 @@ public class MyScanner {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\2\1\1\2\1\0\1\3\1\4\1\5\1\6"+
-    "\1\0\1\7\1\10\2\0\1\7\1\0\1\10";
+    "\2\0\2\1\1\2\1\3\1\4\1\5\12\3\1\6"+
+    "\1\3\1\7\4\3\1\10\1\11";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[18];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -143,12 +125,13 @@ public class MyScanner {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\16\0\34\0\52\0\34\0\70\0\106\0\124"+
-    "\0\34\0\34\0\142\0\160\0\176\0\214\0\232\0\34"+
-    "\0\250\0\250";
+    "\0\0\0\25\0\25\0\52\0\25\0\77\0\25\0\25"+
+    "\0\124\0\151\0\176\0\223\0\250\0\275\0\322\0\347"+
+    "\0\374\0\u0111\0\77\0\u0126\0\77\0\u013b\0\u0150\0\u0165"+
+    "\0\u017a\0\77\0\77";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[18];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -171,15 +154,23 @@ public class MyScanner {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\0\2\3\1\0\1\4\1\5\3\0\1\6\1\7"+
-    "\2\10\1\0\2\11\3\0\1\12\10\11\20\0\1\3"+
-    "\21\0\1\13\2\0\1\14\14\0\1\15\1\0\1\7"+
-    "\15\0\4\10\6\13\1\16\7\13\2\14\1\0\1\14"+
-    "\1\0\11\14\12\0\1\15\1\0\1\17\12\0\1\20"+
-    "\13\0\1\21\2\0\1\22\15\0\1\22\3\0";
+    "\1\0\2\3\1\4\1\5\1\0\1\6\1\7\1\10"+
+    "\1\11\1\12\2\6\1\13\4\6\1\14\2\6\27\0"+
+    "\1\3\27\0\2\6\2\0\14\6\5\0\2\6\2\0"+
+    "\7\6\1\15\4\6\5\0\2\6\2\0\7\6\1\16"+
+    "\4\6\5\0\2\6\2\0\6\6\1\17\5\6\5\0"+
+    "\2\6\2\0\12\6\1\20\1\6\5\0\2\6\2\0"+
+    "\7\6\1\21\4\6\5\0\2\6\2\0\13\6\1\22"+
+    "\5\0\2\6\2\0\12\6\1\23\1\6\5\0\2\6"+
+    "\2\0\10\6\1\24\3\6\5\0\2\6\2\0\5\6"+
+    "\1\25\6\6\5\0\2\6\2\0\1\26\13\6\5\0"+
+    "\2\6\2\0\4\6\1\27\7\6\5\0\2\6\2\0"+
+    "\5\6\1\30\6\6\5\0\2\6\2\0\6\6\1\31"+
+    "\5\6\5\0\2\6\2\0\2\6\1\32\11\6\5\0"+
+    "\2\6\2\0\3\6\1\33\10\6";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[182];
+    int [] result = new int[399];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -222,11 +213,10 @@ public class MyScanner {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\1\1\1\11\1\0\2\1\2\11\1\0"+
-    "\2\1\2\0\1\11\1\0\1\1";
+    "\1\0\1\10\1\11\1\1\1\11\1\1\2\11\23\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[18];
+    int [] result = new int[27];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -300,11 +290,18 @@ public class MyScanner {
   private boolean zzAtBOL = true;
 
   /** Whether the user-EOF-code has already been executed. */
-  @SuppressWarnings("unused")
   private boolean zzEOFDone;
 
   /* user code: */
-    String string = "";
+  String string = "";
+
+  public Symbol token(int tokenType, String content) {
+      System.out.println(content);
+      return new Symbol(tokenType, content) ;
+  }
+
+
+
 
 
   /**
@@ -550,6 +547,18 @@ public class MyScanner {
   }
 
 
+  /**
+   * Contains user EOF-code, which will be executed exactly once,
+   * when the end of file is reached
+   */
+  private void zzDoEOF() throws java.io.IOException {
+    if (!zzEOFDone) {
+      zzEOFDone = true;
+    
+  yyclose();    }
+  }
+
+
 
 
   /**
@@ -559,7 +568,7 @@ public class MyScanner {
    * @return the next token.
    * @exception java.io.IOException if any I/O-Error occurs.
    */
-  public Symbol next() throws java.io.IOException {
+  @Override  public Symbol next_token() throws java.io.IOException {
     int zzInput;
     int zzAction;
 
@@ -695,53 +704,56 @@ public class MyScanner {
 
       if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
         zzAtEOF = true;
-              {
-                return new Symbol( TokenType.EOF, "", "EOF");
-              }
+            zzDoEOF();
+          { return new java_cup.runtime.Symbol(sym.EOF); }
       }
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { return new Symbol(TokenType.WS , "" , yytext());
-            }
-            // fall through
-          case 9: break;
-          case 2:
-            { yybegin(STRING); string = "" + yytext();
+            { ;
             }
             // fall through
           case 10: break;
-          case 3:
-            { return new Symbol(TokenType.decimal, "T_INTLITERAL", yytext());
+          case 2:
+            { return token(sym.PLUS, yytext());
             }
             // fall through
           case 11: break;
-          case 4:
-            { return new Symbol(TokenType.id, "T_ID", yytext());
+          case 3:
+            { return token(sym.IDENTIFIER, yytext());
             }
             // fall through
           case 12: break;
-          case 5:
-            { string = string + yytext();
+          case 4:
+            { return token(sym.OPENBRACKET, yytext());
             }
             // fall through
           case 13: break;
-          case 6:
-            { yybegin(YYINITIAL);
-          return new Symbol(TokenType.String, "T_STRINGLITERAL", string + yytext());
+          case 5:
+            { return token(sym.CLOSEBRACKET, yytext());
             }
             // fall through
           case 14: break;
-          case 7:
-            { return new Symbol(TokenType.comment, "", yytext());
+          case 6:
+            { return token(sym.INT, yytext());
             }
             // fall through
           case 15: break;
-          case 8:
-            { return new Symbol(TokenType.floatingPoint, "T_DOUBLELITERAL", yytext());
+          case 7:
+            { return token(sym.BOOL, yytext());
             }
             // fall through
           case 16: break;
+          case 8:
+            { return token(sym.DOUBLE, yytext());
+            }
+            // fall through
+          case 17: break;
+          case 9:
+            { return token(sym.STRING, yytext());
+            }
+            // fall through
+          case 18: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }

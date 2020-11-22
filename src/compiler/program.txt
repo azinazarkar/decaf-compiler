@@ -1,7 +1,1 @@
-"sal\nam"
-
-/*
-salam salam
-*/
-
-12.0
+int azin

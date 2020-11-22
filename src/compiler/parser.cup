@@ -1,0 +1,39 @@
+package compiler;
+import java_cup.runtime.*;
+
+
+parser code {:
+    // defining scanner here
+    private MyScanner scanner;
+    public parser (MyScanner scanner){
+        this.scanner = scanner;
+    }
+:}
+scan with {: return scanner.next_token(); :}
+// defining terminals here
+terminal PLUS, INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, WS, OPENPARENTHESIS, CLOSEPARENTHESIS, VOID,
+         CLASS, LESS, GREATER, EXTENDS, IMPLEMENTS ;
+terminal String IDENTIFIER, STRINGLITERAL;
+// defining nonterminals
+nonterminal Program, Decl, VariableDecl, FunctionDecl, ClassDecl, InterfaceDecl,
+            Variable, Type, Formals, StmtBlock;
+// defining precedences
+//precedence left PLUS, MINUS;
+//precedence left TIMES, DIVIDE;
+// grammar
+/// PLUS CHEJOORI E
+
+Program ::= Decl Program | /* epsilon */;
+Decl ::= VariableDecl
+       | FunctionDecl
+       | ClassDecl
+       | InterfaceDecl;
+VariableDecl ::= Variable;
+Variable ::= Type IDENTIFIER;
+Type ::= INT | DOUBLE | BOOL | STRING | IDENTIFIER | Type OPENBRACKET CLOSEBRACKET;
+
+FunctionDecl ::= Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
+               | VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock;
+
+Formals ::= Variable Formals | /* epsilon */;
+//ClassDecl ::= CLASS IDENTIFIER LESS EXTENDS GREATER LESS IMPLEMENTS
