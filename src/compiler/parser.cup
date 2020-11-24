@@ -11,7 +11,7 @@ parser code {:
 :}
 scan with {: return scanner.next_token(); :}
 // defining terminals here
-terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
+terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD, UMINUS,
 					LESS, LESSEQUAL, GREATER, GREATEREQUAL, EQUAL, NOTEQUAL, AND, OR, NOT, DOT,
 					INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, WS, OPENPARENTHESIS,
 					READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
@@ -22,30 +22,25 @@ terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD,
 terminal    String  IDENTIFIER, STRINGLITERAL;
 // defining nonterminals
 nonterminal         Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
-					ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdetifiers, FieldStar, Field,
+					ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
 					AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, VariableDeclStar, StmtStar,
 					Stmt, ExprPrime, IfStmt, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
 					CommaExpr, Expr, LValue, Call, Actuals, Constant;
 // defining precedences
-precedence left     ASSIGN;
+precedence right    ASSIGN;
 precedence left     OR;
 precedence left     AND;
-precedence nonassoc EQUAL, NOTEQUAL;
-precedence nonassoc LESS, LESSEQUAL, GREATER, GREATEREQUAL;
+precedence left     EQUAL, NOTEQUAL;
+precedence left     LESS, LESSEQUAL, GREATER, GREATEREQUAL;
 precedence left     PLUS, MINUS;
 precedence left     MULTIPLY, DIVIDE, MOD;
-precedence left     NOT;
-//precedence left PLUS, MINUS;
-//precedence left TIMES, DIVIDE;
-// grammar
-/// PLUS CHEJOORI E
+precedence right    NOT, UMINUS;
+precedence left     DOT, OPENBRACKET;
 
-Program ::=             Decl DeclStar
-						| null
-						;
+Program ::=             Decl DeclStar;
 
-DeclStar ::=            Decl DeclPlus
-						| null
+DeclStar ::=            Decl DeclStar
+						| /*epsilon*/
 						;
 
 Decl ::=                VariableDecl
@@ -62,8 +57,8 @@ Type ::=                INT
 						| DOUBLE
 						| BOOL
 						| STRING
-						| IDENTIFIER |
-						Type OPENBRACKET CLOSEBRACKET
+						| IDENTIFIER
+						| Type OPENBRACKET CLOSEBRACKET
 						;
 
 FunctionDecl ::=        Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
@@ -71,24 +66,24 @@ FunctionDecl ::=        Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS
 						;
 
 Formals ::=             Variable CommaVariables
-						| null
+						| /*epsilon*/
 						;
 CommaVariables ::=      COMMA Variable CommaVariables
-						| null
+						| /*epsilon*/
 						;
 
 ClassDecl ::=           CLASS IDENTIFIER ClassDeclExtends ClassDeclImplements OPENCURLYBRACES FieldStar CLOSECURLYBRACES;
 ClassDeclExtends ::=    EXTENDS IDENTIFIER
-						| null
+						| /*epsilon*/
 						;
-ClassDeclImplements ::= IMPLEMENTS IDENTIFIER CommaIdentifier
-						| null
+ClassDeclImplements ::= IMPLEMENTS IDENTIFIER CommaIdentifiers
+						| /*epsilon*/
 						;
 CommaIdentifiers ::=    COMMA IDENTIFIER CommaIdentifiers
-						| null
+						| /*epsilon*/
 						;
 FieldStar ::=           Field FieldStar
-						| null
+						| /*epsilon*/
 						;
 
 Field ::=               AccessMode VariableDecl
@@ -98,12 +93,12 @@ Field ::=               AccessMode VariableDecl
 AccessMode ::=          PRIVATE
 						| PROTECTED
 						| PUBLIC
-						| null
+						| /*epsilon*/
 						;
 
 InterfaceDecl ::=       INTERFACE IDENTIFIER OPENCURLYBRACES PrototypeStar CLOSECURLYBRACES;
 PrototypeStar ::=       Prototype PrototypeStar
-						| null
+						| /*epsilon*/
 						;
 
 Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
@@ -111,11 +106,11 @@ Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS
 						;
 
 StmtBlock ::=           OPENCURLYBRACES VariableDeclStar StmtStar CLOSECURLYBRACES;
-VariableDeclStar ::=    VariableDeclr VariableDeclStar
-						| null
+VariableDeclStar ::=    VariableDecl VariableDeclStar
+						| /*epsilon*/
 						;
 StmtStar ::=            Stmt StmtStar
-						| null
+						| /*epsilon*/
 						;
 
 Stmt ::=                ExprPrime SEMICOLON
@@ -130,7 +125,7 @@ Stmt ::=                ExprPrime SEMICOLON
 						;
 
 ExprPrime ::=           Expr
-						| null
+						| /*epsilon*/
 						;
 
 IfStmt ::=              IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt
@@ -150,7 +145,7 @@ ContinueStmt ::=        CONTINUE SEMICOLON;
 PrintStmt ::=           PRINT OPENPARENTHESIS Expr CommaExpr CLOSEPARENTHESIS SEMICOLON;
 
 CommaExpr ::=           COMMA CommaExpr
-						| null
+						| /*epsilon*/
 						;
 
 Expr ::=                LValue ASSIGN Expr
@@ -164,7 +159,7 @@ Expr ::=                LValue ASSIGN Expr
 						| Expr MULTIPLY Expr
 						| Expr DIVIDE Expr
 						| Expr MOD Expr
-						| MINUS Expr
+						| MINUS Expr %prec UMINUS
 						| Expr LESS Expr
 						| Expr LESSEQUAL Expr
 						| Expr GREATER Expr
@@ -194,7 +189,7 @@ Call ::=                IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
 						;
 
 Actuals ::=             Expr CommaExpr
-						| null
+						| /*epsilon*/
 						;
 
 Constant ::=            DECIMAL Constant
