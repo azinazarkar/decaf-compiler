@@ -118,7 +118,7 @@ Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS
 //						;
 
 StmtBlock ::=           OPENCURLYBRACES InsideStmtBlock CLOSECURLYBRACES;
-InsideStmtBlock ::=     VariableDecl VariableDeclStar
+InsideStmtBlock ::=     VariableDecl InsideStmtBlock
 						| StmtStar
 						;
 StmtStar ::=            Stmt StmtStar
