@@ -39,6 +39,8 @@ precedence right    NOT, UMINUS;
 precedence left     DOT, OPENBRACKET;
 precedence left     OPENPARENTHESIS;
 
+start with Program;
+
 Program ::=             Decl DeclStar;
 
 DeclStar ::=            Decl DeclStar
