@@ -102,6 +102,7 @@ multiLineComment = \/\*~\*\/
 	"}"    {return token(sym.CLOSECURLYBRACES, yytext()); }
 	"("    {return token(sym.OPENPARENTHESIS, yytext()); }
 	")"    {return token(sym.CLOSEPARENTHESIS, yytext()); }
+	"[]"   {return token(sym.OPENCLOSEBRACKET, yytext()); }
 	"["    {return token(sym.OPENBRACKET, yytext()); }
 	"]"    {return token(sym.CLOSEBRACKET, yytext()); }
 //

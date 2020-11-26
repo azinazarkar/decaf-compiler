@@ -13,7 +13,7 @@ scan with {: return scanner.next_token(); :}
 // defining terminals here
 terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD, UMINUS,
 					LESS, LESSEQUAL, GREATER, GREATEREQUAL, EQUAL, NOTEQUAL, AND, OR, NOT, DOT,
-					INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, WS, OPENPARENTHESIS,
+					INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, OPENCLOSEBRACKET, WS, OPENPARENTHESIS,
 					READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
 					DECIMAL, FLOATINGPOINT, BOOLEANLITERAL, NULL,
 					CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES, VOID, CLASS, INTERFACE,
@@ -23,10 +23,11 @@ terminal    String  IDENTIFIER, STRINGLITERAL;
 // defining nonterminals
 nonterminal         Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
 					ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
-					AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, VariableDeclStar, StmtStar,
-					Stmt, ExprPrime, IfStmt, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
+					AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
+					Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
 					CommaExpr, Expr, LValue, Call, Actuals, Constant;
 // defining precedences
+precedence left     ELSE;
 precedence right    ASSIGN;
 precedence left     OR;
 precedence left     AND;
@@ -36,6 +37,7 @@ precedence left     PLUS, MINUS;
 precedence left     MULTIPLY, DIVIDE, MOD;
 precedence right    NOT, UMINUS;
 precedence left     DOT, OPENBRACKET;
+precedence left     OPENPARENTHESIS;
 
 Program ::=             Decl DeclStar;
 
@@ -49,7 +51,7 @@ Decl ::=                VariableDecl
 						| InterfaceDecl
 						;
 
-VariableDecl ::=        Variable;
+VariableDecl ::=        Variable SEMICOLON;
 
 Variable ::=            Type IDENTIFIER;
 
@@ -58,7 +60,7 @@ Type ::=                INT
 						| BOOL
 						| STRING
 						| IDENTIFIER
-						| Type OPENBRACKET CLOSEBRACKET
+						| Type OPENCLOSEBRACKET
 						;
 
 FunctionDecl ::=        Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
@@ -105,9 +107,17 @@ Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS
 						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
 						;
 
-StmtBlock ::=           OPENCURLYBRACES VariableDeclStar StmtStar CLOSECURLYBRACES;
-VariableDeclStar ::=    VariableDecl VariableDeclStar
-						| /*epsilon*/
+//StmtBlock ::=           OPENCURLYBRACES VariableDeclStar StmtStar CLOSECURLYBRACES;
+//VariableDeclStar ::=    VariableDecl VariableDeclStar
+//						| /*epsilon*/
+//						;
+//StmtStar ::=            Stmt StmtStar
+//						| /*epsilon*/
+//						;
+
+StmtBlock ::=           OPENCURLYBRACES InsideStmtBlock CLOSECURLYBRACES;
+InsideStmtBlock ::=     VariableDecl VariableDeclStar
+						| StmtStar
 						;
 StmtStar ::=            Stmt StmtStar
 						| /*epsilon*/
@@ -128,15 +138,16 @@ ExprPrime ::=           Expr
 						| /*epsilon*/
 						;
 
-IfStmt ::=              IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt
-						| IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ELSE Stmt
+IfStmt ::=              IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePrime;
+ElsePrime ::=           ELSE Stmt
+						| /*epsilon*/
 						;
 
 WhileStmt ::=           WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt;
 
 ForStmt ::=             FOR OPENPARENTHESIS ExprPrime SEMICOLON Expr SEMICOLON ExprPrime CLOSEPARENTHESIS Stmt;
 
-ReturnStmt ::=          RETURN ExprPrime;
+ReturnStmt ::=          RETURN ExprPrime SEMICOLON;
 
 BreakStmt ::=           BREAK SEMICOLON;
 
@@ -192,10 +203,10 @@ Actuals ::=             Expr CommaExpr
 						| /*epsilon*/
 						;
 
-Constant ::=            DECIMAL Constant
-						| FLOATINGPOINT Constant
-						| BOOLEANLITERAL Constant
-						| STRINGLITERAL Constant
+Constant ::=            DECIMAL
+						| FLOATINGPOINT
+						| BOOLEANLITERAL
+						| STRINGLITERAL
 						| NULL
 						;
 
