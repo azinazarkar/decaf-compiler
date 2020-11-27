@@ -463,7 +463,7 @@ public class MyScanner implements java_cup.runtime.Scanner {
   String string = "";
 
   public Symbol token(int tokenType, String content) {
-      System.out.println(content);
+      // System.out.println(content);
       return new Symbol(tokenType, content) ;
   }
 
