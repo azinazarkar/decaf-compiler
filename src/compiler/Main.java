@@ -1,8 +1,6 @@
 package compiler;
 
 import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
 
 public class Main {
 
@@ -10,7 +8,12 @@ public class Main {
 		FileReader fileReader = new FileReader( "src/compiler/program.txt" );
 		MyScanner yylex = new MyScanner( fileReader );
 		parser p = new parser(yylex);
-		p.parse();
-		System.out.println("bashe");
+		try {
+			p.parse();
+		} catch (Exception e) {
+			System.out.println("Syntax Error");
+			System.exit( 0 );
+		}
+		System.out.println("OK");
 	}
 }
