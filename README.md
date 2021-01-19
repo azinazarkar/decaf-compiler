@@ -9,6 +9,7 @@ Run Main to parse the program in "src/compiler/program.txt" and see if it's OK o
 Compiling the program:
 
 ```
+java -jar lib/jflex-full-1.8.2.jar src/compiler/Scanner.flex
 javac -cp .:src/:lib/java-cup-11b.jar src/compiler/Main.java
 ```
 
