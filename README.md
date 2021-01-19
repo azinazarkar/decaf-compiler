@@ -9,17 +9,19 @@ Run Main to parse the program in "src/compiler/program.txt" and see if it's OK o
 Compiling the program:
 
 ```
-javac -cp "./src:./src/compiler/java-cup-11b-runtime.jar" src/compiler/Main.java
+javac -cp .:src/:lib/java-cup-11b.jar src/compiler/Main.java
 ```
 
 Running the program:
 
-java -cp "./src:./src/compiler/java-cup-11b-runtime.jar" compiler.Main
+```
+java -cp .:src/:lib/java-cup-11b.jar compiler.Main
+```
 
 If you want to change the scanner's tokenization and behaviour, you have to change *Scanner.flex*. Once you made your changes, run this command:
 
 ```
-java -jar path/to/jflex/jar/file path/to/Scanner.flex 
+java -jar lib/jflex-full-1.8.2.jar src/compiler/Scanner.flex
 ```
 
 You'll get a file named *MyScanner.java*. Now you can compile and run Main.java. 
