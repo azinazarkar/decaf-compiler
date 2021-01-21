@@ -9,6 +9,7 @@ public class SymbolTable {
 	}
 
 	private SymbolTable() {
+		currentNode = new SymbolTableNode();
 	}
 
 	public SymbolTableNode getSymbolTable() {
