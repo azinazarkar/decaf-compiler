@@ -16,4 +16,14 @@ public class SymbolTable {
 		return currentNode;
 	}
 
+	public void makeNextAndSwitch() {
+		SymbolTable.getInstance().currentNode.next = new SymbolTableNode( SymbolTable.getInstance().currentNode );
+		SymbolTable.getInstance().currentNode = SymbolTable.getInstance().currentNode.next;
+	}
+
+	public void goBack() {
+		SymbolTable.getInstance().currentNode = SymbolTable.getInstance().currentNode.prev;
+		SymbolTable.getInstance().currentNode.next = null;
+	}
+
 }

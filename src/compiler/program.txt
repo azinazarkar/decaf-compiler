@@ -1,14 +1,12 @@
-
-int getSomeValue() {
-    return something;
+int main( double d ) {
+	int a;
+	int b;
+	int c;
+	a = 5;
+	b = 10;
+	c = a + b;
 }
 
-int main() {
-    int a;
-    int b;
-    bool c;
-    double d;
-    d = 1.2E5 * 5. + 1.;
-    c = (a / b < 100);
-    c = true || false;
+int test( double dd ) {
+	int e;
 }

@@ -9,13 +9,16 @@ import java.util.Map;
 
 public class SymbolTableNode {
 
-	private SymbolTableNode prev;
-	private SymbolTableNode next;
+	SymbolTableNode prev;
+	SymbolTableNode next;
 	private Map<String, Descriptor> table;
 
 	public SymbolTableNode() {
-		prev = new SymbolTableNode();
-		next = new SymbolTableNode();
+		table = new HashMap<>();
+	}
+
+	public SymbolTableNode( SymbolTableNode symbolTableNode ) {
+		prev = symbolTableNode;
 		table = new HashMap<>();
 	}
 
@@ -32,4 +35,11 @@ public class SymbolTableNode {
 			throw new NameNotFoundException( name );
 	}
 
+	@Override
+	public String toString() {
+		String returnValue = "";
+		for ( Map.Entry<String, Descriptor> e : table.entrySet() )
+			returnValue = returnValue + " (" + e.getKey() + "," + e.getValue() + ")";
+		return returnValue;
+	}
 }

@@ -1,6 +1,8 @@
 package compiler.Parser;
 import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
+import compiler.CodeGenerator.SymbolTable.*;
+import compiler.CodeGenerator.SymbolTable.Utility.*;
 
 
 parser code {:
@@ -19,7 +21,7 @@ terminal	    AND, OR, NOT;
 // dot
 terminal        DOT;
 // types
-terminal        INT, DOUBLE, BOOL, STRING;
+terminal        String INT, DOUBLE, BOOL, STRING;
 // signs
 terminal		OPENBRACKET, CLOSEBRACKET, OPENCLOSEBRACKET, WS, OPENPARENTHESIS,
 				CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES;
@@ -32,11 +34,13 @@ terminal        READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
 terminal        String IDENTIFIER, STRINGLITERAL;
 
 // defining nonterminals
-nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
+nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, FunctionDecl, Formals, CommaVariables,
 				ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
 				AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
 				Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
 				CommaExpr, Expr, LValue, Call, Actuals, Constant;
+// non-terminals with type
+nonterminal     String Type;
 
 // defining precedences
 precedence left     ELSE;
@@ -67,21 +71,46 @@ Decl ::=                VariableDecl
 
 VariableDecl ::=        Variable SEMICOLON;
 
-Variable ::=            Type IDENTIFIER;
-
-Type ::=                INT
-						| DOUBLE
-						| BOOL
-						| STRING
-						| IDENTIFIER
-						| Type OPENCLOSEBRACKET
+Variable ::=            Type:t IDENTIFIER:id
+						{:
+							System.out.println( "Identifier with type " + t + " and name " + id );
+							SymbolTable.getInstance().getSymbolTable().addEntry(
+								id,
+								new Descriptor( Descriptor.getType( t ), null )
+							);
+						:}
 						;
 
-FunctionDecl ::=        Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
+Type ::=                INT {: RESULT = "INT"; :}
+						| DOUBLE {: RESULT = "DOUBLE"; :}
+						| BOOL {: RESULT = "BOOL"; :}
+						| STRING {: RESULT = "STRING"; :}
+						| IDENTIFIER:e {: RESULT = e; :}
+						| Type OPENCLOSEBRACKET {: RESULT = "ARRAY"; :}
+						;
+
+FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS
+						{:
+							System.out.println( "Starting to get formals." );
+							SymbolTable.getInstance().makeNextAndSwitch();
+						:}
+						Formals
+						{:
+							System.out.println( "After getting formals: " );
+							System.out.println( SymbolTable.getInstance().getSymbolTable() );
+							SymbolTable.getInstance().makeNextAndSwitch();
+						:} CLOSEPARENTHESIS StmtBlock {:
+							System.out.println( "A function!" );
+							System.out.println( "\ttype: " + t );
+							System.out.println( "\tname: " + name );
+							System.out.println( SymbolTable.getInstance().getSymbolTable() );
+							SymbolTable.getInstance().goBack();
+							SymbolTable.getInstance().goBack();
+						:}
 						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
 						;
 
-Formals ::=             Variable CommaVariables
+Formals ::=             Variable:v CommaVariables
 						| /*epsilon*/
 						;
 CommaVariables ::=      COMMA Variable CommaVariables
