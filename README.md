@@ -10,6 +10,8 @@ Compiling the program:
 
 ```
 java -jar lib/jflex-full-1.8.2.jar src/compiler/Scanner.flex
+java -jar lib/java-cup-11b.jar src/compiler/parser.cup
+mv parser.java sym.java src/compiler/
 javac -cp .:src/:lib/java-cup-11b.jar src/compiler/Main.java
 ```
 
@@ -18,12 +20,3 @@ Running the program:
 ```
 java -cp .:src/:lib/java-cup-11b.jar compiler.Main
 ```
-
-If you want to change the scanner's tokenization and behaviour, you have to change *Scanner.flex*. Once you made your changes, run this command:
-
-```
-java -jar lib/jflex-full-1.8.2.jar src/compiler/Scanner.flex
-```
-
-You'll get a file named *MyScanner.java*. Now you can compile and run Main.java. 
-
