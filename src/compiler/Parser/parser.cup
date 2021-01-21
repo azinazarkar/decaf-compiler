@@ -11,21 +11,33 @@ parser code {:
 :}
 scan with {: return scanner.next_token(); :}
 // defining terminals here
-terminal            PLUS, MINUS, MULTIPLY, DIVIDE, MOD, UMINUS,
-					LESS, LESSEQUAL, GREATER, GREATEREQUAL, EQUAL, NOTEQUAL, AND, OR, NOT, DOT,
-					INT, DOUBLE, BOOL, STRING ,OPENBRACKET, CLOSEBRACKET, OPENCLOSEBRACKET, WS, OPENPARENTHESIS,
-					READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
-					DECIMAL, FLOATINGPOINT, BOOLEANLITERAL, NULL,
-					CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES, VOID, CLASS, INTERFACE,
-					EXTENDS, IMPLEMENTS, COMMA, SEMICOLON, PRIVATE, PROTECTED, PUBLIC, IF, ELSE, WHILE, FOR, RETURN,
-					BREAK, CONTINUE, PRINT, ASSIGN, THIS;
-terminal    String  IDENTIFIER, STRINGLITERAL;
+// arithmetic operators
+terminal        PLUS, MINUS, MULTIPLY, DIVIDE, MOD, UMINUS,
+				LESS, LESSEQUAL, GREATER, GREATEREQUAL, EQUAL, NOTEQUAL;
+// logical operators
+terminal	    AND, OR, NOT;
+// dot
+terminal        DOT;
+// types
+terminal        INT, DOUBLE, BOOL, STRING;
+// signs
+terminal		OPENBRACKET, CLOSEBRACKET, OPENCLOSEBRACKET, WS, OPENPARENTHESIS,
+				CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES;
+// keywords
+terminal        READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
+				DECIMAL, FLOATINGPOINT, BOOLEANLITERAL, NULL,
+				VOID, CLASS, INTERFACE,
+				EXTENDS, IMPLEMENTS, COMMA, SEMICOLON, PRIVATE, PROTECTED, PUBLIC, IF, ELSE, WHILE, FOR, RETURN,
+				BREAK, CONTINUE, PRINT, ASSIGN, THIS;
+terminal        String IDENTIFIER, STRINGLITERAL;
+
 // defining nonterminals
-nonterminal         Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
-					ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
-					AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
-					Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
-					CommaExpr, Expr, LValue, Call, Actuals, Constant;
+nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
+				ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
+				AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
+				Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
+				CommaExpr, Expr, LValue, Call, Actuals, Constant;
+
 // defining precedences
 precedence left     ELSE;
 precedence right    ASSIGN;
@@ -108,14 +120,6 @@ PrototypeStar ::=       Prototype PrototypeStar
 Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
 						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
 						;
-
-//StmtBlock ::=           OPENCURLYBRACES VariableDeclStar StmtStar CLOSECURLYBRACES;
-//VariableDeclStar ::=    VariableDecl VariableDeclStar
-//						| /*epsilon*/
-//						;
-//StmtStar ::=            Stmt StmtStar
-//						| /*epsilon*/
-//						;
 
 StmtBlock ::=           OPENCURLYBRACES InsideStmtBlock CLOSECURLYBRACES;
 InsideStmtBlock ::=     VariableDecl InsideStmtBlock
