@@ -1,5 +1,8 @@
 package compiler;
 
+import compiler.Parser.parser;
+import compiler.Scanner.MyScanner;
+
 import java.io.FileReader;
 
 public class Main {

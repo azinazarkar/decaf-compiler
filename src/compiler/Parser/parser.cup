@@ -1,9 +1,9 @@
-package compiler;
+package compiler.Parser;
 import java_cup.runtime.*;
+import compiler.Scanner.MyScanner;
 
 
 parser code {:
-	// defining scanner here
 	private MyScanner scanner;
 	public parser (MyScanner scanner){
 		this.scanner = scanner;

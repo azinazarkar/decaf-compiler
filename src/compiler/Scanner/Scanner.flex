@@ -1,4 +1,5 @@
-package compiler;
+package compiler.Scanner;
+import compiler.Parser.sym;
 import java_cup.runtime.*;
 import java.io.*;
 %%
