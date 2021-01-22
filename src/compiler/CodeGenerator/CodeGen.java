@@ -8,7 +8,7 @@ import java.io.IOException;
 public class CodeGen {
 	private static CodeGen ourInstance = new CodeGen();
 	private String dataSeg = "\t.data\n\n";
-	private String textSeg = "\t.text\n\t.global main\n\nmain:\n";
+	private String textSeg = "\t.text\n\t.globl main\n\nmain:\n";
 
 	public static CodeGen getInstance() {
 		return ourInstance;
