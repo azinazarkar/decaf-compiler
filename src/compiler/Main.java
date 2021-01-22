@@ -1,5 +1,6 @@
 package compiler;
 
+import compiler.CodeGenerator.CodeGen;
 import compiler.Parser.parser;
 import compiler.Scanner.MyScanner;
 
@@ -17,6 +18,7 @@ public class Main {
 			System.out.println("Syntax Error");
 			System.exit( 0 );
 		}
+		CodeGen.getInstance().compile();
 		System.out.println("OK");
 	}
 }

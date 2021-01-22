@@ -6,7 +6,7 @@ import java.io.IOException;
 public class CodeGen {
 	private static CodeGen ourInstance = new CodeGen();
 	private String dataSeg = "\t.data\n";
-	private String textSeg = "\t.text\n.global main\nmain:\n";
+	private String textSeg = "\t.text\n\t.global main\nmain:\n";
 
 	public static CodeGen getInstance() {
 		return ourInstance;
@@ -35,7 +35,7 @@ public class CodeGen {
 
 	public void compile() throws IOException {
 		FileWriter out = new FileWriter( "out.asm" );
-		out.write( dataSeg + textSeg);
+		out.write( dataSeg + "\n" + textSeg);
 		out.close();
 	}
 
