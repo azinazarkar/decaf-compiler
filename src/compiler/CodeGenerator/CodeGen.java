@@ -25,6 +25,10 @@ public class CodeGen {
 		addToData( name + ": " + type + " " + value );
 	}
 
+	public void addToText( String in ) {
+		addToText( in, false );
+	}
+
 	public void addToText( String in, boolean isLabel ) {
 		if ( !isLabel )
 			textSeg = textSeg + "\t";

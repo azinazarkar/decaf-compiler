@@ -23,25 +23,34 @@ terminal	    AND, OR, NOT;
 terminal        DOT;
 // types
 terminal        String INT, DOUBLE, BOOL, STRING;
+
+// literals
+terminal        String DECIMAL;
+terminal        String FLOATINGPOINT;
+terminal        String BOOLEANLITERAL;
+terminal        String STRINGLITERAL;
+terminal        NULL;
+
 // signs
 terminal		OPENBRACKET, CLOSEBRACKET, OPENCLOSEBRACKET, WS, OPENPARENTHESIS,
 				CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES;
 // keywords
 terminal        READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
-				DECIMAL, FLOATINGPOINT, BOOLEANLITERAL, NULL,
 				VOID, CLASS, INTERFACE,
 				EXTENDS, IMPLEMENTS, COMMA, SEMICOLON, PRIVATE, PROTECTED, PUBLIC, IF, ELSE, WHILE, FOR, RETURN,
 				BREAK, CONTINUE, PRINT, ASSIGN, THIS;
-terminal        String IDENTIFIER, STRINGLITERAL;
+terminal        String IDENTIFIER;
 
 // defining nonterminals
 nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, FunctionDecl, Formals, CommaVariables,
 				ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
 				AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
 				Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
-				CommaExpr, Expr, LValue, Call, Actuals, Constant;
+				CommaExpr, Call, Actuals;
 // non-terminals with type
 nonterminal     String Type;
+nonterminal     Descriptor Constant, LValue;
+nonterminal     Descriptor Expr;
 
 // defining precedences
 precedence left     ELSE;
@@ -72,8 +81,7 @@ Decl ::=                VariableDecl
 
 VariableDecl ::=        Variable SEMICOLON;
 
-Variable ::=            Type:t IDENTIFIER:id
-						{:
+Variable ::=            Type:t IDENTIFIER:id {:
 							String name = IDGenerator.getInstance().getNextID();
 							Type type = Descriptor.getType( t );
 							SymbolTable.getInstance().getSymbolTable().addEntry(
@@ -92,12 +100,10 @@ Type ::=                INT {: RESULT = "INT"; :}
 						| Type OPENCLOSEBRACKET {: RESULT = "ARRAY"; :}
 						;
 
-FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS
-						{:
+FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 							SymbolTable.getInstance().makeNextAndSwitch( name );
 						:}
-						Formals
-						{:
+						Formals {:
 							SymbolTable.getInstance().makeNextAndSwitch();
 						:} CLOSEPARENTHESIS StmtBlock {:
 							SymbolTable.getInstance().goBack();
@@ -190,8 +196,22 @@ CommaExpr ::=           COMMA Expr CommaExpr
 						| /*epsilon*/
 						;
 
-Expr ::=                LValue ASSIGN Expr
-						| Constant
+Expr ::=                LValue:lv ASSIGN Expr:e {:
+							if ( e.getType().toString().equals( "INT" ) )
+								CodeGen.getInstance().addToText( "lw " + "$a0, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( e.getName() ).getName() );
+							else
+								System.out.println( "I DONT KNOW" );
+							CodeGen.getInstance().addToText( "la " + "$a1, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( lv.getName() ).getName() );
+							CodeGen.getInstance().addToText( "move $a2, $a0" );
+							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
+							RESULT = new Descriptor( "", Type.DUMMY, 0 );
+						:}
+						|
+						Constant:c {:
+							SymbolTable.getInstance().getSymbolTable().addEntry( c.getName(), c );
+							CodeGen.getInstance().addToData( c.getName(), Type.getMipsType( c.getType() ), c.getValue().toString() );
+							RESULT = c;
+						:}
 						| LValue
 						| THIS
 						| Call
@@ -221,7 +241,7 @@ Expr ::=                LValue ASSIGN Expr
 						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						;
 
-LValue ::=              IDENTIFIER
+LValue ::=              IDENTIFIER:id {: RESULT = new Descriptor( id, Type.DUMMY, 0 ); :}
 						| Expr DOT IDENTIFIER
 						| Expr OPENBRACKET Expr CLOSEBRACKET
 						;
@@ -234,10 +254,10 @@ Actuals ::=             Expr CommaExpr
 						| /*epsilon*/
 						;
 
-Constant ::=            DECIMAL
-						| FLOATINGPOINT
-						| BOOLEANLITERAL
-						| STRINGLITERAL
-						| NULL
+Constant ::=            DECIMAL:d {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.INT, Integer.parseInt( d ) ); :}
+						| FLOATINGPOINT:f {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.DOUBLE, f ); :}
+						| BOOLEANLITERAL:b {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.BOOL, b ); :}
+						| STRINGLITERAL:s {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s ); :}
+						| NULL:n {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
 						;
 
