@@ -16,10 +16,14 @@ public class SymbolTable {
 		return currentNode;
 	}
 
-	// Gets an ID and returns a new string with extra information about scope
-	public String reformat( String id ) {
-		return currentNode.getScopeName() + "_" + currentNode.getLevel() + "_" + id;
-	}
+//	// Gets an ID and returns a new string with extra information about scope
+//	public String reformat( String id ) {
+//		return currentNode.getScopeName() + "_" + currentNode.getLevel() + "_" + id;
+//	}
+
+//	public String getIdFromName( String name ) {
+//		return name.split( "->", 3 )[2];
+//	}
 
 	public void makeNextAndSwitch() {
 		makeNextAndSwitch( SymbolTable.getInstance().currentNode.getScopeName() );

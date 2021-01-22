@@ -2,10 +2,12 @@ package compiler.CodeGenerator.SymbolTable.Utility;
 
 public class Descriptor {
 
+	private String name;
 	private Type type;
 	private Object value;
 
-	public Descriptor(Type type, Object value) {
+	public Descriptor(String name, Type type, Object value) {
+		this.name = name;
 		this.type = type;
 		this.value = value;
 	}

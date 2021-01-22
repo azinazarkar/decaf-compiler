@@ -26,19 +26,19 @@ public class SymbolTableNode {
 		this.scopeName = scopeName;
 	}
 
-	public void addEntry( String name, Descriptor descriptor ) {
-		if ( table.containsKey( name ) )
-			throw new NameAlreadyExistsException( name );
-		table.put( name, descriptor );
+	public void addEntry( String id, Descriptor descriptor ) {
+		if ( table.containsKey( id ) )
+			throw new NameAlreadyExistsException( id );
+		table.put( id, descriptor );
 	}
 
-	public Descriptor getDescriptor( String name ) {
-		if ( table.containsKey( name ) )
-			return table.get( name );
+	public Descriptor getDescriptor( String id ) {
+		if ( table.containsKey( id ) )
+			return table.get( id );
 		else if ( prev == null )
-			throw new NameNotFoundException( name );
+			throw new NameNotFoundException( id );
 		else
-			return prev.getDescriptor( name );
+			return prev.getDescriptor( id );
 	}
 
 	public int getLevel() {

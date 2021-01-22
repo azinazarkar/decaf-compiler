@@ -868,11 +868,11 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							String name = SymbolTable.getInstance().reformat( id );
+							String name = IDGenerator.getInstance().getNextID();
 							Type type = Descriptor.getType( t );
 							SymbolTable.getInstance().getSymbolTable().addEntry(
-								name,
-								new Descriptor( type, null )
+								id,
+								new Descriptor( name, type, null )
 							);
 							CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
 						
