@@ -9,6 +9,7 @@ import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
 import compiler.CodeGenerator.SymbolTable.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
+import compiler.CodeGenerator.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -867,10 +868,13 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
+							String name = SymbolTable.getInstance().reformat( id );
+							Type type = Descriptor.getType( t );
 							SymbolTable.getInstance().getSymbolTable().addEntry(
-								SymbolTable.getInstance().reformat( id ),
-								new Descriptor( Descriptor.getType( t ), null )
+								name,
+								new Descriptor( type, null )
 							);
+							CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Variable",4, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -961,7 +965,6 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 
-							System.out.println( SymbolTable.getInstance().getSymbolTable() );
 							SymbolTable.getInstance().makeNextAndSwitch();
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",40, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -981,7 +984,6 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		
-							System.out.println( SymbolTable.getInstance().getSymbolTable() );
 							SymbolTable.getInstance().goBack();
 							SymbolTable.getInstance().goBack();
 						

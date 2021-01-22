@@ -3,6 +3,7 @@ import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
 import compiler.CodeGenerator.SymbolTable.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
+import compiler.CodeGenerator.*;
 
 
 parser code {:
@@ -73,10 +74,13 @@ VariableDecl ::=        Variable SEMICOLON;
 
 Variable ::=            Type:t IDENTIFIER:id
 						{:
+							String name = SymbolTable.getInstance().reformat( id );
+							Type type = Descriptor.getType( t );
 							SymbolTable.getInstance().getSymbolTable().addEntry(
-								SymbolTable.getInstance().reformat( id ),
-								new Descriptor( Descriptor.getType( t ), null )
+								name,
+								new Descriptor( type, null )
 							);
+							CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
 						:}
 						;
 

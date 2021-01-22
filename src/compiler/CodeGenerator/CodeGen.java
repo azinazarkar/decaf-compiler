@@ -1,12 +1,14 @@
 package compiler.CodeGenerator;
 
+import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
+
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class CodeGen {
 	private static CodeGen ourInstance = new CodeGen();
-	private String dataSeg = "\t.data\n";
-	private String textSeg = "\t.text\n\t.global main\nmain:\n";
+	private String dataSeg = "\t.data\n\n";
+	private String textSeg = "\t.text\n\t.global main\n\nmain:\n";
 
 	public static CodeGen getInstance() {
 		return ourInstance;
