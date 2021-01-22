@@ -1,4 +1,4 @@
-int main( double d ) {
+int main() {
 	int a;
 	int b;
 	int c;
@@ -9,4 +9,5 @@ int main( double d ) {
 
 int test( double dd ) {
 	int e;
+	e = 5;
 }

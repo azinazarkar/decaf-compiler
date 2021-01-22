@@ -190,7 +190,7 @@ ContinueStmt ::=        CONTINUE SEMICOLON;
 
 PrintStmt ::=           PRINT OPENPARENTHESIS Expr CommaExpr CLOSEPARENTHESIS SEMICOLON;
 
-CommaExpr ::=           COMMA CommaExpr
+CommaExpr ::=           COMMA Expr CommaExpr
 						| /*epsilon*/
 						;
 
