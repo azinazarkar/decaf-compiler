@@ -13,6 +13,7 @@
 	.globl main
 
 main:
+
 	lw $a0, _ad
 	la $a1, aa
 	move $a2, $a0
@@ -21,7 +22,11 @@ main:
 	la $a1, ab
 	move $a2, $a0
 	sw $a2, 0($a1)
+	
+test:
+
 	lw $a0, _ah
 	la $a1, ag
 	move $a2, $a0
 	sw $a2, 0($a1)
+	

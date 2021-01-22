@@ -948,6 +948,7 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
+							CodeGen.getInstance().addToText( name + ":\n", true );
 							SymbolTable.getInstance().makeNextAndSwitch( name );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",39, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -986,6 +987,7 @@ class CUP$parser$actions {
 		
 							SymbolTable.getInstance().goBack();
 							SymbolTable.getInstance().goBack();
+							CodeGen.getInstance().addToText( "" );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("FunctionDecl",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
