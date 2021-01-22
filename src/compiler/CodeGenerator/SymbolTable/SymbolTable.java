@@ -9,16 +9,26 @@ public class SymbolTable {
 	}
 
 	private SymbolTable() {
-		currentNode = new SymbolTableNode();
+		currentNode = new SymbolTableNode( "root" );
 	}
 
 	public SymbolTableNode getSymbolTable() {
 		return currentNode;
 	}
 
+	// Gets an ID and returns a new string with extra information about scope
+	public String reformat( String id ) {
+		return currentNode.getScopeName() + "_" + currentNode.getLevel() + "_" + id;
+	}
+
 	public void makeNextAndSwitch() {
-		SymbolTable.getInstance().currentNode.next = new SymbolTableNode( SymbolTable.getInstance().currentNode );
-		SymbolTable.getInstance().currentNode = SymbolTable.getInstance().currentNode.next;
+		makeNextAndSwitch( SymbolTable.getInstance().currentNode.getScopeName() );
+	}
+
+	public void makeNextAndSwitch( String newName ) {
+		SymbolTableNode temp = SymbolTable.getInstance().currentNode;
+		temp.next = new SymbolTableNode( temp, newName, temp.getLevel() + 1 );
+		SymbolTable.getInstance().currentNode = temp.next;
 	}
 
 	public void goBack() {

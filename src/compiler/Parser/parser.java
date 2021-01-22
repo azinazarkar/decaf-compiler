@@ -867,9 +867,8 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							System.out.println( "Identifier with type " + t + " and name " + id );
 							SymbolTable.getInstance().getSymbolTable().addEntry(
-								id,
+								SymbolTable.getInstance().reformat( id ),
 								new Descriptor( Descriptor.getType( t ), null )
 							);
 						
@@ -945,8 +944,7 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
-							System.out.println( "Starting to get formals." );
-							SymbolTable.getInstance().makeNextAndSwitch();
+							SymbolTable.getInstance().makeNextAndSwitch( name );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",39, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -963,7 +961,6 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 
-							System.out.println( "After getting formals: " );
 							System.out.println( SymbolTable.getInstance().getSymbolTable() );
 							SymbolTable.getInstance().makeNextAndSwitch();
 						
@@ -984,9 +981,6 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		
-							System.out.println( "A function!" );
-							System.out.println( "\ttype: " + t );
-							System.out.println( "\tname: " + name );
 							System.out.println( SymbolTable.getInstance().getSymbolTable() );
 							SymbolTable.getInstance().goBack();
 							SymbolTable.getInstance().goBack();

@@ -73,9 +73,8 @@ VariableDecl ::=        Variable SEMICOLON;
 
 Variable ::=            Type:t IDENTIFIER:id
 						{:
-							System.out.println( "Identifier with type " + t + " and name " + id );
 							SymbolTable.getInstance().getSymbolTable().addEntry(
-								id,
+								SymbolTable.getInstance().reformat( id ),
 								new Descriptor( Descriptor.getType( t ), null )
 							);
 						:}
@@ -91,19 +90,12 @@ Type ::=                INT {: RESULT = "INT"; :}
 
 FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS
 						{:
-							System.out.println( "Starting to get formals." );
-							SymbolTable.getInstance().makeNextAndSwitch();
+							SymbolTable.getInstance().makeNextAndSwitch( name );
 						:}
 						Formals
 						{:
-							System.out.println( "After getting formals: " );
-							System.out.println( SymbolTable.getInstance().getSymbolTable() );
 							SymbolTable.getInstance().makeNextAndSwitch();
 						:} CLOSEPARENTHESIS StmtBlock {:
-							System.out.println( "A function!" );
-							System.out.println( "\ttype: " + t );
-							System.out.println( "\tname: " + name );
-							System.out.println( SymbolTable.getInstance().getSymbolTable() );
 							SymbolTable.getInstance().goBack();
 							SymbolTable.getInstance().goBack();
 						:}

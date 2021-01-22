@@ -12,14 +12,18 @@ public class SymbolTableNode {
 	SymbolTableNode prev;
 	SymbolTableNode next;
 	private Map<String, Descriptor> table;
+	private int level;
+	private String scopeName;
 
-	public SymbolTableNode() {
-		table = new HashMap<>();
+	public SymbolTableNode( String scopeName ) {
+		this( null, scopeName, 0 );
 	}
 
-	public SymbolTableNode( SymbolTableNode symbolTableNode ) {
+	public SymbolTableNode( SymbolTableNode symbolTableNode, String scopeName, int level ) {
 		prev = symbolTableNode;
 		table = new HashMap<>();
+		this.level = level;
+		this.scopeName = scopeName;
 	}
 
 	public void addEntry( String name, Descriptor descriptor ) {
@@ -35,9 +39,25 @@ public class SymbolTableNode {
 			throw new NameNotFoundException( name );
 	}
 
+	public int getLevel() {
+		return level;
+	}
+
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
+	public String getScopeName() {
+		return scopeName;
+	}
+
+	public void setScopeName(String scopeName) {
+		this.scopeName = scopeName;
+	}
+
 	@Override
 	public String toString() {
-		String returnValue = "";
+		String returnValue = scopeName + ", " + level + ", ";
 		for ( Map.Entry<String, Descriptor> e : table.entrySet() )
 			returnValue = returnValue + " (" + e.getKey() + "," + e.getValue() + ")";
 		return returnValue;
