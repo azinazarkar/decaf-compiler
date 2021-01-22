@@ -35,8 +35,10 @@ public class SymbolTableNode {
 	public Descriptor getDescriptor( String name ) {
 		if ( table.containsKey( name ) )
 			return table.get( name );
-		else
+		else if ( prev == null )
 			throw new NameNotFoundException( name );
+		else
+			return prev.getDescriptor( name );
 	}
 
 	public int getLevel() {
