@@ -16,7 +16,7 @@ public class SemanticStack {
 		stack = new Stack<>();
 	}
 
-	public void pushDescriptor(Descriptor descriptor ) {
+	public void pushDescriptor( Descriptor descriptor ) {
 		stack.push( descriptor );
 	}
 
