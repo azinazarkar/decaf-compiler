@@ -8,6 +8,7 @@ package compiler.Parser;
 import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
 import compiler.CodeGenerator.SymbolTable.*;
+import compiler.CodeGenerator.Exceptions.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 import java_cup.runtime.XMLElement;
@@ -1475,11 +1476,13 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
+							if ( lv.getType() != e.getType() )
+								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
 							if ( e.getType().toString().equals( "INT" ) )
 								CodeGen.getInstance().addToText( "lw " + "$a0, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( e.getName() ).getName() );
 							else
 								System.out.println( "I DONT KNOW" );
-							CodeGen.getInstance().addToText( "la " + "$a1, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( lv.getName() ).getName() );
+							CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
 							CodeGen.getInstance().addToText( "move $a2, $a0" );
 							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
 							RESULT = new Descriptor( "", Type.DUMMY, 0 );
@@ -1754,7 +1757,7 @@ class CUP$parser$actions {
 		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new Descriptor( id, Type.DUMMY, 0 ); 
+		 RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id ); 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("LValue",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

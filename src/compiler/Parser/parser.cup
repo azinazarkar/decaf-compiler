@@ -2,6 +2,7 @@ package compiler.Parser;
 import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
 import compiler.CodeGenerator.SymbolTable.*;
+import compiler.CodeGenerator.Exceptions.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 
@@ -199,11 +200,13 @@ CommaExpr ::=           COMMA Expr CommaExpr
 						;
 
 Expr ::=                LValue:lv ASSIGN Expr:e {:
+							if ( lv.getType() != e.getType() )
+								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
 							if ( e.getType().toString().equals( "INT" ) )
 								CodeGen.getInstance().addToText( "lw " + "$a0, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( e.getName() ).getName() );
 							else
 								System.out.println( "I DONT KNOW" );
-							CodeGen.getInstance().addToText( "la " + "$a1, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( lv.getName() ).getName() );
+							CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
 							CodeGen.getInstance().addToText( "move $a2, $a0" );
 							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
 							RESULT = new Descriptor( "", Type.DUMMY, 0 );
@@ -243,7 +246,7 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						;
 
-LValue ::=              IDENTIFIER:id {: RESULT = new Descriptor( id, Type.DUMMY, 0 ); :}
+LValue ::=              IDENTIFIER:id {: RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id ); :}
 						| Expr DOT IDENTIFIER
 						| Expr OPENBRACKET Expr CLOSEBRACKET
 						;

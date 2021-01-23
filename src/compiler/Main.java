@@ -15,8 +15,8 @@ public class Main {
 		try {
 			p.parse();
 		} catch (Exception e) {
-			System.out.println("Syntax Error");
-			System.exit( 0 );
+			System.out.println( e );
+			System.exit( 1 );
 		}
 		CodeGen.getInstance().compile();
 		System.out.println("OK");
