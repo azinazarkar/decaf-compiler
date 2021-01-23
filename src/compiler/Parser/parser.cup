@@ -203,9 +203,10 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 							if ( lv.getType() != e.getType() )
 								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
 							if ( e.getType().toString().equals( "INT" ) )
-								CodeGen.getInstance().addToText( "lw " + "$a0, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( e.getName() ).getName() );
+								CodeGen.getInstance().addToText( "lw " + "$a0, " + e.getName() );
 							else
 								System.out.println( "I DONT KNOW" );
+							lv.setValue( e.getValue() );
 							CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
 							CodeGen.getInstance().addToText( "move $a2, $a0" );
 							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
@@ -217,11 +218,28 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 							CodeGen.getInstance().addToData( c.getName(), Type.getMipsType( c.getType() ), c.getValue().toString() );
 							RESULT = c;
 						:}
-						| LValue
+						| LValue:lv {: RESULT = lv; :}
 						| THIS
 						| Call
 						| OPENPARENTHESIS Expr CLOSEPARENTHESIS
-						| Expr PLUS Expr
+						| Expr:e1 PLUS Expr:e2 {:
+							if ( e1.getType() != e2.getType() )
+								throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
+							if ( e1.getType().toString().equals( "INT" ) ) {
+								Descriptor temp = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.INT,
+									(int) e1.getValue() + (int) e2.getValue() );
+								SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
+								CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType( temp.getType() ), temp.getValue().toString() );
+								CodeGen.getInstance().addToText( "lw " + "$a0, " + e1.getName() );
+								CodeGen.getInstance().addToText( "lw " + "$a1, " + e2.getName() );
+								CodeGen.getInstance().addToText( "add $t0, $a0, $a1" );
+								CodeGen.getInstance().addToText( "la " + "$a2, " + temp.getName() );
+								CodeGen.getInstance().addToText( "sw $t0, 0($a2)" );
+								RESULT = temp;
+							}
+						:}
 						| Expr MINUS Expr
 						| Expr MULTIPLY Expr
 						| Expr DIVIDE Expr
@@ -246,7 +264,9 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						;
 
-LValue ::=              IDENTIFIER:id {: RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id ); :}
+LValue ::=              IDENTIFIER:id {:
+							RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
+						:}
 						| Expr DOT IDENTIFIER
 						| Expr OPENBRACKET Expr CLOSEBRACKET
 						;

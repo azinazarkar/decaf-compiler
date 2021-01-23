@@ -1479,9 +1479,10 @@ class CUP$parser$actions {
 							if ( lv.getType() != e.getType() )
 								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
 							if ( e.getType().toString().equals( "INT" ) )
-								CodeGen.getInstance().addToText( "lw " + "$a0, " + SymbolTable.getInstance().getSymbolTable().getDescriptor( e.getName() ).getName() );
+								CodeGen.getInstance().addToText( "lw " + "$a0, " + e.getName() );
 							else
 								System.out.println( "I DONT KNOW" );
+							lv.setValue( e.getValue() );
 							CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
 							CodeGen.getInstance().addToText( "move $a2, $a0" );
 							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
@@ -1511,7 +1512,10 @@ class CUP$parser$actions {
           case 73: // Expr ::= LValue 
             {
               Descriptor RESULT =null;
-
+		int lvleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int lvright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Descriptor lv = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		 RESULT = lv; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1547,7 +1551,30 @@ class CUP$parser$actions {
           case 77: // Expr ::= Expr PLUS Expr 
             {
               Descriptor RESULT =null;
-
+		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Descriptor e1 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int e2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		
+							if ( e1.getType() != e2.getType() )
+								throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
+							if ( e1.getType().toString().equals( "INT" ) ) {
+								Descriptor temp = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.INT,
+									(int) e1.getValue() + (int) e2.getValue() );
+								SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
+								CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType( temp.getType() ), temp.getValue().toString() );
+								CodeGen.getInstance().addToText( "lw " + "$a0, " + e1.getName() );
+								CodeGen.getInstance().addToText( "lw " + "$a1, " + e2.getName() );
+								CodeGen.getInstance().addToText( "add $t0, $a0, $a1" );
+								CodeGen.getInstance().addToText( "la " + "$a2, " + temp.getName() );
+								CodeGen.getInstance().addToText( "sw $t0, 0($a2)" );
+								RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1757,7 +1784,9 @@ class CUP$parser$actions {
 		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id ); 
+		
+							RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("LValue",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

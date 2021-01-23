@@ -52,6 +52,6 @@ public class Descriptor {
 
 	@Override
 	public String toString() {
-		return "" + type;
+		return name + " " + type;
 	}
 }
