@@ -202,9 +202,6 @@ CommaExpr ::=           COMMA Expr CommaExpr
 						;
 
 Expr ::=                LValue:lv ASSIGN Expr:e {:
-							if ( lv.getType() != e.getType() )
-								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
-							lv.setValue( e.getValue() );
 							SemanticStack.getInstance().pushDescriptor( e );
 							SemanticStack.getInstance().pushDescriptor( lv );
 							AssignmentCodeGen.getInstance().cgen();
@@ -221,8 +218,6 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| Call
 						| OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						| Expr:e1 PLUS Expr:e2 {:
-							if ( e1.getType() != e2.getType() )
-								throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 							SemanticStack.getInstance().pushDescriptor( e1 );
 							SemanticStack.getInstance().pushDescriptor( e2 );
 							PlusCodeGen.getInstance().cgen();

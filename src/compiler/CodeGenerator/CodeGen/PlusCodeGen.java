@@ -1,5 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
+import compiler.CodeGenerator.Exceptions.CalculationTypeMismatch;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -19,6 +20,8 @@ public class PlusCodeGen {
 	public void cgen() {
 		Descriptor e2 = SemanticStack.getInstance().popDescriptor();
 		Descriptor e1 = SemanticStack.getInstance().popDescriptor();
+		if ( e1.getType() != e2.getType() )
+			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 		if ( e1.getType().toString().equals( "INT" ) ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
