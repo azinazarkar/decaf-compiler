@@ -1,6 +1,6 @@
 package compiler;
 
-import compiler.CodeGenerator.CodeGen;
+import compiler.CodeGenerator.CodeGen.CodeGen;
 import compiler.Parser.parser;
 import compiler.Scanner.MyScanner;
 

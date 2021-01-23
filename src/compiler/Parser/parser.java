@@ -11,6 +11,7 @@ import compiler.CodeGenerator.SymbolTable.*;
 import compiler.CodeGenerator.Exceptions.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
+import compiler.CodeGenerator.CodeGen.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -875,6 +876,7 @@ class CUP$parser$actions {
 								id,
 								new Descriptor( name, type, null )
 							);
+
 							CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Variable",4, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1478,14 +1480,17 @@ class CUP$parser$actions {
 		
 							if ( lv.getType() != e.getType() )
 								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
-							if ( e.getType().toString().equals( "INT" ) )
-								CodeGen.getInstance().addToText( "lw " + "$a0, " + e.getName() );
-							else
-								System.out.println( "I DONT KNOW" );
 							lv.setValue( e.getValue() );
-							CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
-							CodeGen.getInstance().addToText( "move $a2, $a0" );
-							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
+							SemanticStack.getInstance().pushDescriptor( e );
+							SemanticStack.getInstance().pushDescriptor( lv );
+							AssignmentCodeGen.getInstance().cgen();
+//							if ( e.getType().toString().equals( "INT" ) )
+//								CodeGen.getInstance().addToText( "lw " + "$a0, " + e.getName() );
+//							else
+//								System.out.println( "I DONT KNOW" );
+//							CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
+//							CodeGen.getInstance().addToText( "move $a2, $a0" );
+//							CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
 							RESULT = new Descriptor( "", Type.DUMMY, 0 );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

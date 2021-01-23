@@ -1,6 +1,4 @@
-package compiler.CodeGenerator;
-
-import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
+package compiler.CodeGenerator.CodeGen;
 
 import java.io.FileWriter;
 import java.io.IOException;
