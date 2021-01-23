@@ -224,7 +224,11 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 							Descriptor temp = SemanticStack.getInstance().popDescriptor();
 							RESULT = temp;
 						:}
-						| Expr MINUS Expr
+						| Expr:e1 MINUS Expr:e2 {:
+							SemanticStack.getInstance().pushDescriptor( e1 );
+							SemanticStack.getInstance().pushDescriptor( e2 );
+							MinusCodeGen.getInstance().cgen();
+						:}
 						| Expr MULTIPLY Expr
 						| Expr DIVIDE Expr
 						| Expr MOD Expr
