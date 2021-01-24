@@ -276,7 +276,16 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								RESULT = temp;
 							}
 						:}
-						| Expr MULTIPLY Expr
+						| Expr:e1 MULTIPLY Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								MultiplyCodeGen.getInstance().cgen();
+								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
 						| Expr DIVIDE Expr
 						| Expr MOD Expr
 						| MINUS Expr %prec UMINUS

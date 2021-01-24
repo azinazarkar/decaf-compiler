@@ -2,15 +2,19 @@ int main() {
 	int a;
 	int b;
 	int c;
+	int d;
 	a = 5;
 	b = 12;
 	c = a - b;
+	d = a * b;
 	Print( a );
 	Print( b );
 	Print( c );
+	Print( d );
 }
 
 int test( double dd ) {
 	int e;
-	e = 5;
+	e = 79;
+	Print( e );
 }
