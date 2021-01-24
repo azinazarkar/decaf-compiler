@@ -15,7 +15,7 @@ public class PrintCodeGen {
 	}
 
 	public void cgen() {
-		Descriptor e = SemanticStack.getInstance().popDescriptor();
+		Descriptor e = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Printing " + e.getName() );
 		if ( e.getType() == Type.INT ) {
 			CodeGen.getInstance().addToText( "li $v0, 1" );
@@ -32,9 +32,11 @@ public class PrintCodeGen {
 	}
 
 	public void printEnter() {
+		CodeGen.getInstance().addToText( "# Printing new line" );
 		CodeGen.getInstance().addToText( "li $a0, 0xA" );
 		CodeGen.getInstance().addToText( "li $v0, 0xB" );
 		CodeGen.getInstance().addToText( "syscall" );
+		CodeGen.getInstance().addEmptyLine();
 	}
 
 }

@@ -262,7 +262,7 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								PlusCodeGen.getInstance().cgen();
-								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
 								RESULT = temp;
 							}
 						:}
@@ -272,13 +272,42 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								MinusCodeGen.getInstance().cgen();
-								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
 								RESULT = temp;
 							}
 						:}
-						| Expr MULTIPLY Expr
-						| Expr DIVIDE Expr
-						| Expr MOD Expr
+						| Expr:e1 MULTIPLY Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								MultiplyCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| Expr:e1 DIVIDE Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								SemanticStack.getInstance().pushDescriptor( "quotient" );
+								DivideCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| Expr:e1 MOD Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                SemanticStack.getInstance().pushDescriptor( "mod" );
+                                DivideCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
 						| MINUS Expr %prec UMINUS
 						// azin is working
 						| Expr:e1 LESS Expr:e2 {:

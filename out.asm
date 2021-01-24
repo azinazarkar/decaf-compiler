@@ -8,47 +8,80 @@
 	ac: .word 0
 	ad: .word 0
 	ae: .word 0
-	_af: .word 5
-	_ag: .word 12
-	ah: .word -7
-	_ai: .word 5
+	af: .word 0
+	_ag: .word 5
+	_ah: .word 79
+	ai: .word 15
+	aj: .word 15
+	_ak: .word 79
 
 	.text
 	.globl main
 
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
 main:
 
-	# Assigning _af to aa
-	lw $a0, _af
+	# Assigning _ag to aa
+	lw $a0, _ag
 	la $a1, aa
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
-	# Assigning _ag to ab
-	lw $a0, _ag
+	# Assigning _ah to ab
+	lw $a0, _ah
 	la $a1, ab
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
-	# Subtracting ab from aa
-	lw $a0, aa
-	lw $a1, ab
-	sub $t0, $a0, $a1
-	la $a2, ah
+	# Multiplying ab by aa
+	lw $a0, ab
+	lw $a1, aa
+	div $a0, $a1
+	la $a2, ai
+	mflo $t0
 	sw $t0, 0($a2)
 	
-	# Assigning ah to ac
-	lw $a0, ah
+	# Assigning ai to ac
+	lw $a0, ai
 	la $a1, ac
+	move $a2, $a0
+	sw $a2, 0($a1)
+	
+	# Multiplying ab by aa
+	lw $a0, ab
+	lw $a1, aa
+	div $a0, $a1
+	la $a2, aj
+	mfhi $t0
+	sw $t0, 0($a2)
+	
+	# Assigning aj to ad
+	lw $a0, aj
+	la $a1, ad
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
@@ -57,32 +90,58 @@ main:
 	lw $a0, aa
 	syscall
 	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
 	# Printing ab
 	li $v0, 1
 	lw $a0, ab
 	syscall
 	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
 	# Printing ac
 	li $v0, 1
 	lw $a0, ac
 	syscall
 	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
 	
+	# Printing ad
+	li $v0, 1
+	lw $a0, ad
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
+	
 test:
 
-	# Assigning _ai to ae
-	lw $a0, _ai
-	la $a1, ae
+	# Assigning _ak to af
+	lw $a0, _ak
+	la $a1, af
 	move $a2, $a0
 	sw $a2, 0($a1)
+	
+	# Printing af
+	li $v0, 1
+	lw $a0, af
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
 	
 	
