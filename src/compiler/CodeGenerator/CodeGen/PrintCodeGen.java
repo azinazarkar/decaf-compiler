@@ -16,6 +16,7 @@ public class PrintCodeGen {
 
 	public void cgen() {
 		Descriptor e = SemanticStack.getInstance().popDescriptor();
+		CodeGen.getInstance().addToText( "# Printing " + e.getName() );
 		if ( e.getType() == Type.INT ) {
 			CodeGen.getInstance().addToText( "li $v0, 1" );
 			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );

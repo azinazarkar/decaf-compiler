@@ -17,6 +17,7 @@ public class AssignmentCodeGen{
 	public void cgen() {
 		Descriptor lv = SemanticStack.getInstance().popDescriptor();
 		Descriptor expr = SemanticStack.getInstance().popDescriptor();
+		CodeGen.getInstance().addToText( "# Assigning " + expr.getName() + " to " + lv.getName() );
 		if ( lv.getType() != expr.getType() )
 			throw new AssignmentTypeMismatch( lv.getType(), expr.getType() );
 		lv.setValue( expr.getValue() );
