@@ -278,7 +278,8 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						;
 
 LValue ::=              IDENTIFIER:id {:
-							RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
 						:}
 						| Expr DOT IDENTIFIER
 						| Expr OPENBRACKET Expr CLOSEBRACKET

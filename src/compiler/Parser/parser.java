@@ -1804,7 +1804,8 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("LValue",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
