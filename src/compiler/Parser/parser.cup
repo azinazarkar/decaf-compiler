@@ -122,6 +122,13 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 								SymbolTable.getInstance().switchToNext();
 						:} CLOSEPARENTHESIS StmtBlock {:
 							SymbolTable.getInstance().goBack();
+							if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
+									&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
+                                CodeGen.getInstance().addToText( "# Exit!" );
+                                CodeGen.getInstance().addToText( "li $v0, 10" );
+                                CodeGen.getInstance().addToText( "syscall" );
+                                CodeGen.getInstance().addEmptyLine();
+                            }
 							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 )
 								CodeGen.getInstance().addToText( "" );
@@ -308,14 +315,22 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                                 RESULT = temp;
                             }
 						:}
-						| MINUS Expr %prec UMINUS
-						// azin is working
-						| Expr:e1 LESS Expr:e2 {:
+						| MINUS Expr:e {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                UnaryMinusCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:} %prec UMINUS
+
+                        | Expr:e1 LESS Expr:e2 {:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
                                 SemanticStack.getInstance().pushDescriptor( e1 );
                                 SemanticStack.getInstance().pushDescriptor( e2 );
-                                MinusCodeGen.getInstance().cgen();
+                                LessCodeGen.getInstance().cgen();
                                 Descriptor temp = SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
                             }
