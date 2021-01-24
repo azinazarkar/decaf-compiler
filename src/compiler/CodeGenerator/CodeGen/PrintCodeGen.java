@@ -1,5 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
+import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
@@ -26,6 +27,12 @@ public class PrintCodeGen {
 		else if ( e.getType() == Type.BOOL ) {
 			CodeGen.getInstance().addToText( "li $v0, 4" );
 			CodeGen.getInstance().addToText( "la $a0, " + e.getName() );
+			CodeGen.getInstance().addToText( "syscall" );
+			CodeGen.getInstance().addEmptyLine();
+		}
+		else if ( e.getType() == Type.DOUBLE ) {
+			CodeGen.getInstance().addToText( "li $v0, 2" );
+			CodeGen.getInstance().addToText( "lwc1 $f12, " + e.getName() );
 			CodeGen.getInstance().addToText( "syscall" );
 			CodeGen.getInstance().addEmptyLine();
 		}

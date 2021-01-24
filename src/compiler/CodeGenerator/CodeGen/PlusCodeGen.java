@@ -26,7 +26,7 @@ public class PlusCodeGen {
 			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 		if ( e1.getType() == Type.BOOL)
 			throw new InvalidOperator("+", Type.BOOL);
-		if ( e1.getType().toString().equals( "INT" ) ) {
+		if ( e1.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
 					Type.INT,
@@ -38,6 +38,22 @@ public class PlusCodeGen {
 			CodeGen.getInstance().addToText("add $t0, $a0, $a1");
 			CodeGen.getInstance().addToText("la " + "$a2, " + temp.getName());
 			CodeGen.getInstance().addToText("sw $t0, 0($a2)");
+			CodeGen.getInstance().addEmptyLine();
+			SemanticStack.getInstance().pushDescriptor( temp );
+		}
+		else if ( e1.getType() == Type.DOUBLE ) {
+			Descriptor temp = new Descriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.DOUBLE,
+					Float.floatToIntBits( Float.intBitsToFloat( (int) e1.getValue() ) + Float.intBitsToFloat( (int) e2.getValue() ) )
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToText( "lwc1 $f0, " + e1.getName() );
+			CodeGen.getInstance().addToText( "lwc1 $f1, " + e2.getName() );
+			CodeGen.getInstance().addToText( "add.s $f2, $f0, $f1" );
+			CodeGen.getInstance().addToText( "la $a0, " + temp.getName() );
+			CodeGen.getInstance().addToText( "swc1 $f2, 0($a0)" );
 			CodeGen.getInstance().addEmptyLine();
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
