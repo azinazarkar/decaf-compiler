@@ -2040,7 +2040,11 @@ class CUP$parser$actions {
 		String d = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.INT, Integer.parseInt( d ) );
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.INT,
+									Integer.parseInt( d )
+								);
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -2053,7 +2057,14 @@ class CUP$parser$actions {
 		int fleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int fright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String f = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.DOUBLE, f ); 
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.DOUBLE,
+									Float.floatToIntBits( Float.parseFloat( f ) )
+								);
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

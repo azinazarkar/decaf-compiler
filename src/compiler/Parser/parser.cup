@@ -382,9 +382,20 @@ ActualsCommaExpr ::=    COMMA Expr ActualsCommaExpr
 
 Constant ::=            DECIMAL:d {:
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.INT, Integer.parseInt( d ) );
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.INT,
+									Integer.parseInt( d )
+								);
 						:}
-						| FLOATINGPOINT:f {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.DOUBLE, f ); :}
+						| FLOATINGPOINT:f {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.DOUBLE,
+									Float.floatToIntBits( Float.parseFloat( f ) )
+								);
+						:}
 						| BOOLEANLITERAL:b {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.BOOL, b ); :}
 						| STRINGLITERAL:s {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s ); :}
 						| NULL:n {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
