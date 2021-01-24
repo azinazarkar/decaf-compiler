@@ -16,15 +16,21 @@
 	.text
 	.globl main
 
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
 main:
 
 	# Assigning _af to aa
@@ -57,25 +63,31 @@ main:
 	lw $a0, aa
 	syscall
 	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
 	# Printing ab
 	li $v0, 1
 	lw $a0, ab
 	syscall
 	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
 	# Printing ac
 	li $v0, 1
 	lw $a0, ac
 	syscall
 	
+	# Printing new line
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	
 	
 test:
 

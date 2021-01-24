@@ -32,9 +32,11 @@ public class PrintCodeGen {
 	}
 
 	public void printEnter() {
+		CodeGen.getInstance().addToText( "# Printing new line" );
 		CodeGen.getInstance().addToText( "li $a0, 0xA" );
 		CodeGen.getInstance().addToText( "li $v0, 0xB" );
 		CodeGen.getInstance().addToText( "syscall" );
+		CodeGen.getInstance().addEmptyLine();
 	}
 
 }
