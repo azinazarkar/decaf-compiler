@@ -45,6 +45,29 @@ public class MultiplyCodeGen {
 			CodeGen.getInstance().addEmptyLine();
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
+		else if ( e1.getType() == Type.DOUBLE ) {
+			System.out.println( e1.getValue() + " " + e2.getValue() );
+			System.out.println( Float.intBitsToFloat( (int) e1.getValue() ) + " " + Float.intBitsToFloat( (int) e2.getValue() ) );
+			double doubleAnswer = Float.intBitsToFloat( (int) e1.getValue() ) * Float.intBitsToFloat( (int) e2.getValue() );
+			System.out.println( doubleAnswer );
+			int intAnswer = Float.floatToIntBits( (float) doubleAnswer );
+			System.out.println( intAnswer );
+			System.out.println( Float.intBitsToFloat( intAnswer ) );
+			Descriptor temp = new Descriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.DOUBLE,
+					intAnswer
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToText( "lwc1 $f0, " + e1.getName() );
+			CodeGen.getInstance().addToText( "lwc1 $f1, " + e2.getName() );
+			CodeGen.getInstance().addToText( "mul.s $f2, $f0, $f1" );
+			CodeGen.getInstance().addToText( "la $a0, " + temp.getName() );
+			CodeGen.getInstance().addToText( "swc1 $f2, 0($a0)" );
+			CodeGen.getInstance().addEmptyLine();
+			SemanticStack.getInstance().pushDescriptor( temp );
+		}
 	}
 
 }

@@ -16,6 +16,9 @@
 	_ak: .word 1008981504
 	_al: .word 1078523331
 	_am: .word -1078523331
+	_an: .word 1069547520
+	_ao: .word 1075838976
+	_ap: .word 1081081856
 
 	.text
 	.globl main
@@ -91,6 +94,23 @@ main:
 	# Printing _am
 	li $v0, 2
 	lwc1 $f12, _am
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
+	# Multiplying _an by _ao
+	lwc1 $f0, _an
+	lwc1 $f1, _ao
+	mul.s $f2, $f0, $f1
+	la $a0, _ap
+	swc1 $f2, 0($a0)
+	
+	# Printing _ap
+	li $v0, 2
+	lwc1 $f12, _ap
 	syscall
 	
 	# Printing new line
