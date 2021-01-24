@@ -1,3 +1,10 @@
+
+int test( double dd ) {
+	int e;
+	e = 79;
+	Print( e );
+}
+
 int main() {
 	int a;
 	int b;
@@ -8,10 +15,4 @@ int main() {
 	Print( a );
 	Print( b );
 	Print( c );
-}
-
-int test( double dd ) {
-	int e;
-	e = 79;
-	Print( e );
 }

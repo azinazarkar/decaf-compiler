@@ -121,6 +121,12 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 							else if ( phase == 1 )
 								SymbolTable.getInstance().switchToNext();
 						:} CLOSEPARENTHESIS StmtBlock {:
+							if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" ) ) {
+								CodeGen.getInstance().addToText( "# Exit!" );
+								CodeGen.getInstance().addToText( "li $v0, 10" );
+								CodeGen.getInstance().addToText( "syscall" );
+								CodeGen.getInstance().addEmptyLine();
+							}
 							SymbolTable.getInstance().goBack();
 							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 )
