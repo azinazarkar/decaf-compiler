@@ -1,5 +1,8 @@
 	.data
 
+	true_print_string: .asciiz "true"
+	false_print_string: .asciiz "false"
+
 	aa: .word 0
 	ab: .word 0
 	ac: .word 0

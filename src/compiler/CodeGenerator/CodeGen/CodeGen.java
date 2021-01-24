@@ -13,6 +13,9 @@ public class CodeGen {
 	}
 
 	private CodeGen() {
+		dataSeg += "\ttrue_print_string: .asciiz \"true\"\n";
+		dataSeg += "\tfalse_print_string: .asciiz \"false\"\n";
+		dataSeg += "\n";
 	}
 
 	public void addToData( String in ) {
@@ -31,6 +34,10 @@ public class CodeGen {
 		if ( !isLabel )
 			textSeg = textSeg + "\t";
 		textSeg = textSeg + in + "\n";
+	}
+
+	public void addEmptyLine() {
+		addToText( "" );
 	}
 
 	public void cgen() {

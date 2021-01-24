@@ -35,7 +35,7 @@ public class PlusCodeGen {
 			CodeGen.getInstance().addToText("add $t0, $a0, $a1");
 			CodeGen.getInstance().addToText("la " + "$a2, " + temp.getName());
 			CodeGen.getInstance().addToText("sw $t0, 0($a2)");
-			CodeGen.getInstance().addToText( "" );
+			CodeGen.getInstance().addEmptyLine();
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
 	}

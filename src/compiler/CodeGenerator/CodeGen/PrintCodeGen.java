@@ -21,11 +21,22 @@ public class PrintCodeGen {
 			CodeGen.getInstance().addToText( "li $v0, 1" );
 			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
 			CodeGen.getInstance().addToText( "syscall" );
-			CodeGen.getInstance().addToText( "li $a0, 0xA" );
-			CodeGen.getInstance().addToText( "li $v0, 0xB" );
-			CodeGen.getInstance().addToText( "syscall" );
-			CodeGen.getInstance().addToText( "" );
+			printEnter();
+			CodeGen.getInstance().addEmptyLine();
 		}
+		else if ( e.getType() == Type.BOOL ) {
+			CodeGen.getInstance().addToText( "li $v0, 4" );
+			CodeGen.getInstance().addToText( "la $a0, " + e.getName() );
+			CodeGen.getInstance().addToText( "syscall" );
+			printEnter();
+			CodeGen.getInstance().addEmptyLine();
+		}
+	}
+
+	private void printEnter() {
+		CodeGen.getInstance().addToText( "li $a0, 0xA" );
+		CodeGen.getInstance().addToText( "li $v0, 0xB" );
+		CodeGen.getInstance().addToText( "syscall" );
 	}
 
 }
