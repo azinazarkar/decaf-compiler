@@ -14,10 +14,6 @@ int main() {
 	d = 5;
 	a = 3.14;
 	b = -4.15;
-	Print( a < b );
-	Print( b < a );
-	Print( a <= b );
-    Print( b <= a );
-	Print( c <= d );
-	Print( d <= c);
+	Print( c != d );
+	Print( a != b );
 }

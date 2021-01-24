@@ -17,10 +17,6 @@
 	_al: .word -1082445005
 	_am: .word 0
 	_an: .word 1
-	_ao: .word 0
-	_ap: .word 1
-	_aq: .word 1
-	_ar: .word 1
 
 	.text
 	.globl main
@@ -69,10 +65,10 @@ main:
 	la $a0, ad
 	swc1 $f0, 0($a0)
 	
-	# Is ac less than ad? 
-	lw $a0, ac
-	lw $a1, ad
-	slt $t0, $a0, $a1
+	# Is ae not equal to af? 
+	lw $a0, ae
+	lw $a1, af
+	sne $t0, $a0, $a1
 	la $a2, _am
 	sw $t0, 0($a2)
 	
@@ -86,82 +82,14 @@ main:
 	li $v0, 0xB
 	syscall
 	
-	# Is ad less than ac? 
-	lw $a0, ad
-	lw $a1, ac
-	slt $t0, $a0, $a1
+	# Is ac not equal to ad? 
+	lw $a0, ac
+	lw $a1, ad
+	sne $t0, $a0, $a1
 	la $a2, _an
 	sw $t0, 0($a2)
 	
 	# Printing _an
-	li $v0, 4
-	la $a0, true_print_string
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Is ac less or equal to ad? 
-	lw $a0, ac
-	lw $a1, ad
-	sle $t0, $a0, $a1
-	la $a2, _ao
-	sw $t0, 0($a2)
-	
-	# Printing _ao
-	li $v0, 4
-	la $a0, false_print_string
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Is ad less or equal to ac? 
-	lw $a0, ad
-	lw $a1, ac
-	sle $t0, $a0, $a1
-	la $a2, _ap
-	sw $t0, 0($a2)
-	
-	# Printing _ap
-	li $v0, 4
-	la $a0, true_print_string
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Is ae less or equal to af? 
-	lw $a0, ae
-	lw $a1, af
-	sle $t0, $a0, $a1
-	la $a2, _aq
-	sw $t0, 0($a2)
-	
-	# Printing _aq
-	li $v0, 4
-	la $a0, true_print_string
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Is af less or equal to ae? 
-	lw $a0, af
-	lw $a1, ae
-	sle $t0, $a0, $a1
-	la $a2, _ar
-	sw $t0, 0($a2)
-	
-	# Printing _ar
 	li $v0, 4
 	la $a0, true_print_string
 	syscall
