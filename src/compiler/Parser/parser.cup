@@ -325,7 +325,17 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                                 RESULT = temp;
                             }
 						:} %prec UMINUS
-						| Expr LESS Expr
+
+                        | Expr:e1 LESS Expr:e2 {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                LessCodeGen.getInstance().cgen();
+                                Descriptor temp = SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+                        :}
 						| Expr LESSEQUAL Expr
 						| Expr GREATER Expr
 						| Expr GREATEREQUAL Expr
