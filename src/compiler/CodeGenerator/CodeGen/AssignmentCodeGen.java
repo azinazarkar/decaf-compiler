@@ -23,10 +23,9 @@ public class AssignmentCodeGen{
 		if ( lv.getType() != expr.getType() )
 			throw new AssignmentTypeMismatch( lv.getType(), expr.getType() );
 		lv.setValue( expr.getValue() );
-		if ( expr.getType() == Type.INT ) {
+		if ( expr.getType() == Type.INT || expr.getType() == Type.BOOL ) {
 			CodeGen.getInstance().addToText( "lw " + "$a0, " + expr.getName() );
 			CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
-//			CodeGen.getInstance().addToText( "move $a2, $a0" );
 			CodeGen.getInstance().addToText( "sw $a0, 0($a1)" );
 		}
 		else if ( expr.getType() == Type.DOUBLE ) {

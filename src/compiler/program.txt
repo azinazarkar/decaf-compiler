@@ -10,6 +10,7 @@ int main() {
 	int b;
 	double c;
 	double d;
+	bool e;
 	a = 3;
 	b = 4;
 	Print( a == b );
@@ -21,4 +22,6 @@ int main() {
 	Print( c == d );
 	c = 1.28;
 	Print( c == d );
+	e = 10 == 10;
+	Print( e );
 }
