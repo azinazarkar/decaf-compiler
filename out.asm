@@ -19,6 +19,11 @@
 	_an: .word 1069547520
 	_ao: .word 1075838976
 	_ap: .word 1081081856
+	_aq: .word 1080033280
+	_ar: .word -1080033280
+	_as: .word 1056964608
+	_at: .word -1056964608
+	_au: .word 1042284544
 
 	.text
 	.globl main
@@ -111,6 +116,33 @@ main:
 	# Printing _ap
 	li $v0, 2
 	lwc1 $f12, _ap
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
+	# Getting negative value of _aq
+	lwc1 $f0, _aq
+	neg.s $f1, $f0
+	swc1 $f1, _ar
+	
+	# Getting negative value of _as
+	lwc1 $f0, _as
+	neg.s $f1, $f0
+	swc1 $f1, _at
+	
+	# Dividing _ar by _at
+	lwc1 $f0, _ar
+	lwc1 $f1, _at
+	div.s $f2, $f0, $f1
+	la $a0, _au
+	swc1 $f2, 0($a0)
+	
+	# Printing _au
+	li $v0, 2
+	lwc1 $f12, _au
 	syscall
 	
 	# Printing new line

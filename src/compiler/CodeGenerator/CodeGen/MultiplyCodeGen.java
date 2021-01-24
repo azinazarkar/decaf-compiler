@@ -46,13 +46,8 @@ public class MultiplyCodeGen {
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
 		else if ( e1.getType() == Type.DOUBLE ) {
-			System.out.println( e1.getValue() + " " + e2.getValue() );
-			System.out.println( Float.intBitsToFloat( (int) e1.getValue() ) + " " + Float.intBitsToFloat( (int) e2.getValue() ) );
 			double doubleAnswer = Float.intBitsToFloat( (int) e1.getValue() ) * Float.intBitsToFloat( (int) e2.getValue() );
-			System.out.println( doubleAnswer );
 			int intAnswer = Float.floatToIntBits( (float) doubleAnswer );
-			System.out.println( intAnswer );
-			System.out.println( Float.intBitsToFloat( intAnswer ) );
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
 					Type.DOUBLE,
