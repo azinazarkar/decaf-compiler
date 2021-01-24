@@ -1,6 +1,7 @@
 package compiler.CodeGenerator.CodeGen;
 
 import compiler.CodeGenerator.Exceptions.CalculationTypeMismatch;
+import compiler.CodeGenerator.Exceptions.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -23,6 +24,8 @@ public class MinusCodeGen {
 		CodeGen.getInstance().addToText( "Subtracting " + e2.getName() + " from " + e1.getName() );
 		if ( e1.getType() != e2.getType() )
 			throw new CalculationTypeMismatch( "-", e1.getType(), e2.getType() );
+		if ( e1.getType() == Type.BOOL)
+			throw new InvalidOperator("-", Type.BOOL);
 		if ( e1.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
 					IDGenerator.getInstance().getNextID(),
