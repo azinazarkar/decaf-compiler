@@ -6,14 +6,6 @@ int test( double dd ) {
 }
 
 int main() {
-	int a;
-	int b;
-	int c;
-	int d;
-	a = -5;
-	b = 79;
-	c = a * b;
-	Print( a );
-	Print( b );
-	Print( c );
+	double a;
+	a = 3.14 + 3.14;
 }
