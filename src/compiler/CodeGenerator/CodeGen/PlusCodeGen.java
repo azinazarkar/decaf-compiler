@@ -1,6 +1,7 @@
 package compiler.CodeGenerator.CodeGen;
 
 import compiler.CodeGenerator.Exceptions.CalculationTypeMismatch;
+import compiler.CodeGenerator.Exceptions.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -23,6 +24,8 @@ public class PlusCodeGen {
 		CodeGen.getInstance().addToText( "# Adding " + e1.getName() + " and " + e2.getName() );
 		if ( e1.getType() != e2.getType() )
 			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
+		if ( e1.getType() == Type.BOOL)
+			throw new InvalidOperator("+", Type.BOOL);
 		if ( e1.getType().toString().equals( "INT" ) ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
