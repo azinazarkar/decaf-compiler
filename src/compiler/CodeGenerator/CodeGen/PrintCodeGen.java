@@ -24,6 +24,7 @@ public class PrintCodeGen {
 			CodeGen.getInstance().addToText( "li $a0, 0xA" );
 			CodeGen.getInstance().addToText( "li $v0, 0xB" );
 			CodeGen.getInstance().addToText( "syscall" );
+			CodeGen.getInstance().addToText( "" );
 		}
 	}
 
