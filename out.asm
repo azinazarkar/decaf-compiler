@@ -9,13 +9,16 @@
 	ad: .word 0
 	ae: .word 0
 	_af: .word 5
-	_ag: .word 10
-	_ah: .word 15
+	_ag: .word 12
+	ah: .word -7
 	_ai: .word 5
 
 	.text
 	.globl main
 
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
@@ -36,15 +39,15 @@ main:
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
-	# Adding aa and ab
+	# Subtracting ab from aa
 	lw $a0, aa
 	lw $a1, ab
-	add $t0, $a0, $a1
-	la $a2, _ah
+	sub $t0, $a0, $a1
+	la $a2, ah
 	sw $t0, 0($a2)
 	
-	# Assigning _ah to ac
-	lw $a0, _ah
+	# Assigning ah to ac
+	lw $a0, ah
 	la $a1, ac
 	move $a2, $a0
 	sw $a2, 0($a1)
@@ -54,9 +57,12 @@ main:
 	lw $a0, aa
 	syscall
 	
-	# Printing ac
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	# Printing ab
 	li $v0, 1
-	lw $a0, ac
+	lw $a0, ab
 	syscall
 	
 	li $a0, 0xA

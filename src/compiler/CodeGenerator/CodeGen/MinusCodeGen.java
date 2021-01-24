@@ -20,7 +20,7 @@ public class MinusCodeGen {
 	public void cgen() {
 		Descriptor e2 = SemanticStack.getInstance().popDescriptor();
 		Descriptor e1 = SemanticStack.getInstance().popDescriptor();
-		CodeGen.getInstance().addToText( "Subtracting " + e2.getName() + " from " + e1.getName() );
+		CodeGen.getInstance().addToText( "# Subtracting " + e2.getName() + " from " + e1.getName() );
 		if ( e1.getType() != e2.getType() )
 			throw new CalculationTypeMismatch( "-", e1.getType(), e2.getType() );
 		if ( e1.getType() == Type.INT ) {
