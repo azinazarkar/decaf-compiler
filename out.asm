@@ -45,6 +45,16 @@ main:
 	la $a0, ac
 	swc1 $f0, 0($a0)
 	
+	# Printing ac
+	li $v0, 2
+	lwc1 $f12, ac
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
 	# Exit!
 	li $v0, 10
 	syscall

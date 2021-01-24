@@ -8,4 +8,5 @@ int test( double dd ) {
 int main() {
 	double a;
 	a = 3.14 + 3.14;
+	Print( a );
 }
