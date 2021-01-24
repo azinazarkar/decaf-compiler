@@ -6,25 +6,18 @@ int test( double dd ) {
 }
 
 int main() {
-	int a;
-	int b;
-	double c;
-	double d;
-	bool e;
-	bool f;
-	a = 3;
-	b = 4;
-	Print( a == b );
-	a = 3;
-	b = 3;
-	Print( a == b );
-	c = 3.14;
-	d = 3.14;
-	Print( c == d );
-	c = 1.28;
-	Print( c == d );
-	e = 10 == 10;
-	f = true;
-	Print( e );
-	Print( e == f );
+	double a;
+	double b;
+	int c;
+	int d;
+	c = 5;
+	d = 5;
+	a = 3.14;
+	b = -4.15;
+	Print( a < b );
+	Print( b < a );
+	Print( a <= b );
+    Print( b <= a );
+	Print( c <= d );
+	Print( d <= c);
 }

@@ -1785,7 +1785,6 @@ class CUP$parser$actions {
                             if ( phase == 1 ) {
                                 SemanticStack.getInstance().pushDescriptor( e1 );
                                 SemanticStack.getInstance().pushDescriptor( e2 );
-                                SemanticStack.getInstance().pushDescriptor( "less" );
                                 LessCodeGen.getInstance().cgen();
                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
@@ -1810,7 +1809,6 @@ class CUP$parser$actions {
                              if ( phase == 1 ) {
                                  SemanticStack.getInstance().pushDescriptor( e1 );
                                  SemanticStack.getInstance().pushDescriptor( e2 );
-                                 SemanticStack.getInstance().pushDescriptor( "lessEqual" );
                                  LessEqualCodeGen.getInstance().cgen();
                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                  RESULT = temp;
@@ -1835,7 +1833,6 @@ class CUP$parser$actions {
                             if ( phase == 1 ) {
                                 SemanticStack.getInstance().pushDescriptor( e1 );
                                 SemanticStack.getInstance().pushDescriptor( e2 );
-                                SemanticStack.getInstance().pushDescriptor( "greater" );
                                 GreaterCodeGen.getInstance().cgen();
                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
@@ -1860,7 +1857,6 @@ class CUP$parser$actions {
                              if ( phase == 1 ) {
                                  SemanticStack.getInstance().pushDescriptor( e1 );
                                  SemanticStack.getInstance().pushDescriptor( e2 );
-                                 SemanticStack.getInstance().pushDescriptor( "greatEqual" );
                                  GreaterEqualCodeGen.getInstance().cgen();
                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                  RESULT = temp;
@@ -1909,7 +1905,6 @@ class CUP$parser$actions {
                                if ( phase == 1 ) {
                                    SemanticStack.getInstance().pushDescriptor( e1 );
                                    SemanticStack.getInstance().pushDescriptor( e2 );
-                                   SemanticStack.getInstance().pushDescriptor( "nEqual" );
                                    NotEqualCodeGen.getInstance().cgen();
                                    Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                    RESULT = temp;
@@ -1934,7 +1929,6 @@ class CUP$parser$actions {
                               if ( phase == 1 ) {
                                   SemanticStack.getInstance().pushDescriptor( e1 );
                                   SemanticStack.getInstance().pushDescriptor( e2 );
-                                  SemanticStack.getInstance().pushDescriptor( "and" );
                                   AndCodeGen.getInstance().cgen();
                                   Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                   RESULT = temp;
@@ -1959,7 +1953,6 @@ class CUP$parser$actions {
                              if ( phase == 1 ) {
                                  SemanticStack.getInstance().pushDescriptor( e1 );
                                  SemanticStack.getInstance().pushDescriptor( e2 );
-                                 SemanticStack.getInstance().pushDescriptor( "or" );
                                  OrCodeGen.getInstance().cgen();
                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                  RESULT = temp;

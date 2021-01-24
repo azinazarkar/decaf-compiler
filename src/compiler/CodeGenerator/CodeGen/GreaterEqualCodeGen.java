@@ -17,7 +17,7 @@ public class GreaterEqualCodeGen {
         CodeGen.getInstance().addToText("# Is " + d1.getName() + " greater or equal to " + d2.getName() + "? ");
         if (d1.getType() != d2.getType())
             throw new CalculationTypeMismatch(">=", d1.getType(), d2.getType());
-        if (d1.getType() == Type.INT){
+        if (d1.getType() == Type.INT || d1.getType() == Type.DOUBLE){
             Descriptor operationResult = new Descriptor(
                     "_" + IDGenerator.getInstance().getNextID(),
                     Type.BOOL,
