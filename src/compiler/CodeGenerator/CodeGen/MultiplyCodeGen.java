@@ -30,7 +30,7 @@ public class MultiplyCodeGen {
 			long answer = Long.valueOf( (int) e1.getValue() ) * Long.valueOf( (int) e2.getValue() );
 			int answer32Bit = (int) ( (answer << 32) >>> 32 );
 			Descriptor temp = new Descriptor(
-					IDGenerator.getInstance().getNextID(),
+					"_" + IDGenerator.getInstance().getNextID(),
 					Type.INT,
 					answer32Bit
 			);

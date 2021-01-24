@@ -29,7 +29,7 @@ public class DivideCodeGen {
 			throw new InvalidOperator("*", Type.BOOL);
 		if ( e1.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
-					IDGenerator.getInstance().getNextID(),
+					"_" + IDGenerator.getInstance().getNextID(),
 					Type.INT,
 					(int) e1.getValue() / (int) e2.getValue()
 			);
