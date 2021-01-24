@@ -332,7 +332,7 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                                 SemanticStack.getInstance().pushDescriptor( e1 );
                                 SemanticStack.getInstance().pushDescriptor( e2 );
                                 LessCodeGen.getInstance().cgen();
-                                Descriptor temp = SemanticStack.getInstance().popDescriptor();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
                             }
                         :}
