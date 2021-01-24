@@ -1011,13 +1011,14 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		
-							if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" ) ) {
-								CodeGen.getInstance().addToText( "# Exit!" );
-								CodeGen.getInstance().addToText( "li $v0, 10" );
-								CodeGen.getInstance().addToText( "syscall" );
-								CodeGen.getInstance().addEmptyLine();
-							}
 							SymbolTable.getInstance().goBack();
+							if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
+									&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
+                                CodeGen.getInstance().addToText( "# Exit!" );
+                                CodeGen.getInstance().addToText( "li $v0, 10" );
+                                CodeGen.getInstance().addToText( "syscall" );
+                                CodeGen.getInstance().addEmptyLine();
+                            }
 							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 )
 								CodeGen.getInstance().addToText( "" );

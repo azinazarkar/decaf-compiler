@@ -37,6 +37,10 @@ public class SymbolTableNode {
 		table.put( id, descriptor );
 	}
 
+	public int getEntryCount() {
+		return table.size();
+	}
+
 	protected void addNext( String name ) {
 		next.add( new SymbolTableNode( this, name, level + 1 ) );
 		nextIndex++;
