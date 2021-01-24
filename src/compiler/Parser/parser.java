@@ -1478,9 +1478,6 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							if ( lv.getType() != e.getType() )
-								throw new AssignmentTypeMismatch( lv.getType(), e.getType() );
-							lv.setValue( e.getValue() );
 							SemanticStack.getInstance().pushDescriptor( e );
 							SemanticStack.getInstance().pushDescriptor( lv );
 							AssignmentCodeGen.getInstance().cgen();
@@ -1556,21 +1553,9 @@ class CUP$parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							if ( e1.getType() != e2.getType() )
-								throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 							SemanticStack.getInstance().pushDescriptor( e1 );
 							SemanticStack.getInstance().pushDescriptor( e2 );
 							PlusCodeGen.getInstance().cgen();
-//							if ( e1.getType().toString().equals( "INT" ) ) {
-//								Descriptor temp = new Descriptor(
-//									"_" + IDGenerator.getInstance().getNextID(),
-//									Type.INT,
-//									(int) e1.getValue() + (int) e2.getValue() );
-//								SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-//								SemanticStack.getInstance().pushDescriptor( temp );
-//								SemanticStack.getInstance().pushDescriptor( e1 );
-//								SemanticStack.getInstance().pushDescriptor( e2 );
-//								PlusCodeGen.getInstance().cgen();
 							Descriptor temp = SemanticStack.getInstance().popDescriptor();
 							RESULT = temp;
 						
@@ -1582,7 +1567,17 @@ class CUP$parser$actions {
           case 78: // Expr ::= Expr MINUS Expr 
             {
               Descriptor RESULT =null;
-
+		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Descriptor e1 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int e2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		
+							SemanticStack.getInstance().pushDescriptor( e1 );
+							SemanticStack.getInstance().pushDescriptor( e2 );
+							MinusCodeGen.getInstance().cgen();
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

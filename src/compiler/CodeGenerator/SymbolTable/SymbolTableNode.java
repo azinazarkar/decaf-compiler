@@ -4,32 +4,50 @@ import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.Exceptions.NameAlreadyExistsException;
 import compiler.CodeGenerator.Exceptions.NameNotFoundException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SymbolTableNode {
 
 	SymbolTableNode prev;
-	SymbolTableNode next;
+	List<SymbolTableNode> next;
 	private Map<String, Descriptor> table;
 	private int level;
 	private String scopeName;
+	private int nextIndex;
 
 	public SymbolTableNode( String scopeName ) {
 		this( null, scopeName, 0 );
 	}
 
 	public SymbolTableNode( SymbolTableNode symbolTableNode, String scopeName, int level ) {
+		next = new ArrayList<>( 0 );
 		prev = symbolTableNode;
 		table = new HashMap<>();
 		this.level = level;
 		this.scopeName = scopeName;
+		this.nextIndex = -1;
 	}
 
 	public void addEntry( String id, Descriptor descriptor ) {
 		if ( table.containsKey( id ) )
 			throw new NameAlreadyExistsException( id );
 		table.put( id, descriptor );
+	}
+
+	protected void addNext( String name ) {
+		next.add( new SymbolTableNode( this, name, level + 1 ) );
+		nextIndex++;
+	}
+
+	protected SymbolTableNode getNext() {
+		return next.get( nextIndex );
+	}
+
+	protected void resetIndex() {
+		nextIndex = 0;
 	}
 
 	public Descriptor getDescriptor( String id ) {

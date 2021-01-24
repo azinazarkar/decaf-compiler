@@ -37,7 +37,7 @@ public class CodeGen {
 
 	}
 
-	public void compile() throws IOException {
+	public void writeToFile() throws IOException {
 		FileWriter out = new FileWriter( "out.asm" );
 		out.write( dataSeg + "\n" + textSeg);
 		out.close();

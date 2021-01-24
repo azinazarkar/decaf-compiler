@@ -16,28 +16,37 @@ public class SymbolTable {
 		return currentNode;
 	}
 
-//	// Gets an ID and returns a new string with extra information about scope
-//	public String reformat( String id ) {
-//		return currentNode.getScopeName() + "_" + currentNode.getLevel() + "_" + id;
-//	}
-
-//	public String getIdFromName( String name ) {
-//		return name.split( "->", 3 )[2];
-//	}
-
 	public void makeNextAndSwitch() {
 		makeNextAndSwitch( SymbolTable.getInstance().currentNode.getScopeName() );
 	}
 
 	public void makeNextAndSwitch( String newName ) {
 		SymbolTableNode temp = SymbolTable.getInstance().currentNode;
-		temp.next = new SymbolTableNode( temp, newName, temp.getLevel() + 1 );
-		SymbolTable.getInstance().currentNode = temp.next;
+		temp.addNext( newName );
+		SymbolTable.getInstance().currentNode = temp.getNext();
 	}
+
+	public void resetIndexes() {
+		resetIndexesOfANode( currentNode );
+	}
+
+	private void resetIndexesOfANode( SymbolTableNode symbolTableNode ) {
+		symbolTableNode.resetIndex();
+		for ( int i = 0; i < symbolTableNode.next.size(); i++ )
+			resetIndexesOfANode( symbolTableNode.next.get(i) );
+	}
+
 
 	public void goBack() {
 		SymbolTable.getInstance().currentNode = SymbolTable.getInstance().currentNode.prev;
-		SymbolTable.getInstance().currentNode.next = null;
 	}
 
+	@Override
+	public String toString() {
+		String returnValue = "";
+		returnValue += currentNode.toString() + "\n";
+		for ( SymbolTableNode i : currentNode.next )
+			returnValue += "\t" + i.toString();
+		return returnValue;
+	}
 }
