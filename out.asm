@@ -16,6 +16,12 @@
 	.text
 	.globl main
 
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
 main:
 
 	# Assigning _af to aa
@@ -47,26 +53,23 @@ main:
 	li $v0, 1
 	lw $a0, aa
 	syscall
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Printing ab
-	li $v0, 1
-	lw $a0, ab
-	syscall
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
 	
 	# Printing ac
 	li $v0, 1
 	lw $a0, ac
 	syscall
+	
 	li $a0, 0xA
 	li $v0, 0xB
 	syscall
+	# Printing ac
+	li $v0, 1
+	lw $a0, ac
+	syscall
 	
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
 	
 test:
 

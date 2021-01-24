@@ -5,8 +5,8 @@ int main() {
 	a = 5;
 	b = 10;
 	c = a + b;
-	Print( a );
-	Print( b );
+	Print( a, c );
+	// Print( b );
 	Print( c );
 }
 
