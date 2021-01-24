@@ -331,19 +331,99 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                             if ( phase == 1 ) {
                                 SemanticStack.getInstance().pushDescriptor( e1 );
                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                SemanticStack.getInstance().pushDescriptor( "less" );
                                 LessCodeGen.getInstance().cgen();
                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
                             }
                         :}
-						| Expr LESSEQUAL Expr
-						| Expr GREATER Expr
-						| Expr GREATEREQUAL Expr
-						| Expr EQUAL Expr
-						| Expr NOTEQUAL Expr
-						| Expr AND Expr
-						| Expr OR Expr
-						| NOT Expr
+						| Expr:e1 LESSEQUAL Expr:e2{:
+                             int phase = ParserPhase.getInstance().getPhase();
+                             if ( phase == 1 ) {
+                                 SemanticStack.getInstance().pushDescriptor( e1 );
+                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                 SemanticStack.getInstance().pushDescriptor( "lessEqual" );
+                                 LessEqualCodeGen.getInstance().cgen();
+                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                 RESULT = temp;
+                             }
+                         :}
+						| Expr:e1 GREATER Expr:e2{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                SemanticStack.getInstance().pushDescriptor( "greater" );
+                                GreaterCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+                        :}
+						| Expr:e1 GREATEREQUAL Expr:e2{:
+                             int phase = ParserPhase.getInstance().getPhase();
+                             if ( phase == 1 ) {
+                                 SemanticStack.getInstance().pushDescriptor( e1 );
+                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                 SemanticStack.getInstance().pushDescriptor( "greatEqual" );
+                                 GreaterEqualCodeGen.getInstance().cgen();
+                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                 RESULT = temp;
+                             }
+                         :}
+						| Expr:e1 EQUAL Expr:e2{:
+                              int phase = ParserPhase.getInstance().getPhase();
+                              if ( phase == 1 ) {
+                                  SemanticStack.getInstance().pushDescriptor( e1 );
+                                  SemanticStack.getInstance().pushDescriptor( e2 );
+                                  SemanticStack.getInstance().pushDescriptor( "equal" );
+                                  EqualCodeGen.getInstance().cgen();
+                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                  RESULT = temp;
+                              }
+                          :}
+						| Expr:e1 NOTEQUAL Expr:e2{:
+                               int phase = ParserPhase.getInstance().getPhase();
+                               if ( phase == 1 ) {
+                                   SemanticStack.getInstance().pushDescriptor( e1 );
+                                   SemanticStack.getInstance().pushDescriptor( e2 );
+                                   SemanticStack.getInstance().pushDescriptor( "nEqual" );
+                                   NotEqualCodeGen.getInstance().cgen();
+                                   Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                   RESULT = temp;
+                               }
+                           :}
+						| Expr:e1 AND Expr:e2{:
+                              int phase = ParserPhase.getInstance().getPhase();
+                              if ( phase == 1 ) {
+                                  SemanticStack.getInstance().pushDescriptor( e1 );
+                                  SemanticStack.getInstance().pushDescriptor( e2 );
+                                  SemanticStack.getInstance().pushDescriptor( "and" );
+                                  AndCodeGen.getInstance().cgen();
+                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                  RESULT = temp;
+                              }
+                          :}
+						| Expr:e1 OR Expr:e2{:
+                             int phase = ParserPhase.getInstance().getPhase();
+                             if ( phase == 1 ) {
+                                 SemanticStack.getInstance().pushDescriptor( e1 );
+                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                 SemanticStack.getInstance().pushDescriptor( "or" );
+                                 OrCodeGen.getInstance().cgen();
+                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                 RESULT = temp;
+                             }
+                         :}
+						| NOT Expr:e {:
+                          int phase = ParserPhase.getInstance().getPhase();
+                          if ( phase == 1 ) {
+                              SemanticStack.getInstance().pushDescriptor( e );
+                              SemanticStack.getInstance().pushDescriptor( "not" );
+                              NotCodeGen.getInstance().cgen();
+                              Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                              RESULT = temp;
+                          }
+                      :}
 						| READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS {:
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
 								IntegerInputCodeGen.getInstance().cgen();
