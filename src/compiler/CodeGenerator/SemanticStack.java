@@ -6,7 +6,7 @@ import java.util.Stack;
 
 public class SemanticStack {
 	private static SemanticStack ourInstance = new SemanticStack();
-	private Stack<Descriptor> stack;
+	private Stack<Object> stack;
 
 	public static SemanticStack getInstance() {
 		return ourInstance;
@@ -16,15 +16,15 @@ public class SemanticStack {
 		stack = new Stack<>();
 	}
 
-	public void pushDescriptor( Descriptor descriptor ) {
-		stack.push( descriptor );
+	public void pushDescriptor( Object value ) {
+		stack.push( value );
 	}
 
-	public Descriptor popDescriptor() {
+	public Object popDescriptor() {
 		return stack.pop();
 	}
 
-	public Descriptor topDescriptor() {
+	public Object topDescriptor() {
 		return stack.peek();
 	}
 

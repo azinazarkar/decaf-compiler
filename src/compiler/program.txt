@@ -4,9 +4,9 @@ int main() {
 	int c;
 	int d;
 	a = 5;
-	b = 12;
-	c = a - b;
-	d = a * b;
+	b = 79;
+	c = b / a;
+	d = b % a;
 	Print( a );
 	Print( b );
 	Print( c );

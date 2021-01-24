@@ -19,8 +19,8 @@ public class PlusCodeGen {
 	}
 
 	public void cgen() {
-		Descriptor e2 = SemanticStack.getInstance().popDescriptor();
-		Descriptor e1 = SemanticStack.getInstance().popDescriptor();
+		Descriptor e2 = (Descriptor) SemanticStack.getInstance().popDescriptor();
+		Descriptor e1 = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Adding " + e1.getName() + " and " + e2.getName() );
 		if ( e1.getType() != e2.getType() )
 			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );

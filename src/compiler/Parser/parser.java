@@ -1636,7 +1636,7 @@ class CUP$parser$actions {
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								PlusCodeGen.getInstance().cgen();
-								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
 								RESULT = temp;
 							}
 						
@@ -1660,7 +1660,7 @@ class CUP$parser$actions {
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								MinusCodeGen.getInstance().cgen();
-								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
 								RESULT = temp;
 							}
 						
@@ -1684,7 +1684,7 @@ class CUP$parser$actions {
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								MultiplyCodeGen.getInstance().cgen();
-								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
 								RESULT = temp;
 							}
 						
@@ -1696,7 +1696,23 @@ class CUP$parser$actions {
           case 82: // Expr ::= Expr DIVIDE Expr 
             {
               Descriptor RESULT =null;
-
+		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Descriptor e1 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int e2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								SemanticStack.getInstance().pushDescriptor( "quotient" );
+								DivideCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",39, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1705,7 +1721,23 @@ class CUP$parser$actions {
           case 83: // Expr ::= Expr MOD Expr 
             {
               Descriptor RESULT =null;
-
+		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Descriptor e1 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int e2left = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
+		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
+		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
+		
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                SemanticStack.getInstance().pushDescriptor( "mod" );
+                                DivideCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",39, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

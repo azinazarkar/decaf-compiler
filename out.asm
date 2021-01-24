@@ -10,9 +10,9 @@
 	ae: .word 0
 	af: .word 0
 	_ag: .word 5
-	_ah: .word 12
-	ai: .word -7
-	aj: .word 60
+	_ah: .word 79
+	ai: .word 15
+	aj: .word 15
 	_ak: .word 79
 
 	.text
@@ -57,11 +57,12 @@ main:
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
-	# Subtracting ab from aa
-	lw $a0, aa
-	lw $a1, ab
-	sub $t0, $a0, $a1
+	# Multiplying ab by aa
+	lw $a0, ab
+	lw $a1, aa
+	div $a0, $a1
 	la $a2, ai
+	mflo $t0
 	sw $t0, 0($a2)
 	
 	# Assigning ai to ac
@@ -70,12 +71,12 @@ main:
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
-	# Multiplying aa by ab
-	lw $a0, aa
-	lw $a1, ab
-	mult $a0, $a1
+	# Multiplying ab by aa
+	lw $a0, ab
+	lw $a1, aa
+	div $a0, $a1
 	la $a2, aj
-	mflo $t0
+	mfhi $t0
 	sw $t0, 0($a2)
 	
 	# Assigning aj to ad
