@@ -6,13 +6,19 @@ int test( double dd ) {
 }
 
 int main() {
-	double a;
-	double b;
-	a = 3.14 + 3.14;
-	Print( a );
-	b = 5.16 - 5.15;
-	Print( b );
-	Print( -3.14 );
-	Print( 1.5 * 2.5 );
-	Print( -3.5 / 0.5 );
+	int a;
+	int b;
+	double c;
+	double d;
+	a = 3;
+	b = 4;
+	Print( a == b );
+	a = 3;
+	b = 3;
+	Print( a == b );
+	c = 3.14;
+	d = 3.14;
+	Print( c == d );
+	c = 1.28;
+	Print( c == d );
 }

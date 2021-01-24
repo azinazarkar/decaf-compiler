@@ -26,7 +26,10 @@ public class PrintCodeGen {
 		}
 		else if ( e.getType() == Type.BOOL ) {
 			CodeGen.getInstance().addToText( "li $v0, 4" );
-			CodeGen.getInstance().addToText( "la $a0, " + e.getName() );
+			if ( (boolean) e.getValue() )
+				CodeGen.getInstance().addToText( "la $a0, true_print_string" );
+			else
+				CodeGen.getInstance().addToText( "la $a0, false_print_string" );
 			CodeGen.getInstance().addToText( "syscall" );
 			CodeGen.getInstance().addEmptyLine();
 		}

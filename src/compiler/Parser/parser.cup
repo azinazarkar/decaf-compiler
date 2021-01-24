@@ -375,7 +375,6 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                               if ( phase == 1 ) {
                                   SemanticStack.getInstance().pushDescriptor( e1 );
                                   SemanticStack.getInstance().pushDescriptor( e2 );
-                                  SemanticStack.getInstance().pushDescriptor( "equal" );
                                   EqualCodeGen.getInstance().cgen();
                                   Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                   RESULT = temp;
@@ -476,8 +475,16 @@ Constant ::=            DECIMAL:d {:
 									Float.floatToIntBits( Float.parseFloat( f ) )
 								);
 						:}
-						| BOOLEANLITERAL:b {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.BOOL, b ); :}
-						| STRINGLITERAL:s {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s ); :}
+						| BOOLEANLITERAL:b {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.BOOL,
+									( b.equals( "true" ) ) ? 1 : 0 );
+						:}
+						| STRINGLITERAL:s {:
+							RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s );
+						:}
 						| NULL:n {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
 						;
 

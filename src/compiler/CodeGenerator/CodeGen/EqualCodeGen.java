@@ -21,9 +21,34 @@ public class EqualCodeGen {
             Descriptor operationResult = new Descriptor(
                     "_" + IDGenerator.getInstance().getNextID(),
                     Type.BOOL,
-                    (int)d1.getValue() == (int)d2.getValue()
+                    ((int)d1.getValue()) == ((int)d2.getValue())
             );
             SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
+            CodeGen.getInstance().addToData(
+                    operationResult.getName(),
+                    Type.getMipsType(operationResult.getType()),
+                    Integer.toString( (boolean) operationResult.getValue() ? 1 : 0 )
+            );
+            CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
+            CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
+            CodeGen.getInstance().addToText("seq $t0, $a0, $a1");
+            CodeGen.getInstance().addToText("la " + "$a2, " + operationResult.getName());
+            CodeGen.getInstance().addToText("sw $t0, 0($a2)");
+            CodeGen.getInstance().addEmptyLine();
+            SemanticStack.getInstance().pushDescriptor( operationResult );
+        }
+        else if ( d1.getType() == Type.DOUBLE ) {
+            Descriptor operationResult = new Descriptor(
+                    "_" + IDGenerator.getInstance().getNextID(),
+                    Type.BOOL,
+                    (int) d1.getValue() == (int) d2.getValue()
+            );
+            SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
+            CodeGen.getInstance().addToData(
+                    operationResult.getName(),
+                    Type.getMipsType(operationResult.getType()),
+                    Integer.toString( (boolean) operationResult.getValue() ? 1 : 0 )
+            );
             CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
             CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
             CodeGen.getInstance().addToText("seq $t0, $a0, $a1");
@@ -39,6 +64,11 @@ public class EqualCodeGen {
                     (boolean)d1.getValue() == (boolean)d2.getValue()
             );
             SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
+            CodeGen.getInstance().addToData(
+                    operationResult.getName(),
+                    Type.getMipsType(operationResult.getType()),
+                    Integer.toString( (boolean) operationResult.getValue() ? 1 : 0 )
+            );
             CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
             CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
             CodeGen.getInstance().addToText("seq $t0, $a0, $a1");

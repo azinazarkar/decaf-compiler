@@ -1885,7 +1885,6 @@ class CUP$parser$actions {
                               if ( phase == 1 ) {
                                   SemanticStack.getInstance().pushDescriptor( e1 );
                                   SemanticStack.getInstance().pushDescriptor( e2 );
-                                  SemanticStack.getInstance().pushDescriptor( "equal" );
                                   EqualCodeGen.getInstance().cgen();
                                   Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                   RESULT = temp;
@@ -2201,7 +2200,13 @@ class CUP$parser$actions {
 		int bleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int bright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String b = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.BOOL, b ); 
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.BOOL,
+									( b.equals( "true" ) ) ? 1 : 0 );
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2213,7 +2218,9 @@ class CUP$parser$actions {
 		int sleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String s = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s ); 
+		
+							RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s );
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
