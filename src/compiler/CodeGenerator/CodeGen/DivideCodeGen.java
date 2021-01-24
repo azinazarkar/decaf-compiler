@@ -22,7 +22,7 @@ public class DivideCodeGen {
 		String answerPart = (String) SemanticStack.getInstance().popDescriptor();
 		Descriptor e2 = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		Descriptor e1 = (Descriptor) SemanticStack.getInstance().popDescriptor();
-		CodeGen.getInstance().addToText( "# Multiplying " + e1.getName() + " by " + e2.getName() );
+		CodeGen.getInstance().addToText( "# Dividing " + e1.getName() + " by " + e2.getName() + " and using " + answerPart );
 		if ( e1.getType() != e2.getType() )
 			throw new CalculationTypeMismatch( "*", e1.getType(), e2.getType() );
 		if ( e1.getType() == Type.BOOL )
