@@ -22,6 +22,11 @@ public class NotCodeGen {
                 !(boolean)d1.getValue()
         );
         SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
+        CodeGen.getInstance().addToData(
+                operationResult.getName(),
+                Type.getMipsType(operationResult.getType()),
+                Integer.toString( (boolean) operationResult.getValue() ? 1 : 0 )
+        );
         CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
         CodeGen.getInstance().addToText("not $t0, $a0");
         CodeGen.getInstance().addToText("la " + "$a1, " + operationResult.getName());
