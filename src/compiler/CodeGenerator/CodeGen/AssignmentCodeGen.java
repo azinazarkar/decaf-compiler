@@ -29,6 +29,7 @@ public class AssignmentCodeGen{
 		CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );
 		CodeGen.getInstance().addToText( "move $a2, $a0" );
 		CodeGen.getInstance().addToText( "sw $a2, 0($a1)" );
+		CodeGen.getInstance().addEmptyLine();
 	}
 
 }

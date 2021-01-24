@@ -48,7 +48,7 @@ nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, FunctionDecl, F
 				ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
 				AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
 				Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
-				CommaExpr, Call, Actuals;
+				PrintCommaExpr, ActualsCommaExpr, Call, Actuals;
 // non-terminals with type
 nonterminal     String Type;
 nonterminal     Descriptor Constant, LValue;
@@ -207,19 +207,31 @@ BreakStmt ::=           BREAK SEMICOLON;
 
 ContinueStmt ::=        CONTINUE SEMICOLON;
 
-PrintStmt ::=           PRINT OPENPARENTHESIS Expr:e CommaExpr CLOSEPARENTHESIS SEMICOLON
+PrintStmt ::=           PRINT OPENPARENTHESIS Expr:e
+                        {:
+                            int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								PrintCodeGen.getInstance().cgen();
+							}
+                        :}
+                        PrintCommaExpr CLOSEPARENTHESIS SEMICOLON
+						;
+
+PrintCommaExpr ::=      COMMA Expr:e
 						{:
 							int phase = ParserPhase.getInstance().getPhase();
 							if ( phase == 1 ) {
 								SemanticStack.getInstance().pushDescriptor( e );
 								PrintCodeGen.getInstance().cgen();
 							}
-
 						:}
-						;
-
-CommaExpr ::=           COMMA Expr CommaExpr
-						| /*epsilon*/
+						PrintCommaExpr
+						|
+						/*epsilon*/
+						{:
+							PrintCodeGen.getInstance().printEnter();
+						:}
 						;
 
 Expr ::=                LValue:lv ASSIGN Expr:e {:
@@ -299,7 +311,11 @@ Call ::=                IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
 						| Expr DOT IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
 						;
 
-Actuals ::=             Expr CommaExpr
+Actuals ::=             Expr ActualsCommaExpr
+						| /*epsilon*/
+						;
+
+ActualsCommaExpr ::=    COMMA Expr ActualsCommaExpr
 						| /*epsilon*/
 						;
 

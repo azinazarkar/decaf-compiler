@@ -21,7 +21,7 @@ public class MinusCodeGen {
 	public void cgen() {
 		Descriptor e2 = SemanticStack.getInstance().popDescriptor();
 		Descriptor e1 = SemanticStack.getInstance().popDescriptor();
-		CodeGen.getInstance().addToText( "Subtracting " + e2.getName() + " from " + e1.getName() );
+		CodeGen.getInstance().addToText( "# Subtracting " + e2.getName() + " from " + e1.getName() );
 		if ( e1.getType() != e2.getType() )
 			throw new CalculationTypeMismatch( "-", e1.getType(), e2.getType() );
 		if ( e1.getType() == Type.BOOL)
@@ -39,6 +39,7 @@ public class MinusCodeGen {
 			CodeGen.getInstance().addToText("sub $t0, $a0, $a1");
 			CodeGen.getInstance().addToText("la " + "$a2, " + temp.getName());
 			CodeGen.getInstance().addToText("sw $t0, 0($a2)");
+			CodeGen.getInstance().addEmptyLine();
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
 	}
