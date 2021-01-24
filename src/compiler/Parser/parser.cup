@@ -280,7 +280,17 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| Expr DIVIDE Expr
 						| Expr MOD Expr
 						| MINUS Expr %prec UMINUS
-						| Expr LESS Expr
+						// azin is working
+						| Expr:e1 LESS Expr:e2 {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                MinusCodeGen.getInstance().cgen();
+                                Descriptor temp = SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+                        :}
 						| Expr LESSEQUAL Expr
 						| Expr GREATER Expr
 						| Expr GREATEREQUAL Expr
