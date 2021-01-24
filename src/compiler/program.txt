@@ -12,4 +12,5 @@ int main() {
 	Print( a );
 	b = 5.16 - 5.15;
 	Print( b );
+	Print( -3.14 );
 }

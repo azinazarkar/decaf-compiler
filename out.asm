@@ -14,6 +14,8 @@
 	_ai: .word 1084563128
 	_aj: .word 1084542157
 	_ak: .word 1008981504
+	_al: .word 1078523331
+	_am: .word -1078523331
 
 	.text
 	.globl main
@@ -74,6 +76,21 @@ main:
 	# Printing ad
 	li $v0, 2
 	lwc1 $f12, ad
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
+	# Getting negative value of _al
+	lwc1 $f0, _al
+	neg.s $f1, $f0
+	swc1 $f1, _am
+	
+	# Printing _am
+	li $v0, 2
+	lwc1 $f12, _am
 	syscall
 	
 	# Printing new line
