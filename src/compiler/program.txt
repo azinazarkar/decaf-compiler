@@ -9,10 +9,13 @@ int main() {
 	int a;
 	int b;
 	int c;
+	int d;
 	a = -5;
 	b = 79;
+	d = ReadInteger();
 	c = a * b;
 	Print( a );
 	Print( b );
 	Print( c );
+	Print( d - a );
 }

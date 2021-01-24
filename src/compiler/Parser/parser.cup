@@ -122,16 +122,16 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 								SymbolTable.getInstance().switchToNext();
 						:} CLOSEPARENTHESIS StmtBlock {:
 							SymbolTable.getInstance().goBack();
-							if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
-									&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
-                                CodeGen.getInstance().addToText( "# Exit!" );
-                                CodeGen.getInstance().addToText( "li $v0, 10" );
-                                CodeGen.getInstance().addToText( "syscall" );
-                                CodeGen.getInstance().addEmptyLine();
-                            }
-							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								CodeGen.getInstance().addToText( "" );
+								if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
+										&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
+	                                CodeGen.getInstance().addToText( "# Exit!" );
+	                                CodeGen.getInstance().addToText( "li $v0, 10" );
+	                                CodeGen.getInstance().addToText( "syscall" );
+	                                CodeGen.getInstance().addEmptyLine();
+	                                CodeGen.getInstance().addEmptyLine();
+                                }
+							SymbolTable.getInstance().goBack();
 						:}
 						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
 						;
@@ -237,7 +237,8 @@ PrintCommaExpr ::=      COMMA Expr:e
 						|
 						/*epsilon*/
 						{:
-							PrintCodeGen.getInstance().printEnter();
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								PrintCodeGen.getInstance().printEnter();
 						:}
 						;
 
@@ -333,7 +334,13 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| Expr AND Expr
 						| Expr OR Expr
 						| NOT Expr
-						| READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS
+						| READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								IntegerInputCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
 						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS
 						| NEW IDENTIFIER
 						| NEWARRAY OPENPARENTHESIS Expr COMMA Type CLOSEPARENTHESIS

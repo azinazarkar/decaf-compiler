@@ -1012,16 +1012,16 @@ class CUP$parser$actions {
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
 		
 							SymbolTable.getInstance().goBack();
-							if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
-									&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
-                                CodeGen.getInstance().addToText( "# Exit!" );
-                                CodeGen.getInstance().addToText( "li $v0, 10" );
-                                CodeGen.getInstance().addToText( "syscall" );
-                                CodeGen.getInstance().addEmptyLine();
-                            }
-							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								CodeGen.getInstance().addToText( "" );
+								if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
+										&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
+	                                CodeGen.getInstance().addToText( "# Exit!" );
+	                                CodeGen.getInstance().addToText( "li $v0, 10" );
+	                                CodeGen.getInstance().addToText( "syscall" );
+	                                CodeGen.getInstance().addEmptyLine();
+	                                CodeGen.getInstance().addEmptyLine();
+                                }
+							SymbolTable.getInstance().goBack();
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("FunctionDecl",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1540,7 +1540,8 @@ class CUP$parser$actions {
             {
               Object RESULT =null;
 		
-							PrintCodeGen.getInstance().printEnter();
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								PrintCodeGen.getInstance().printEnter();
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("PrintCommaExpr",32, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1854,7 +1855,13 @@ class CUP$parser$actions {
           case 94: // Expr ::= READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								IntegerInputCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",39, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

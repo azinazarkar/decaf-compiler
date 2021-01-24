@@ -8,43 +8,22 @@
 	ac: .word 0
 	ad: .word 0
 	ae: .word 0
-	_af: .word 79
-	_ag: .word 5
-	_ah: .word -5
-	_ai: .word 79
-	_aj: .word -395
+	af: .word 0
+	_ag: .word 79
+	_ah: .word 5
+	_ai: .word -5
+	_aj: .word 79
+	_ak: .word 0
+	_al: .word -395
+	_am: .word 5
 
 	.text
 	.globl main
 
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Printing new line
-	li $a0, 0xA
-	li $v0, 0xB
-	syscall
-	
-	# Exit!
-	li $v0, 10
-	syscall
-	
 test:
 
-	# Assigning _af to ab
-	lw $a0, _af
+	# Assigning _ag to ab
+	lw $a0, _ag
 	la $a1, ab
 	move $a2, $a0
 	sw $a2, 0($a1)
@@ -59,23 +38,34 @@ test:
 	li $v0, 0xB
 	syscall
 	
-	
 main:
 
-	# Getting negative value of _ag
-	lw $s0, _ag
+	# Getting negative value of _ah
+	lw $s0, _ah
 	neg $s1, $s0
-	sw $s1, _ah
+	sw $s1, _ai
 	
-	# Assigning _ah to ac
-	lw $a0, _ah
+	# Assigning _ai to ac
+	lw $a0, _ai
 	la $a1, ac
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
-	# Assigning _ai to ad
-	lw $a0, _ai
+	# Assigning _aj to ad
+	lw $a0, _aj
 	la $a1, ad
+	move $a2, $a0
+	sw $a2, 0($a1)
+	
+	# Reading an integer
+	li $v0, 5
+	syscall
+	la $s0, _ak
+	sw $v0, 0($s0)
+	
+	# Assigning _ak to af
+	lw $a0, _ak
+	la $a1, af
 	move $a2, $a0
 	sw $a2, 0($a1)
 	
@@ -83,12 +73,12 @@ main:
 	lw $a0, ac
 	lw $a1, ad
 	mult $a0, $a1
-	la $a2, _aj
+	la $a2, _al
 	mflo $t0
 	sw $t0, 0($a2)
 	
-	# Assigning _aj to ae
-	lw $a0, _aj
+	# Assigning _al to ae
+	lw $a0, _al
 	la $a1, ae
 	move $a2, $a0
 	sw $a2, 0($a1)
@@ -116,6 +106,23 @@ main:
 	# Printing ae
 	li $v0, 1
 	lw $a0, ae
+	syscall
+	
+	# Printing new line
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	
+	# Subtracting ac from af
+	lw $a0, af
+	lw $a1, ac
+	sub $t0, $a0, $a1
+	la $a2, _am
+	sw $t0, 0($a2)
+	
+	# Printing _am
+	li $v0, 1
+	lw $a0, _am
 	syscall
 	
 	# Printing new line
