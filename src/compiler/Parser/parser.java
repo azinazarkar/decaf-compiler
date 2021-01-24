@@ -1456,7 +1456,17 @@ class CUP$parser$actions {
           case 68: // PrintStmt ::= PRINT OPENPARENTHESIS Expr CommaExpr CLOSEPARENTHESIS SEMICOLON 
             {
               Object RESULT =null;
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								PrintCodeGen.getInstance().cgen();
+							}
 
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("PrintStmt",31, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1600,7 +1610,8 @@ class CUP$parser$actions {
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								MinusCodeGen.getInstance().cgen();
-								// TODO retrieve the answer and push it up
+								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
 							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

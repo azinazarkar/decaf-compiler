@@ -207,7 +207,16 @@ BreakStmt ::=           BREAK SEMICOLON;
 
 ContinueStmt ::=        CONTINUE SEMICOLON;
 
-PrintStmt ::=           PRINT OPENPARENTHESIS Expr CommaExpr CLOSEPARENTHESIS SEMICOLON;
+PrintStmt ::=           PRINT OPENPARENTHESIS Expr:e CommaExpr CLOSEPARENTHESIS SEMICOLON
+						{:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								PrintCodeGen.getInstance().cgen();
+							}
+
+						:}
+						;
 
 CommaExpr ::=           COMMA Expr CommaExpr
 						| /*epsilon*/

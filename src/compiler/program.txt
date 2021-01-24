@@ -5,6 +5,9 @@ int main() {
 	a = 5;
 	b = 10;
 	c = a + b;
+	Print( a );
+	Print( b );
+	Print( c );
 }
 
 int test( double dd ) {

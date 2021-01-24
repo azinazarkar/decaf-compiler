@@ -32,6 +32,24 @@ main:
 	la $a1, ac
 	move $a2, $a0
 	sw $a2, 0($a1)
+	li $v0, 1
+	lw $a0, aa
+	syscall
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	li $v0, 1
+	lw $a0, ab
+	syscall
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
+	li $v0, 1
+	lw $a0, ac
+	syscall
+	li $a0, 0xA
+	li $v0, 0xB
+	syscall
 	
 test:
 
