@@ -16,7 +16,7 @@ public class SymbolTableNode {
 	private Map<String, Descriptor> table;
 	private int level;
 	private String scopeName;
-	private int nextIndex;
+	protected int nextIndex;
 
 	public SymbolTableNode( String scopeName ) {
 		this( null, scopeName, 0 );

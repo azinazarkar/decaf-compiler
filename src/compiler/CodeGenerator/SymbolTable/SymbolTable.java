@@ -26,6 +26,12 @@ public class SymbolTable {
 		SymbolTable.getInstance().currentNode = temp.getNext();
 	}
 
+	public void switchToNext() {
+		SymbolTableNode temp = SymbolTable.getInstance().currentNode;
+		SymbolTable.getInstance().currentNode = temp.getNext();
+		temp.nextIndex++;
+	}
+
 	public void resetIndexes() {
 		resetIndexesOfANode( currentNode );
 	}

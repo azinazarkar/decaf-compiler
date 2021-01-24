@@ -870,14 +870,15 @@ class CUP$parser$actions {
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							String name = IDGenerator.getInstance().getNextID();
-							Type type = Descriptor.getType( t );
-							SymbolTable.getInstance().getSymbolTable().addEntry(
-								id,
-								new Descriptor( name, type, null )
-							);
-
-							CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
+							if ( ParserPhase.getInstance().getPhase() == 0 ) {
+								String name = IDGenerator.getInstance().getNextID();
+								Type type = Descriptor.getType( t );
+								SymbolTable.getInstance().getSymbolTable().addEntry(
+									id,
+									new Descriptor( name, type, null )
+								);
+								CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
+							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Variable",4, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -951,8 +952,14 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 
-							CodeGen.getInstance().addToText( name + ":\n", true );
-							SymbolTable.getInstance().makeNextAndSwitch( name );
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 0 ) {
+								SymbolTable.getInstance().makeNextAndSwitch( name );
+							}
+							else if ( phase == 1 ) {
+								CodeGen.getInstance().addToText( name + ":\n", true );
+								SymbolTable.getInstance().switchToNext();
+							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",39, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -969,7 +976,11 @@ class CUP$parser$actions {
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 
-							SymbolTable.getInstance().makeNextAndSwitch();
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 0 )
+								SymbolTable.getInstance().makeNextAndSwitch();
+							else if ( phase == 1 )
+								SymbolTable.getInstance().switchToNext();
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",40, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -990,7 +1001,8 @@ class CUP$parser$actions {
 		
 							SymbolTable.getInstance().goBack();
 							SymbolTable.getInstance().goBack();
-							CodeGen.getInstance().addToText( "" );
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								CodeGen.getInstance().addToText( "" );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("FunctionDecl",5, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1478,9 +1490,12 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							SemanticStack.getInstance().pushDescriptor( e );
-							SemanticStack.getInstance().pushDescriptor( lv );
-							AssignmentCodeGen.getInstance().cgen();
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								SemanticStack.getInstance().pushDescriptor( lv );
+								AssignmentCodeGen.getInstance().cgen();
+							}
 							RESULT = new Descriptor( "", Type.DUMMY, 0 );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1495,8 +1510,11 @@ class CUP$parser$actions {
 		int cright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor c = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							SymbolTable.getInstance().getSymbolTable().addEntry( c.getName(), c );
-							CodeGen.getInstance().addToData( c.getName(), Type.getMipsType( c.getType() ), c.getValue().toString() );
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SymbolTable.getInstance().getSymbolTable().addEntry( c.getName(), c );
+								CodeGen.getInstance().addToData( c.getName(), Type.getMipsType( c.getType() ), c.getValue().toString() );
+							}
 							RESULT = c;
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -1553,11 +1571,14 @@ class CUP$parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							SemanticStack.getInstance().pushDescriptor( e1 );
-							SemanticStack.getInstance().pushDescriptor( e2 );
-							PlusCodeGen.getInstance().cgen();
-							Descriptor temp = SemanticStack.getInstance().popDescriptor();
-							RESULT = temp;
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								PlusCodeGen.getInstance().cgen();
+								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1574,9 +1595,13 @@ class CUP$parser$actions {
 		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							SemanticStack.getInstance().pushDescriptor( e1 );
-							SemanticStack.getInstance().pushDescriptor( e2 );
-							MinusCodeGen.getInstance().cgen();
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								MinusCodeGen.getInstance().cgen();
+								// TODO retrieve the answer and push it up
+							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1846,7 +1871,10 @@ class CUP$parser$actions {
 		int dleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String d = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.INT, Integer.parseInt( d ) ); 
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.INT, Integer.parseInt( d ) );
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
