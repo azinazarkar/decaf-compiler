@@ -28,9 +28,9 @@ public class PlusCodeGen {
 			throw new InvalidOperator("+", Type.BOOL);
 		if ( e1.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
-				"_" + IDGenerator.getInstance().getNextID(),
-				Type.INT,
-				(int) e1.getValue() + (int) e2.getValue());
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.INT,
+					(int) e1.getValue() + (int) e2.getValue());
 			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
 			CodeGen.getInstance().addToText("lw " + "$a0, " + e1.getName());
@@ -43,9 +43,9 @@ public class PlusCodeGen {
 		}
 		else if ( e1.getType() == Type.DOUBLE ) {
 			Descriptor temp = new Descriptor(
-				"_" + IDGenerator.getInstance().getNextID(),
-				Type.DOUBLE,
-				Float.floatToIntBits( Float.intBitsToFloat( (int) e1.getValue() ) + Float.intBitsToFloat( (int) e2.getValue() ) )
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.DOUBLE,
+					Float.floatToIntBits( Float.intBitsToFloat( (int) e1.getValue() ) + Float.intBitsToFloat( (int) e2.getValue() ) )
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
