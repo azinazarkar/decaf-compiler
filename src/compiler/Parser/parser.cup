@@ -251,7 +251,8 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								SemanticStack.getInstance().pushDescriptor( e1 );
 								SemanticStack.getInstance().pushDescriptor( e2 );
 								MinusCodeGen.getInstance().cgen();
-								// TODO retrieve the answer and push it up
+								Descriptor temp = SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
 							}
 						:}
 						| Expr MULTIPLY Expr
