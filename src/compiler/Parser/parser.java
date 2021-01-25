@@ -2025,7 +2025,6 @@ class CUP$parser$actions {
                           int phase = ParserPhase.getInstance().getPhase();
                           if ( phase == 1 ) {
                               SemanticStack.getInstance().pushDescriptor( e );
-                              SemanticStack.getInstance().pushDescriptor( "not" );
                               NotCodeGen.getInstance().cgen();
                               Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                               RESULT = temp;
@@ -2081,7 +2080,17 @@ class CUP$parser$actions {
           case 99: // Expr ::= ITOD OPENPARENTHESIS Expr CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								itodCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2090,7 +2099,17 @@ class CUP$parser$actions {
           case 100: // Expr ::= DTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                dtoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

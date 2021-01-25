@@ -436,7 +436,6 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                           int phase = ParserPhase.getInstance().getPhase();
                           if ( phase == 1 ) {
                               SemanticStack.getInstance().pushDescriptor( e );
-                              SemanticStack.getInstance().pushDescriptor( "not" );
                               NotCodeGen.getInstance().cgen();
                               Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                               RESULT = temp;
@@ -452,8 +451,22 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS
 						| NEW IDENTIFIER
 						| NEWARRAY OPENPARENTHESIS Expr COMMA Type CLOSEPARENTHESIS
-						| ITOD OPENPARENTHESIS Expr CLOSEPARENTHESIS
-						| DTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| ITOD OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								itodCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| DTOI OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                dtoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
 						| ITOB OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						;
