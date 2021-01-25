@@ -486,7 +486,14 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                                 RESULT = temp;
                             }
 						:}
-						| ITOB OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| ITOB OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                itobCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
 						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
 						;
 
