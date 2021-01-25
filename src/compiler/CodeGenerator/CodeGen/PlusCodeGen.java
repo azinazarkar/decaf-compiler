@@ -5,6 +5,7 @@ import compiler.CodeGenerator.Exceptions.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
+import compiler.CodeGenerator.SymbolTable.Utility.CompileTimeDescriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
 
@@ -22,7 +23,10 @@ public class PlusCodeGen {
 		Descriptor e2 = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		Descriptor e1 = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Adding " + e1.getName() + " and " + e2.getName() );
-		if ( e1.getType() != e2.getType() )
+		if ( e1.getType() != e2.getType() &&
+				( ( e1.getType() != Type.STRINGLITERAL && e2.getType() != Type.STRING )
+				|| ( e1.getType() != Type.STRING && e2.getType() != Type.STRINGLITERAL ) )
+		)
 			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 		if ( e1.getType() == Type.BOOL)
 			throw new InvalidOperator("+", Type.BOOL);
@@ -48,12 +52,28 @@ public class PlusCodeGen {
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 			CodeGen.getInstance().addToText( "lwc1 $f0, " + e1.getName() );
 			CodeGen.getInstance().addToText( "lwc1 $f1, " + e2.getName() );
 			CodeGen.getInstance().addToText( "add.s $f2, $f0, $f1" );
 			CodeGen.getInstance().addToText( "la $a0, " + temp.getName() );
 			CodeGen.getInstance().addToText( "swc1 $f2, 0($a0)" );
 			CodeGen.getInstance().addEmptyLine();
+			SemanticStack.getInstance().pushDescriptor( temp );
+		}
+		else if ( e1.getType() == Type.STRINGLITERAL && e2.getType() == Type.STRINGLITERAL ) {
+			CompileTimeDescriptor d1 = (CompileTimeDescriptor) e1;
+			CompileTimeDescriptor d2 = (CompileTimeDescriptor) e2;
+			CompileTimeDescriptor temp = new CompileTimeDescriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.STRINGLITERAL,
+					d1.getValue().toString().substring( 0, d1.getValue().toString().length() - 1 )
+							+ d2.getValue().toString()
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+			SemanticStack.getInstance().pushDescriptor( temp );
+			StringLiteralCodeGen.getInstance().cgen();
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
 	}

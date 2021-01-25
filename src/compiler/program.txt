@@ -1,9 +1,6 @@
 
 int main() {
-	bool a;
-	bool b;
-	a = 3 == 4;
-	b = 10 == 10;
-	Print( a );
-	Print( b );
+	string s;
+	s = "Hello" + " world!";
+	Print( s );
 }
