@@ -9,6 +9,9 @@ int main() {
 	string s1;
 	string s2;
 	s1 = "Hello!";
-	s2 = s1;
+	s2 = "World!";
+	Print( s1, s2 );
+	s1 = "Bye";
+	s2 = "Cruel world...";
 	Print( s1, s2 );
 }

@@ -7,7 +7,7 @@ public enum Type {
 		if ( type == INT || type == DOUBLE || type == BOOL || type == STRING )
 			return ".word";
 		if ( type == STRINGLITERAL )
-			return ".byte";
+			return ".space";
 		else return "IDON'TKNOW";
 	}
 
