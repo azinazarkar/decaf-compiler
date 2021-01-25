@@ -13,9 +13,23 @@ public class CodeGen {
 	}
 
 	private CodeGen() {
-		dataSeg += "\ttrue_print_string: .asciiz \"true\"\n";
-		dataSeg += "\tfalse_print_string: .asciiz \"false\"\n";
+		dataSeg += "\t_true_print_string: .asciiz \"true\"\n";
+		dataSeg += "\t_false_print_string: .asciiz \"false\"\n";
 		dataSeg += "\n";
+		addEmptyLine();
+		addToText( "_print_true:", true );
+		addToText( "li $v0, 4" );
+		addToText( "la $a0, _true_print_string" );
+		addToText( "syscall" );
+		addToText( "jr $ra" );
+		addEmptyLine();
+		addToText( "_print_false:", true );
+		addToText( "li $v0, 4" );
+		addToText( "la $a0, _false_print_string" );
+		addToText( "syscall" );
+		addToText( "jr $ra" );
+		addEmptyLine();
+		addEmptyLine();
 	}
 
 	public void addToData( String in ) {
@@ -24,6 +38,10 @@ public class CodeGen {
 
 	public void addToData( String name, String type, String value ) {
 		addToData( name + ": " + type + " " + value );
+	}
+
+	public void addToData( String name, String type, int value ) {
+		addToData( name, type, Integer.toString( value ) );
 	}
 
 	public void addToText( String in ) {

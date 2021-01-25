@@ -21,14 +21,13 @@ public class AndCodeGen {
             throw new InvalidOperator("&&", d2.getType());
         Descriptor operationResult = new Descriptor(
                 "_" + IDGenerator.getInstance().getNextID(),
-                Type.BOOL,
-                (boolean)d1.getValue() && (boolean)d2.getValue()
+                Type.BOOL
         );
         SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
         CodeGen.getInstance().addToData(
                 operationResult.getName(),
                 Type.getMipsType(operationResult.getType()),
-                Integer.toString( (boolean) operationResult.getValue() ? 1 : 0 )
+                Integer.toString( 0 )
         );
         CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
         CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());

@@ -4,12 +4,10 @@ public class Descriptor {
 
 	private String name;
 	private Type type;
-	private Object value;
 
-	public Descriptor(String name, Type type, Object value) {
+	public Descriptor(String name, Type type) {
 		this.name = name;
 		this.type = type;
-		this.value = value;
 	}
 
 	public static Type getType( String in ) {
@@ -40,14 +38,6 @@ public class Descriptor {
 
 	public void setType(Type type) {
 		this.type = type;
-	}
-
-	public Object getValue() {
-		return value;
-	}
-
-	public void setValue(Object value) {
-		this.value = value;
 	}
 
 	@Override

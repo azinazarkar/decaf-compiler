@@ -27,15 +27,12 @@ public class MultiplyCodeGen {
 		if ( e1.getType() == Type.BOOL )
 			throw new InvalidOperator("*", Type.BOOL);
 		if ( e1.getType() == Type.INT ) {
-			long answer = Long.valueOf( (int) e1.getValue() ) * Long.valueOf( (int) e2.getValue() );
-			int answer32Bit = (int) ( (answer << 32) >>> 32 );
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					Type.INT,
-					answer32Bit
+					Type.INT
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 			CodeGen.getInstance().addToText("lw " + "$a0, " + e1.getName());
 			CodeGen.getInstance().addToText("lw " + "$a1, " + e2.getName());
 			CodeGen.getInstance().addToText("mult $a0, $a1");
@@ -46,15 +43,12 @@ public class MultiplyCodeGen {
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
 		else if ( e1.getType() == Type.DOUBLE ) {
-			double doubleAnswer = Float.intBitsToFloat( (int) e1.getValue() ) * Float.intBitsToFloat( (int) e2.getValue() );
-			int intAnswer = Float.floatToIntBits( (float) doubleAnswer );
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					Type.DOUBLE,
-					intAnswer
+					Type.DOUBLE
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 			CodeGen.getInstance().addToText( "lwc1 $f0, " + e1.getName() );
 			CodeGen.getInstance().addToText( "lwc1 $f1, " + e2.getName() );
 			CodeGen.getInstance().addToText( "mul.s $f2, $f0, $f1" );

@@ -29,11 +29,10 @@ public class UnaryMinusCodeGen {
 		if ( e.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					Type.INT,
-					-1 * (int) e.getValue()
+					Type.INT
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 			CodeGen.getInstance().addToText( "lw $s0, " + e.getName() );
 			CodeGen.getInstance().addToText( "neg $s1, $s0" );
 			CodeGen.getInstance().addToText( "sw $s1, " + temp.getName() );
@@ -43,11 +42,10 @@ public class UnaryMinusCodeGen {
 		else if ( e.getType() == Type.DOUBLE ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					Type.DOUBLE,
-					-1 * (int) e.getValue()
+					Type.DOUBLE
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 			CodeGen.getInstance().addToText( "lwc1 $f0, " + e.getName() );
 			CodeGen.getInstance().addToText( "neg.s $f1, $f0" );
 			CodeGen.getInstance().addToText( "swc1 $f1, " + temp.getName() );

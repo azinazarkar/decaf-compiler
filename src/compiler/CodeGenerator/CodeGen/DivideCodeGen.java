@@ -30,11 +30,10 @@ public class DivideCodeGen {
 			CodeGen.getInstance().addToText( "# Dividing " + e1.getName() + " by " + e2.getName() + " and using " + answerPart );
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					Type.INT,
-					(int) e1.getValue() / (int) e2.getValue()
+					Type.INT
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0 );
 			CodeGen.getInstance().addToText("lw " + "$a0, " + e1.getName());
 			CodeGen.getInstance().addToText("lw " + "$a1, " + e2.getName());
 			CodeGen.getInstance().addToText("div $a0, $a1");
@@ -49,15 +48,12 @@ public class DivideCodeGen {
 		}
 		else if ( e1.getType() == Type.DOUBLE ) {
 			CodeGen.getInstance().addToText( "# Dividing " + e1.getName() + " by " + e2.getName() );
-			float floatAnswer = Float.intBitsToFloat( (int) e1.getValue() ) / Float.intBitsToFloat( (int) e2.getValue() );
-			int answer = Float.floatToIntBits( floatAnswer );
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					Type.DOUBLE,
-					answer
+					Type.DOUBLE
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), temp.getValue().toString());
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0 );
 			CodeGen.getInstance().addToText( "lwc1 $f0, " + e1.getName() );
 			CodeGen.getInstance().addToText( "lwc1 $f1, " + e2.getName() );
 			CodeGen.getInstance().addToText( "div.s $f2, $f0, $f1" );

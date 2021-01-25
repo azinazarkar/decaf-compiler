@@ -22,7 +22,6 @@ public class AssignmentCodeGen{
 		CodeGen.getInstance().addToText( "# Assigning " + expr.getName() + " to " + lv.getName() );
 		if ( lv.getType() != expr.getType() && ( lv.getType() != Type.STRING && expr.getType() != Type.STRINGLITERAL ) )
 			throw new AssignmentTypeMismatch( lv.getType(), expr.getType() );
-		lv.setValue( expr.getValue() );
 		if ( expr.getType() == Type.INT || expr.getType() == Type.BOOL ) {
 			CodeGen.getInstance().addToText( "lw " + "$a0, " + expr.getName() );
 			CodeGen.getInstance().addToText( "la " + "$a1, " + lv.getName() );

@@ -20,14 +20,13 @@ public class NotEqualCodeGen {
         if (d1.getType() == Type.INT || d1.getType() == Type.DOUBLE){
             Descriptor operationResult = new Descriptor(
                     "_" + IDGenerator.getInstance().getNextID(),
-                    Type.BOOL,
-                    (int)d1.getValue() != (int)d2.getValue()
+                    Type.BOOL
             );
             SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
             CodeGen.getInstance().addToData(
                     operationResult.getName(),
                     Type.getMipsType(operationResult.getType()),
-                    Integer.toString( (boolean) operationResult.getValue() ? 1 : 0 )
+                    0
             );
             CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
             CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
@@ -40,10 +39,14 @@ public class NotEqualCodeGen {
         else if (d1.getType() == Type.BOOL){
             Descriptor operationResult = new Descriptor(
                     "_" + IDGenerator.getInstance().getNextID(),
-                    Type.BOOL,
-                    (boolean)d1.getValue() != (boolean)d2.getValue()
+                    Type.BOOL
             );
             SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
+            CodeGen.getInstance().addToData(
+                    operationResult.getName(),
+                    Type.getMipsType(operationResult.getType()),
+                    0
+            );
             CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
             CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
             CodeGen.getInstance().addToText("sne $t0, $a0, $a1");

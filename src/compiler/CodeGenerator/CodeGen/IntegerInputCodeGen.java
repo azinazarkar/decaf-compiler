@@ -19,11 +19,10 @@ public class IntegerInputCodeGen {
 	public void cgen() {
 		Descriptor temp = new Descriptor(
 				"_" + IDGenerator.getInstance().getNextID(),
-				Type.INT,
-				0
+				Type.INT
 		);
 		SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-		CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType( temp.getType() ), temp.getValue().toString() );
+		CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType( temp.getType() ), 0 );
 		CodeGen.getInstance().addToText( "# Reading an integer" );
 		CodeGen.getInstance().addToText( "li $v0, 5" );
 		CodeGen.getInstance().addToText( "syscall" );

@@ -51,8 +51,9 @@ nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, FunctionDecl, F
 				PrintCommaExpr, ActualsCommaExpr, Call, Actuals;
 // non-terminals with type
 nonterminal     String Type;
-nonterminal     Descriptor Constant, LValue;
+nonterminal     Descriptor LValue;
 nonterminal     Descriptor Expr;
+nonterminal     CompileTimeDescriptor Constant;
 
 // defining precedences
 precedence left     ELSE;
@@ -90,7 +91,7 @@ Variable ::=            Type:t IDENTIFIER:id {:
 								System.out.println( t );
 								SymbolTable.getInstance().getSymbolTable().addEntry(
 									id,
-									new Descriptor( name, type, null )
+									new Descriptor( name, type )
 								);
 								CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
 							}
@@ -259,7 +260,7 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								SemanticStack.getInstance().pushDescriptor( lv );
 								AssignmentCodeGen.getInstance().cgen();
 							}
-							RESULT = new Descriptor( "", Type.DUMMY, 0 );
+							RESULT = new Descriptor( "", Type.DUMMY );
 						:}
 						|
 						Constant:c {:
@@ -479,7 +480,7 @@ ActualsCommaExpr ::=    COMMA Expr ActualsCommaExpr
 
 Constant ::=            DECIMAL:d {:
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								RESULT = new Descriptor(
+								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.INT,
 									Integer.parseInt( d )
@@ -487,7 +488,7 @@ Constant ::=            DECIMAL:d {:
 						:}
 						| FLOATINGPOINT:f {:
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								RESULT = new Descriptor(
+								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.DOUBLE,
 									Float.floatToIntBits( Float.parseFloat( f ) )
@@ -495,19 +496,19 @@ Constant ::=            DECIMAL:d {:
 						:}
 						| BOOLEANLITERAL:b {:
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								RESULT = new Descriptor(
+								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.BOOL,
 									( b.equals( "true" ) ) ? 1 : 0 );
 						:}
 						| STRINGLITERAL:s {:
 							if ( ParserPhase.getInstance().getPhase() == 1 )
-								RESULT = new Descriptor(
+								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.STRINGLITERAL,
 									s.substring( 1, s.length() - 1 ) + "\0"
 								);
 						:}
-						| NULL:n {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
+						| NULL:n {: RESULT = new CompileTimeDescriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
 						;
 

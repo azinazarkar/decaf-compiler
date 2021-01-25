@@ -24,12 +24,28 @@ public class PrintCodeGen {
 			CodeGen.getInstance().addToText( "syscall" );
 		}
 		else if ( e.getType() == Type.BOOL ) {
-			CodeGen.getInstance().addToText( "li $v0, 4" );
-			if ( (boolean) e.getValue() )
-				CodeGen.getInstance().addToText( "la $a0, true_print_string" );
-			else
-				CodeGen.getInstance().addToText( "la $a0, false_print_string" );
-			CodeGen.getInstance().addToText( "syscall" );
+			String printFalseLabel = "_print_false_" + IDGenerator.getInstance().getNextID();
+			String printTrueLabel = "_print_true_" + IDGenerator.getInstance().getNextID();
+			String printEndLabel = "_print_bool_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $s0, " + e.getName() );
+			CodeGen.getInstance().addToText( "beq $s0, $zero, " + printFalseLabel );
+			CodeGen.getInstance().addToText( "bne $s0, $zero, " + printTrueLabel );
+			CodeGen.getInstance().addToText( printFalseLabel + ":", true );
+			CodeGen.getInstance().addToText( "sub $sp, $sp, 4" );
+			CodeGen.getInstance().addToText( "sw $ra, 0($sp)" );
+			CodeGen.getInstance().addToText( "jal _print_false" );
+			CodeGen.getInstance().addToText( "lw $ra, 0($sp)" );
+			CodeGen.getInstance().addToText( "addi $sp, $sp, 4" );
+			CodeGen.getInstance().addToText( "j " + printEndLabel );
+			CodeGen.getInstance().addToText( printTrueLabel + ":", true );
+			CodeGen.getInstance().addToText( "sub $sp, $sp, 4" );
+			CodeGen.getInstance().addToText( "sw $ra, 0($sp)" );
+			CodeGen.getInstance().addToText( "jal _print_true" );
+			CodeGen.getInstance().addToText( "lw $ra, 0($sp)" );
+			CodeGen.getInstance().addToText( "addi $sp, $sp, 4" );
+			CodeGen.getInstance().addToText( "j " + printEndLabel );
+			CodeGen.getInstance().addToText( printEndLabel + ": ", true );
+
 		}
 		else if ( e.getType() == Type.DOUBLE ) {
 			CodeGen.getInstance().addToText( "li $v0, 2" );

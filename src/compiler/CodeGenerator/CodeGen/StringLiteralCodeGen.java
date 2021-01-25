@@ -1,6 +1,7 @@
 package compiler.CodeGenerator.CodeGen;
 
 import compiler.CodeGenerator.SemanticStack;
+import compiler.CodeGenerator.SymbolTable.Utility.CompileTimeDescriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 
 public class StringLiteralCodeGen {
@@ -14,7 +15,7 @@ public class StringLiteralCodeGen {
 	}
 
 	public void cgen() {
-		Descriptor descriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
+		CompileTimeDescriptor descriptor = (CompileTimeDescriptor) SemanticStack.getInstance().popDescriptor();
 		String s = descriptor.getValue().toString();
 		int size = s.length();
 		CodeGen.getInstance().addToText( "# Storing string \"" + s.substring(0, Math.min( 10, s.length() - 1 ) ) + "...\" into data segment" );
