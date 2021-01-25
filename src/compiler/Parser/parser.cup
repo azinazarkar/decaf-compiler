@@ -200,22 +200,38 @@ Stmt ::=                ExprPrime SEMICOLON
 ExprPrime ::=           Expr
 						| /*epsilon*/
 						;
-                        //azin is working hereeee
+
 IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 1 ) {
-                                SemanticStack.getInstance().pushDescriptor( RESULT );
+                            if ( phase == 0 ) {
+                                SymbolTable.getInstance().makeNextAndSwitch( "if" );
+                            }
+                            else if ( phase == 1 ) {
+                                SymbolTable.getInstance().switchToNext();
+                                SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
                         :} CLOSEPARENTHESIS Stmt:s ElsePrime{:
-                            String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
-                            CodeGen.getInstance().addToText(elseLabel, true);
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                System.out.println("hey azin");
+                                String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                CodeGen.getInstance().addToText(elseLabel + ":\n", true);
+                            }
                         :};
 ElsePrime ::=           ELSE Stmt:s
 						| /*epsilon*/
 						;
-
-WhileStmt ::=           WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt;
+                        //azin is working here and she really has no idea what she's doing
+WhileStmt ::=           WHILE OPENPARENTHESIS Expr:e{:
+                            SemanticStack.getInstance().popDescriptor();
+                            WhileCodeGen.getInstance().cgen();
+                        :} CLOSEPARENTHESIS Stmt:s{:
+                            String whileLabel = (String)SemanticStack.getInstance().popDescriptor();
+                            String endWhileLabel = (String)SemanticStack.getInstance().popDescriptor();
+                            CodeGen.getInstance().addToText("b " + whileLabel);
+                            CodeGen.getInstance().addToText(endWhileLabel, true);
+                        :};
 
 ForStmt ::=             FOR OPENPARENTHESIS ExprPrime SEMICOLON Expr SEMICOLON ExprPrime CLOSEPARENTHESIS Stmt;
 

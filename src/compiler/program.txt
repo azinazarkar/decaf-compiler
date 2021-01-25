@@ -1,6 +1,9 @@
-
 int main() {
-	string s;
-	s = "Hello" + " world!";
-	Print( s );
+	int a ;
+	int b ;
+	a = 5;
+	b = 3;
+	if (b <= 3) {a = 0; b = 2;}
+    Print(a);
+    Print(b);
 }
