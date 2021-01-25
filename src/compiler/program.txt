@@ -1,9 +1,0 @@
-
-int main() {
-	double d;
-	int c;
-	d = 1.8;
-	c = dtoi( d );
-	Print( d );
-	Print( c );
-}
