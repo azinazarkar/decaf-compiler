@@ -203,22 +203,22 @@ ExprPrime ::=           Expr
 
 IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 0 ) {
+                            /*if ( phase == 0 ) {
                                 SymbolTable.getInstance().makeNextAndSwitch( "if" );
                             }
-                            else if ( phase == 1 ) {
-                                SymbolTable.getInstance().switchToNext();
+                            else*/ if ( phase == 1 ) {
+                                //SymbolTable.getInstance().switchToNext();
                                 SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
-                        :} CLOSEPARENTHESIS Stmt:s ElsePrime{:
+                        :} CLOSEPARENTHESIS Stmt:s{:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                System.out.println("hey azin");
                                 String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                System.out.println(elseLabel);
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                             }
-                        :};
+                        :} ElsePrime;
 ElsePrime ::=           ELSE Stmt:s
 						| /*epsilon*/
 						;
