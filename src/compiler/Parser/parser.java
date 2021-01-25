@@ -2194,7 +2194,17 @@ class CUP$parser$actions {
           case 104: // Expr ::= BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                btoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

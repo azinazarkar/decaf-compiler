@@ -494,7 +494,14 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
                                 RESULT = temp;
                             }
 						:}
-						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| BTOI OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                btoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
 						;
 
 LValue ::=              IDENTIFIER:id {:
