@@ -885,6 +885,7 @@ class CUP$parser$actions {
 							if ( ParserPhase.getInstance().getPhase() == 0 ) {
 								String name = IDGenerator.getInstance().getNextID();
 								Type type = Descriptor.getType( t );
+								System.out.println( t );
 								SymbolTable.getInstance().getSymbolTable().addEntry(
 									id,
 									new Descriptor( name, type, null )
@@ -927,7 +928,7 @@ class CUP$parser$actions {
           case 13: // Type ::= STRING 
             {
               String RESULT =null;
-		 RESULT = "STRING"; 
+		 System.out.println( "HERE!" ); RESULT = "STRING"; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1581,7 +1582,22 @@ class CUP$parser$actions {
 							int phase = ParserPhase.getInstance().getPhase();
 							if ( phase == 1 ) {
 								SymbolTable.getInstance().getSymbolTable().addEntry( c.getName(), c );
-								CodeGen.getInstance().addToData( c.getName(), Type.getMipsType( c.getType() ), c.getValue().toString() );
+								Type type = c.getType();
+								if ( type == Type.INT || type == Type.DOUBLE || type == Type.BOOL )
+									CodeGen.getInstance().addToData(
+										c.getName(),
+										Type.getMipsType( type ),
+										c.getValue().toString()
+									);
+								else if ( type == Type.STRINGLITERAL ) {
+									CodeGen.getInstance().addToData(
+										c.getName(),
+										Type.getMipsType( type ),
+										Integer.toString( c.getValue().toString().length() )
+									);
+									SemanticStack.getInstance().pushDescriptor( c );
+									StringLiteralCodeGen.getInstance().cgen();
+								}
 							}
 							RESULT = c;
 						
@@ -2212,7 +2228,12 @@ class CUP$parser$actions {
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String s = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s );
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.STRINGLITERAL,
+									s.substring( 1, s.length() - 1 ) + "\0"
+								);
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",37, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

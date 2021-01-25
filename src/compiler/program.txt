@@ -6,14 +6,9 @@ int test( double dd ) {
 }
 
 int main() {
-	double a;
-	double b;
-	int c;
-	int d;
-	c = 5;
-	d = 5;
-	a = 3.14;
-	b = -4.15;
-	Print( c != d );
-	Print( a != b );
+	string s1;
+	string s2;
+	s1 = "Hello!";
+	s2 = s1;
+	Print( s1, s2 );
 }

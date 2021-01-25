@@ -87,6 +87,7 @@ Variable ::=            Type:t IDENTIFIER:id {:
 							if ( ParserPhase.getInstance().getPhase() == 0 ) {
 								String name = IDGenerator.getInstance().getNextID();
 								Type type = Descriptor.getType( t );
+								System.out.println( t );
 								SymbolTable.getInstance().getSymbolTable().addEntry(
 									id,
 									new Descriptor( name, type, null )
@@ -99,7 +100,7 @@ Variable ::=            Type:t IDENTIFIER:id {:
 Type ::=                INT {: RESULT = "INT"; :}
 						| DOUBLE {: RESULT = "DOUBLE"; :}
 						| BOOL {: RESULT = "BOOL"; :}
-						| STRING {: RESULT = "STRING"; :}
+						| STRING {: System.out.println( "HERE!" ); RESULT = "STRING"; :}
 						| IDENTIFIER:e {: RESULT = e; :}
 						| Type OPENCLOSEBRACKET {: RESULT = "ARRAY"; :}
 						;
@@ -256,7 +257,22 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 							int phase = ParserPhase.getInstance().getPhase();
 							if ( phase == 1 ) {
 								SymbolTable.getInstance().getSymbolTable().addEntry( c.getName(), c );
-								CodeGen.getInstance().addToData( c.getName(), Type.getMipsType( c.getType() ), c.getValue().toString() );
+								Type type = c.getType();
+								if ( type == Type.INT || type == Type.DOUBLE || type == Type.BOOL )
+									CodeGen.getInstance().addToData(
+										c.getName(),
+										Type.getMipsType( type ),
+										c.getValue().toString()
+									);
+								else if ( type == Type.STRINGLITERAL ) {
+									CodeGen.getInstance().addToData(
+										c.getName(),
+										Type.getMipsType( type ),
+										Integer.toString( c.getValue().toString().length() )
+									);
+									SemanticStack.getInstance().pushDescriptor( c );
+									StringLiteralCodeGen.getInstance().cgen();
+								}
 							}
 							RESULT = c;
 						:}
@@ -476,7 +492,12 @@ Constant ::=            DECIMAL:d {:
 									( b.equals( "true" ) ) ? 1 : 0 );
 						:}
 						| STRINGLITERAL:s {:
-							RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.STRING, s );
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new Descriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.STRINGLITERAL,
+									s.substring( 1, s.length() - 1 ) + "\0"
+								);
 						:}
 						| NULL:n {: RESULT = new Descriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
 						;

@@ -1,13 +1,13 @@
 package compiler.CodeGenerator.SymbolTable.Utility;
 
 public enum Type {
-	INT, DOUBLE, BOOL, STRING, VOID, NULL, OBJECT, DUMMY;
+	INT, DOUBLE, BOOL, STRING, STRINGLITERAL, VOID, NULL, OBJECT, DUMMY;
 
 	public static String getMipsType( Type type ) {
-		if ( type == INT || type == DOUBLE || type == BOOL )
+		if ( type == INT || type == DOUBLE || type == BOOL || type == STRING )
 			return ".word";
-		if ( type == STRING )
-			return ".asciiz";
+		if ( type == STRINGLITERAL )
+			return ".byte";
 		else return "IDON'TKNOW";
 	}
 
