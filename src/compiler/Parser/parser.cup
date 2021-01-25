@@ -211,13 +211,14 @@ IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                                 SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
-                        :} CLOSEPARENTHESIS Stmt:s ElsePrime{:
+                        :} CLOSEPARENTHESIS {:
+                         :}Stmt:s ElsePrime{:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                System.out.println("hey azin");
                                 String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                             }
+                            SymbolTable.getInstance().goBack();
                         :};
 ElsePrime ::=           ELSE Stmt:s
 						| /*epsilon*/
