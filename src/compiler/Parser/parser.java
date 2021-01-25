@@ -2268,7 +2268,7 @@ class CUP$parser$actions {
 								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.STRINGLITERAL,
-									s.substring( 1, s.length() - 1 ) + "\0"
+									s.substring( 1, s.length() - 1 ) + '\0'
 								);
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",39, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

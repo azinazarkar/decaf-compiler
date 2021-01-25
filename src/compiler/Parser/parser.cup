@@ -506,7 +506,7 @@ Constant ::=            DECIMAL:d {:
 								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.STRINGLITERAL,
-									s.substring( 1, s.length() - 1 ) + "\0"
+									s.substring( 1, s.length() - 1 ) + '\0'
 								);
 						:}
 						| NULL:n {: RESULT = new CompileTimeDescriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
