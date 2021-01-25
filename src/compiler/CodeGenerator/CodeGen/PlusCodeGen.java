@@ -25,7 +25,7 @@ public class PlusCodeGen {
 		CodeGen.getInstance().addToText( "# Adding " + e1.getName() + " and " + e2.getName() );
 		if ( e1.getType() != e2.getType() &&
 				( ( e1.getType() != Type.STRINGLITERAL && e2.getType() != Type.STRING )
-				|| ( e1.getType() != Type.STRING && e2.getType() != Type.STRINGLITERAL ) )
+				&& ( e1.getType() != Type.STRING && e2.getType() != Type.STRINGLITERAL ) )
 		)
 			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 		if ( e1.getType() == Type.BOOL)
@@ -75,6 +75,24 @@ public class PlusCodeGen {
 			SemanticStack.getInstance().pushDescriptor( temp );
 			StringLiteralCodeGen.getInstance().cgen();
 			SemanticStack.getInstance().pushDescriptor( temp );
+		}
+		else if ( e1.getType() == Type.STRINGLITERAL && e2.getType() == Type.STRING ) {
+			Descriptor temp = new Descriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.STRING
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+			CodeGen.getInstance().addToText( "lw $a0, " + e2.getName() );
+			CodeGen.getInstance().addToText( "jal _get_string_size" );
+			Descriptor result = new Descriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.STRING
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(result.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(result.getType()), 0);
+			// TODO build the string
+			SemanticStack.getInstance().pushDescriptor( result );
 		}
 	}
 
