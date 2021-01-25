@@ -1,19 +1,8 @@
 
-int test( double dd ) {
-	int e;
-	e = 79;
-	Print( e );
-}
-
 int main() {
-	double a;
-	double b;
 	int c;
 	int d;
-	c = 5;
-	d = 5;
-	a = 3.14;
-	b = -4.15;
-	Print( c != d );
-	Print( a != b );
+	d = 5 ;
+	bool a = 0;
+	if (a == 1) c = d + d;
 }
