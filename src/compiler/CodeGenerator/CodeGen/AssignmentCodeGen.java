@@ -20,7 +20,7 @@ public class AssignmentCodeGen{
 		Descriptor lv = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		Descriptor expr = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Assigning " + expr.getName() + " to " + lv.getName() );
-		if ( lv.getType() != expr.getType() )
+		if ( lv.getType() != expr.getType() && ( lv.getType() != Type.STRING && expr.getType() != Type.STRINGLITERAL ) )
 			throw new AssignmentTypeMismatch( lv.getType(), expr.getType() );
 		lv.setValue( expr.getValue() );
 		if ( expr.getType() == Type.INT || expr.getType() == Type.BOOL ) {
@@ -32,6 +32,16 @@ public class AssignmentCodeGen{
 			CodeGen.getInstance().addToText( "lwc1 $f0, " + expr.getName() );
 			CodeGen.getInstance().addToText( "la $a0, " + lv.getName() );
 			CodeGen.getInstance().addToText( "swc1 $f0, 0($a0)" );
+		}
+		else if ( expr.getType() == Type.STRINGLITERAL ) {
+			CodeGen.getInstance().addToText( "la $s0, " + expr.getName() );
+			CodeGen.getInstance().addToText( "la $s1, " + lv.getName() );
+			CodeGen.getInstance().addToText( "sw $s0, 0($s1)" );
+		}
+		else if ( expr.getType() == Type.STRING ) {
+			CodeGen.getInstance().addToText( "lw $s0, " + expr.getName() );
+			CodeGen.getInstance().addToText( "la $s1, " + lv.getName() );
+			CodeGen.getInstance().addToText( "sw $s0, 0($s1)" );
 		}
 		else
 			System.out.println( "I DONT KNOW" );

@@ -22,7 +22,6 @@ public class PrintCodeGen {
 			CodeGen.getInstance().addToText( "li $v0, 1" );
 			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
 			CodeGen.getInstance().addToText( "syscall" );
-			CodeGen.getInstance().addEmptyLine();
 		}
 		else if ( e.getType() == Type.BOOL ) {
 			CodeGen.getInstance().addToText( "li $v0, 4" );
@@ -31,14 +30,18 @@ public class PrintCodeGen {
 			else
 				CodeGen.getInstance().addToText( "la $a0, false_print_string" );
 			CodeGen.getInstance().addToText( "syscall" );
-			CodeGen.getInstance().addEmptyLine();
 		}
 		else if ( e.getType() == Type.DOUBLE ) {
 			CodeGen.getInstance().addToText( "li $v0, 2" );
 			CodeGen.getInstance().addToText( "lwc1 $f12, " + e.getName() );
 			CodeGen.getInstance().addToText( "syscall" );
-			CodeGen.getInstance().addEmptyLine();
 		}
+		else if ( e.getType() == Type.STRING ) {
+			CodeGen.getInstance().addToText( "li $v0, 4" );
+			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+			CodeGen.getInstance().addToText( "syscall" );
+		}
+		CodeGen.getInstance().addEmptyLine();
 	}
 
 	public void printEnter() {

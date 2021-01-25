@@ -1,8 +1,11 @@
 
 int main() {
-	int c;
-	int d;
-	d = 5 ;
-	bool a = 0;
-	if (a == 1) c = d + d;
+	string s1;
+	string s2;
+	s1 = "Hello!";
+	s2 = "World!";
+	Print( s1, s2 );
+	s1 = "Bye";
+	s2 = "Cruel world...";
+	Print( s1, s2 );
 }
