@@ -1,10 +1,4 @@
 
-int test( double dd ) {
-	int e;
-	e = 79;
-	Print( e );
-}
-
 int main() {
 	string s1;
 	string s2;

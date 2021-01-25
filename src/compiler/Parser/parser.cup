@@ -199,9 +199,18 @@ Stmt ::=                ExprPrime SEMICOLON
 ExprPrime ::=           Expr
 						| /*epsilon*/
 						;
-
-IfStmt ::=              IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePrime;
-ElsePrime ::=           ELSE Stmt
+                        //azin is working hereeee
+IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( RESULT );
+                                IfCodeGen.getInstance().cgen();
+                            }
+                        :} CLOSEPARENTHESIS Stmt:s ElsePrime{:
+                            String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
+                            CodeGen.getInstance().addToText(elseLabel, true);
+                        :};
+ElsePrime ::=           ELSE Stmt:s
 						| /*epsilon*/
 						;
 
