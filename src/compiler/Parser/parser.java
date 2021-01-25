@@ -1417,7 +1417,9 @@ class CUP$parser$actions {
 
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 0 ) {
-                                SymbolTable.getInstance().makeNextAndSwitch( "if" );
+                                SymbolTable.getInstance().makeNextAndSwitch(
+                                    SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if"
+                                );
                             }
                             else if ( phase == 1 ) {
                                 SymbolTable.getInstance().switchToNext();
