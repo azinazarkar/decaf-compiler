@@ -279,7 +279,7 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						| LValue:lv {: RESULT = lv; :}
 						| THIS
 						| Call
-						| OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {: RESULT = e; :}
 						| Expr:e1 PLUS Expr:e2 {:
 							int phase = ParserPhase.getInstance().getPhase();
 							if ( phase == 1 ) {
