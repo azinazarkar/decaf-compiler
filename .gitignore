@@ -3,3 +3,5 @@ out/
 *.iml
 *.class
 *.java~
+out.asm
+src/compiler/program.txt

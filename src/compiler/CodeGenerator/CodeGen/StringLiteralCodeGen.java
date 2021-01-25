@@ -24,8 +24,8 @@ public class StringLiteralCodeGen {
 			char currentChar = s.charAt( i );
 			CodeGen.getInstance().addToText( "li $s1, \'" + currentChar + "\'" );
 			CodeGen.getInstance().addToText( "sb $s1, " + i + "($s0)" );
-			System.out.println( (int) currentChar );
 		}
+//		CodeGen.getInstance().addToText( "sb $zero, " + s.length() + "($s0)" );
 	}
 
 }

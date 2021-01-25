@@ -57,6 +57,11 @@ public class PrintCodeGen {
 			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
 			CodeGen.getInstance().addToText( "syscall" );
 		}
+		else if ( e.getType() == Type.STRINGLITERAL ) {
+			CodeGen.getInstance().addToText( "li $v0, 4" );
+			CodeGen.getInstance().addToText( "la $a0, " + e.getName() );
+			CodeGen.getInstance().addToText( "syscall" );
+		}
 		CodeGen.getInstance().addEmptyLine();
 	}
 
