@@ -211,16 +211,31 @@ IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                                 SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
-                        :} CLOSEPARENTHESIS Stmt:s{:
+                        :} CLOSEPARENTHESIS Stmt:s ElsePrime;
+ElsePrime ::=           ELSE {:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
                                 String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
-                                System.out.println(elseLabel);
+                                String endLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                CodeGen.getInstance().addToText("b " + endLabel);
+                                CodeGen.getInstance().addToText(elseLabel + ":\n", true);
+                                SemanticStack.getInstance().pushDescriptor(endLabel);
+                            }
+                        :} Stmt:s {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String endLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                CodeGen.getInstance().addToText(endLabel + ":\n", true);
+                            }
+                        :}
+						| /*epsilon*/ {:
+						    int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                String endLabel = (String)SemanticStack.getInstance().popDescriptor();
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                             }
-                        :} ElsePrime;
-ElsePrime ::=           ELSE Stmt:s
-						| /*epsilon*/
+						:}
 						;
                         //azin is working here and she really has no idea what she's doing
 WhileStmt ::=           WHILE OPENPARENTHESIS Expr:e{:
