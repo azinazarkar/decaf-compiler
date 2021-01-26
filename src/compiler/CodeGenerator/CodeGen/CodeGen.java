@@ -20,12 +20,8 @@ public class CodeGen {
 		dataSeg += "\n";
 		dataSeg += "\t_array_size_error_message: .asciiz \"array size less than zero\\n\"\n";
 		dataSeg += "\n";
-		addEmptyLine();
-		addBooleanPrintMethods();
-		addEmptyLine();
-		addStringSizeMethod();
-		addEmptyLine();
-		addEmptyLine();
+		dataSeg += "\t_array_index_illegal: .asciiz \"index passed to array is more than its size\\n\"\n";
+		dataSeg += "\n";
 	}
 
 	public void addToData( String in ) {
@@ -55,10 +51,15 @@ public class CodeGen {
 	}
 
 	public void cgen() {
-
 	}
 
 	public void writeToFile() throws IOException {
+		addEmptyLine();
+		addBooleanPrintMethods();
+		addEmptyLine();
+		addStringSizeMethod();
+		addEmptyLine();
+		addEmptyLine();
 		FileWriter out = new FileWriter( "out.asm" );
 		out.write( dataSeg + "\n" + textSeg);
 		out.close();

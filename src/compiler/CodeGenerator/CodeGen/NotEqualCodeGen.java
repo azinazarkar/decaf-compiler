@@ -17,7 +17,7 @@ public class NotEqualCodeGen {
         CodeGen.getInstance().addToText("# Is " + d1.getName() + " not equal to " + d2.getName() + "? ");
         if (d1.getType() != d2.getType())
             throw new CalculationTypeMismatch("!=", d1.getType(), d2.getType());
-        if (d1.getType() == Type.INT || d1.getType() == Type.DOUBLE){
+        if (d1.getType() == Type.INT || d1.getType() == Type.DOUBLE || d1.getType() == Type.BOOL){
             Descriptor operationResult = new Descriptor(
                     "_" + IDGenerator.getInstance().getNextID(),
                     Type.BOOL
@@ -29,31 +29,40 @@ public class NotEqualCodeGen {
                     0
             );
             CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
+            if ( d1.isFromArray() )
+                CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
             CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
+            if ( d2.isFromArray() )
+                CodeGen.getInstance().addToText( "lw $a1, 0($a1)" );
             CodeGen.getInstance().addToText("sne $t0, $a0, $a1");
             CodeGen.getInstance().addToText("la " + "$a2, " + operationResult.getName());
             CodeGen.getInstance().addToText("sw $t0, 0($a2)");
             CodeGen.getInstance().addEmptyLine();
             SemanticStack.getInstance().pushDescriptor( operationResult );
         }
-        else if (d1.getType() == Type.BOOL){
-            Descriptor operationResult = new Descriptor(
-                    "_" + IDGenerator.getInstance().getNextID(),
-                    Type.BOOL
-            );
-            SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
-            CodeGen.getInstance().addToData(
-                    operationResult.getName(),
-                    Type.getMipsType(operationResult.getType()),
-                    0
-            );
-            CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
-            CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
-            CodeGen.getInstance().addToText("sne $t0, $a0, $a1");
-            CodeGen.getInstance().addToText("la " + "$a2, " + operationResult.getName());
-            CodeGen.getInstance().addToText("sw $t0, 0($a2)");
-            CodeGen.getInstance().addEmptyLine();
-            SemanticStack.getInstance().pushDescriptor( operationResult );
-        }
+        //TODO ADD NOT EQUALITY FOR OTHER TYPES
+//        else if (d1.getType() == Type.BOOL){
+//            Descriptor operationResult = new Descriptor(
+//                    "_" + IDGenerator.getInstance().getNextID(),
+//                    Type.BOOL
+//            );
+//            SymbolTable.getInstance().getSymbolTable().addEntry(operationResult.getName(), operationResult);
+//            CodeGen.getInstance().addToData(
+//                    operationResult.getName(),
+//                    Type.getMipsType(operationResult.getType()),
+//                    0
+//            );
+//            CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
+//            if ( d1.isFromArray() )
+//                CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+//            CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
+//            if ( d2.isFromArray() )
+//                CodeGen.getInstance().addToText( "lw $a1, 0($a1)" );
+//            CodeGen.getInstance().addToText("sne $t0, $a0, $a1");
+//            CodeGen.getInstance().addToText("la " + "$a2, " + operationResult.getName());
+//            CodeGen.getInstance().addToText("sw $t0, 0($a2)");
+//            CodeGen.getInstance().addEmptyLine();
+//            SemanticStack.getInstance().pushDescriptor( operationResult );
+//        }
     }
 }

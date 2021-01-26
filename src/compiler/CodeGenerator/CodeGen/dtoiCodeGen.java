@@ -30,7 +30,10 @@ public class dtoiCodeGen {
 		CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 		String lessthan = "_dtoi_isless_" + IDGenerator.getInstance().getNextID();
 		String endLabel = "_dtoi_end_" + IDGenerator.getInstance().getNextID();
-		CodeGen.getInstance().addToText( "lwc1 $f0, " + e.getName() );
+		CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+		if ( e.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+		CodeGen.getInstance().addToText( "mtc1 $a0, $f0" );
 		CodeGen.getInstance().addToText( "lwc1 $f1, _dtoi_border_value" );
 		CodeGen.getInstance().addToText( "c.lt.s $f0, $f1" );
 		CodeGen.getInstance().addToText( "abs.s $f0, $f0" );

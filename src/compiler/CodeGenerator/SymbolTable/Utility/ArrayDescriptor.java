@@ -6,7 +6,11 @@ public class ArrayDescriptor extends Descriptor {
 	private int dimensionCount;
 
 	public ArrayDescriptor( String name, ArrayType arrayType ) {
-		super( name, Type.ARRAY );
+		this( name, arrayType, false );
+	}
+
+	public ArrayDescriptor( String name, ArrayType arrayType, boolean isFromArray ) {
+		super( name, Type.ARRAY, isFromArray );
 		this.subType = arrayType.getSubType();
 		this.dimensionCount = arrayType.getDimensionCount();
 	}

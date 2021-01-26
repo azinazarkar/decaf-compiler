@@ -31,6 +31,8 @@ public class itobCodeGen {
 		String falseGenerationLabel = "_itob_false_generation_" + IDGenerator.getInstance().getNextID();
 		String itobEnd = "_itob_end_" + IDGenerator.getInstance().getNextID();
 		CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+		if ( e.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 		CodeGen.getInstance().addToText( "la $a1, " + temp.getName() );
 		CodeGen.getInstance().addToText( "beqz $a0, " + falseGenerationLabel );
 		CodeGen.getInstance().addToText( "li $t0, 1" );

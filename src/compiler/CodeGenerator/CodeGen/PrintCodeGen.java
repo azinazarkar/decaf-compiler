@@ -21,6 +21,8 @@ public class PrintCodeGen {
 		if ( e.getType() == Type.INT ) {
 			CodeGen.getInstance().addToText( "li $v0, 1" );
 			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+			if ( e.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 			CodeGen.getInstance().addToText( "syscall" );
 		}
 		else if ( e.getType() == Type.BOOL ) {
@@ -28,6 +30,8 @@ public class PrintCodeGen {
 			String printTrueLabel = "_print_true_" + IDGenerator.getInstance().getNextID();
 			String printEndLabel = "_print_bool_end_" + IDGenerator.getInstance().getNextID();
 			CodeGen.getInstance().addToText( "lw $s0, " + e.getName() );
+			if ( e.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 			CodeGen.getInstance().addToText( "beq $s0, $zero, " + printFalseLabel );
 			CodeGen.getInstance().addToText( "bne $s0, $zero, " + printTrueLabel );
 			CodeGen.getInstance().addToText( printFalseLabel + ":", true );
@@ -49,12 +53,17 @@ public class PrintCodeGen {
 		}
 		else if ( e.getType() == Type.DOUBLE ) {
 			CodeGen.getInstance().addToText( "li $v0, 2" );
-			CodeGen.getInstance().addToText( "lwc1 $f12, " + e.getName() );
+			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+			if ( e.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+			CodeGen.getInstance().addToText( "mtc1 $a0, $f12" );
 			CodeGen.getInstance().addToText( "syscall" );
 		}
 		else if ( e.getType() == Type.STRING ) {
 			CodeGen.getInstance().addToText( "li $v0, 4" );
 			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+			if ( e.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 			CodeGen.getInstance().addToText( "syscall" );
 		}
 		else if ( e.getType() == Type.STRINGLITERAL ) {

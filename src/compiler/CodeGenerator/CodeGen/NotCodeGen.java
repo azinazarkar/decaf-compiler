@@ -27,6 +27,8 @@ public class NotCodeGen {
                 0
         );
         CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
+        if ( d1.isFromArray() )
+            CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
         CodeGen.getInstance().addToText("not $t0, $a0");
         CodeGen.getInstance().addToText("la " + "$a1, " + operationResult.getName());
         CodeGen.getInstance().addToText("sw $t0, 0($a1)");

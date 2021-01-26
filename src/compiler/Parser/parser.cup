@@ -7,6 +7,7 @@ import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 import compiler.CodeGenerator.CodeGen.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
+import compiler.Parser.Utility.ParserHelper;
 
 
 parser code {:
@@ -319,6 +320,7 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								SemanticStack.getInstance().pushDescriptor( e );
 								SemanticStack.getInstance().pushDescriptor( lv );
 								AssignmentCodeGen.getInstance().cgen();
+//								ParserHelper.getInstance().isLValueArray = false;
 							}
 							RESULT = new Descriptor( "", Type.DUMMY );
 						:}
@@ -560,7 +562,16 @@ LValue ::=              IDENTIFIER:id {:
 								RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
 						:}
 						| Expr DOT IDENTIFIER
-						| Expr OPENBRACKET Expr CLOSEBRACKET
+						| Expr:e1 OPENBRACKET Expr:e2 CLOSEBRACKET {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+//								ParserHelper.getInstance().isLValueArray = true;
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								ArrayGetIndexValueCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
 						;
 
 Call ::=                IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS

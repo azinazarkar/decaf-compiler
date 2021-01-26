@@ -30,7 +30,11 @@ public class AndCodeGen {
                 Integer.toString( 0 )
         );
         CodeGen.getInstance().addToText("lw " + "$a0, " + d1.getName());
+        if ( d1.isFromArray() )
+            CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
         CodeGen.getInstance().addToText("lw " + "$a1, " + d2.getName());
+        if ( d1.isFromArray() )
+            CodeGen.getInstance().addToText( "lw $a1, 0($a1)" );
         CodeGen.getInstance().addToText("and $t0, $a0, $a1");
         CodeGen.getInstance().addToText("la " + "$a2, " + operationResult.getName());
         CodeGen.getInstance().addToText("sw $t0, 0($a2)");

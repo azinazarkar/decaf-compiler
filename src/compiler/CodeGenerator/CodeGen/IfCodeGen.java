@@ -19,6 +19,8 @@ public class IfCodeGen {
         // TODO optimization (reloading can be omitted)
         CodeGen.getInstance().addToText("# if statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());
+        if ( condition.isFromArray() )
+            CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
         CodeGen.getInstance().addToText("beq " +  "$a0, " + "0, " + elseLabel);
         CodeGen.getInstance().addEmptyLine();
         SemanticStack.getInstance().pushDescriptor(endLabel);

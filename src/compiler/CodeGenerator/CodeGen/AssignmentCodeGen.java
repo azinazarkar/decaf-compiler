@@ -6,6 +6,7 @@ import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.Utility.ArrayDescriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
+import compiler.Parser.Utility.ParserHelper;
 
 public class AssignmentCodeGen{
 	private static AssignmentCodeGen ourInstance = new AssignmentCodeGen();
@@ -24,24 +25,57 @@ public class AssignmentCodeGen{
 		if ( ! ( expr instanceof ArrayDescriptor ) ) {
 			if (lv.getType() != expr.getType() && (lv.getType() != Type.STRING && expr.getType() != Type.STRINGLITERAL))
 				throw new AssignmentTypeMismatch(lv.getType(), expr.getType());
-			if (expr.getType() == Type.INT || expr.getType() == Type.BOOL) {
-				CodeGen.getInstance().addToText("lw " + "$a0, " + expr.getName());
-				CodeGen.getInstance().addToText("la " + "$a1, " + lv.getName());
-				CodeGen.getInstance().addToText("sw $a0, 0($a1)");
-			} else if (expr.getType() == Type.DOUBLE) {
-				CodeGen.getInstance().addToText("lwc1 $f0, " + expr.getName());
-				CodeGen.getInstance().addToText("la $a0, " + lv.getName());
-				CodeGen.getInstance().addToText("swc1 $f0, 0($a0)");
-			} else if (expr.getType() == Type.STRINGLITERAL) {
-				CodeGen.getInstance().addToText("la $s0, " + expr.getName());
-				CodeGen.getInstance().addToText("la $s1, " + lv.getName());
-				CodeGen.getInstance().addToText("sw $s0, 0($s1)");
-			} else if (expr.getType() == Type.STRING) {
-				CodeGen.getInstance().addToText("lw $s0, " + expr.getName());
-				CodeGen.getInstance().addToText("la $s1, " + lv.getName());
-				CodeGen.getInstance().addToText("sw $s0, 0($s1)");
-			} else
-				System.out.println("I DONT KNOW");
+			if ( !lv.isFromArray() ) {
+//			if (!ParserHelper.getInstance().isLValueArray) {
+				if (expr.getType() == Type.INT || expr.getType() == Type.BOOL) {
+					CodeGen.getInstance().addToText("lw " + "$a0, " + expr.getName());
+					if ( expr.isFromArray() )
+						CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+					CodeGen.getInstance().addToText("la " + "$a1, " + lv.getName());
+					CodeGen.getInstance().addToText("sw $a0, 0($a1)");
+				} else if (expr.getType() == Type.DOUBLE) {
+					CodeGen.getInstance().addToText("lw $a0, " + expr.getName());
+					if ( expr.isFromArray() )
+						CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+					CodeGen.getInstance().addToText( "mtc1 $a0, $f0" );
+					CodeGen.getInstance().addToText("la $a0, " + lv.getName());
+					CodeGen.getInstance().addToText("swc1 $f0, 0($a0)");
+				} else if (expr.getType() == Type.STRINGLITERAL) {
+					CodeGen.getInstance().addToText("la $s0, " + expr.getName());
+					CodeGen.getInstance().addToText("la $s1, " + lv.getName());
+					CodeGen.getInstance().addToText("sw $s0, 0($s1)");
+				} else if (expr.getType() == Type.STRING) {
+					CodeGen.getInstance().addToText("lw $s0, " + expr.getName());
+					if ( expr.isFromArray() )
+						CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
+					CodeGen.getInstance().addToText("la $s1, " + lv.getName());
+					CodeGen.getInstance().addToText("sw $s0, 0($s1)");
+				} else
+					System.out.println("I DONT KNOW");
+			}
+			else {
+				if (expr.getType() == Type.INT || expr.getType() == Type.BOOL) {
+					CodeGen.getInstance().addToText("lw " + "$a0, " + expr.getName());
+					if ( expr.isFromArray() )
+						CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+					CodeGen.getInstance().addToText("lw " + "$a1, " + lv.getName());
+					CodeGen.getInstance().addToText("sw $a0, 0($a1)");
+				} else if (expr.getType() == Type.DOUBLE) {
+					CodeGen.getInstance().addToText("lw $a0, " + expr.getName());
+					if ( expr.isFromArray() )
+						CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+					CodeGen.getInstance().addToText( "mtc1 $a0, $f0" );
+					CodeGen.getInstance().addToText("lw $a0, " + lv.getName());
+					CodeGen.getInstance().addToText("swc1 $f0, 0($a0)");
+				} else if (expr.getType() == Type.STRING) {
+					CodeGen.getInstance().addToText("lw $s0, " + expr.getName());
+					if ( expr.isFromArray() )
+						CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
+					CodeGen.getInstance().addToText("lw $s1, " + lv.getName());
+					CodeGen.getInstance().addToText("sw $s0, 0($s1)");
+				} else
+					System.out.println("I DONT KNOW");
+			}
 		}
 		else {
 			if ( ! (lv instanceof ArrayDescriptor ) )

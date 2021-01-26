@@ -13,6 +13,7 @@ import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 import compiler.CodeGenerator.CodeGen.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
+import compiler.Parser.Utility.ParserHelper;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -1716,6 +1717,7 @@ class CUP$parser$actions {
 								SemanticStack.getInstance().pushDescriptor( e );
 								SemanticStack.getInstance().pushDescriptor( lv );
 								AssignmentCodeGen.getInstance().cgen();
+//								ParserHelper.getInstance().isLValueArray = false;
 							}
 							RESULT = new Descriptor( "", Type.DUMMY );
 						
@@ -2315,7 +2317,22 @@ class CUP$parser$actions {
           case 108: // LValue ::= Expr OPENBRACKET Expr CLOSEBRACKET 
             {
               Descriptor RESULT =null;
-
+		int e1left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
+		int e1right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
+		Descriptor e1 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		int e2left = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int e2right = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Descriptor e2 = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+//								ParserHelper.getInstance().isLValueArray = true;
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								ArrayGetIndexValueCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("LValue",37, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

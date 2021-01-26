@@ -31,6 +31,8 @@ public class btoiCodeGen {
 		String isFalseLabel = "_btoi_is_false_" + IDGenerator.getInstance().getNextID();
 		String btoiEndLabel = "_btoi_end_" + IDGenerator.getInstance().getNextID();
 		CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+		if ( e.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 		CodeGen.getInstance().addToText( "la $a1, " + temp.getName() );
 		CodeGen.getInstance().addToText( "beqz $a0, " + isFalseLabel );
 		CodeGen.getInstance().addToText( "li $t0, 1" );

@@ -24,6 +24,8 @@ public class ValidArraySizeCheckerCodeGen {
 		String arraySizeNegative = "_array_size_negative_" + IDGenerator.getInstance().getNextID();
 		CodeGen.getInstance().addToText( "# Checking if the size of array is positive" );
 		CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+		if ( e.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 		CodeGen.getInstance().addToText( "blt $a0, $zero, " + arraySizeNegative );
 		CodeGen.getInstance().addToText( "j " + arraySizeCheckEnd );
 		CodeGen.getInstance().addToText( arraySizeNegative + ": ", true );
