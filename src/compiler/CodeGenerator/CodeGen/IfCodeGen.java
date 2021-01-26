@@ -2,6 +2,8 @@ package compiler.CodeGenerator.CodeGen;
 
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
+import compiler.CodeGenerator.SymbolTable.SymbolTable;
+import compiler.CodeGenerator.SymbolTable.SymbolTableNode;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
 
@@ -11,8 +13,9 @@ public class IfCodeGen {
     private IfCodeGen(){}
     public void cgen(){
         Descriptor condition = (Descriptor) SemanticStack.getInstance().popDescriptor();
-        String elseLabel = IDGenerator.getInstance().getNextID();
-        String endLabel = IDGenerator.getInstance().getNextID();
+        SymbolTableNode temp = SymbolTable.getInstance().getSymbolTable();
+        String elseLabel = "_" + temp.getScopeName() + "_else_" + temp.getLevel() + "_" + IDGenerator.getInstance().getNextID();
+        String endLabel = "_" + temp.getScopeName() + "_end_" + temp.getLevel() + "_" + IDGenerator.getInstance().getNextID();
         // TODO optimization (reloading can be omitted)
         CodeGen.getInstance().addToText("# if statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());

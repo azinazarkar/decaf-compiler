@@ -56,7 +56,11 @@ public class parser extends java_cup.runtime.lr_parser {
     "\030\003\000\002\030\003\000\002\030\003\000\002\030" +
     "\003\000\002\030\003\000\002\030\003\000\002\030\003" +
     "\000\002\031\003\000\002\031\002\000\002\054\002\000" +
+<<<<<<< HEAD
     "\002\032\011\000\002\055\002\000\002\033\005\000\002" +
+=======
+    "\002\055\002\000\002\032\012\000\002\033\004\000\002" +
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
     "\033\002\000\002\056\002\000\002\034\010\000\002\035" +
     "\013\000\002\036\005\000\002\037\004\000\002\040\004" +
     "\000\002\057\002\000\002\041\011\000\002\060\002\000" +
@@ -479,6 +483,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\134\101\165\001\002\000\042\004\202\005\171\006\174" +
     "\007\173\010\175\012\205\013\177\014\200\015\207\016" +
     "\201\017\172\020\170\021\210\023\204\035\203\042\uffc5" +
+<<<<<<< HEAD
     "\001\002\000\004\042\307\001\002\000\070\005\125\022" +
     "\127\030\135\031\116\032\120\033\156\034\141\041\146" +
     "\043\110\045\130\046\115\047\137\050\131\051\147\052" +
@@ -497,12 +502,36 @@ public class parser extends java_cup.runtime.lr_parser {
     "\uffc4\032\uffc4\033\uffc4\034\uffc4\041\uffc4\043\uffc4\044\uffc4" +
     "\045\uffc4\046\uffc4\047\uffc4\050\uffc4\051\uffc4\052\uffc4\053" +
     "\uffc4\054\uffc4\063\uffc4\067\uffc4\070\uffc4\071\uffc4\072\uffc4" +
+=======
+    "\001\002\000\004\042\307\001\002\000\070\005\uffc4\022" +
+    "\uffc4\030\uffc4\031\uffc4\032\uffc4\033\uffc4\034\uffc4\041\uffc4" +
+    "\043\uffc4\045\uffc4\046\uffc4\047\uffc4\050\uffc4\051\uffc4\052" +
+    "\uffc4\053\uffc4\054\uffc4\063\uffc4\067\uffc4\071\uffc4\072\uffc4" +
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
     "\073\uffc4\074\uffc4\075\uffc4\076\uffc4\100\uffc4\101\uffc4\001" +
     "\002\000\070\005\125\022\127\030\135\031\116\032\120" +
     "\033\156\034\141\041\146\043\110\045\130\046\115\047" +
     "\137\050\131\051\147\052\144\053\150\054\154\063\uffc6" +
     "\067\133\071\151\072\124\073\136\074\142\075\123\076" +
+<<<<<<< HEAD
     "\162\100\134\101\165\001\002\000\074\005\uffc2\022\uffc2" +
+=======
+    "\162\100\134\101\165\001\002\000\074\005\uffc1\022\uffc1" +
+    "\030\uffc1\031\uffc1\032\uffc1\033\uffc1\034\uffc1\041\uffc1\043" +
+    "\uffc1\044\uffc1\045\uffc1\046\uffc1\047\uffc1\050\uffc1\051\uffc1" +
+    "\052\uffc1\053\uffc1\054\uffc1\063\uffc1\067\uffc1\070\312\071" +
+    "\uffc1\072\uffc1\073\uffc1\074\uffc1\075\uffc1\076\uffc1\100\uffc1" +
+    "\101\uffc1\001\002\000\070\005\125\022\127\030\135\031" +
+    "\116\032\120\033\156\034\141\041\146\043\110\045\130" +
+    "\046\115\047\137\050\131\051\147\052\144\053\150\054" +
+    "\154\063\uffc6\067\133\071\151\072\124\073\136\074\142" +
+    "\075\123\076\162\100\134\101\165\001\002\000\074\005" +
+    "\uffc3\022\uffc3\030\uffc3\031\uffc3\032\uffc3\033\uffc3\034\uffc3" +
+    "\041\uffc3\043\uffc3\044\uffc3\045\uffc3\046\uffc3\047\uffc3\050" +
+    "\uffc3\051\uffc3\052\uffc3\053\uffc3\054\uffc3\063\uffc3\067\uffc3" +
+    "\070\uffc3\071\uffc3\072\uffc3\073\uffc3\074\uffc3\075\uffc3\076" +
+    "\uffc3\100\uffc3\101\uffc3\001\002\000\074\005\uffc2\022\uffc2" +
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
     "\030\uffc2\031\uffc2\032\uffc2\033\uffc2\034\uffc2\041\uffc2\043" +
     "\uffc2\044\uffc2\045\uffc2\046\uffc2\047\uffc2\050\uffc2\051\uffc2" +
     "\052\uffc2\053\uffc2\054\uffc2\063\uffc2\067\uffc2\070\uffc2\071" +
@@ -692,6 +721,7 @@ public class parser extends java_cup.runtime.lr_parser {
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
     "\000\002\001\001\000\002\001\001\000\002\001\001\000" +
     "\012\044\156\047\151\050\304\051\116\001\001\000\004" +
+<<<<<<< HEAD
     "\054\305\001\001\000\002\001\001\000\036\024\137\030" +
     "\307\031\112\032\142\034\131\035\120\036\111\037\160" +
     "\040\157\041\121\044\156\047\151\050\144\051\116\001" +
@@ -699,6 +729,15 @@ public class parser extends java_cup.runtime.lr_parser {
     "\000\002\001\001\000\036\024\137\030\313\031\112\032" +
     "\142\034\131\035\120\036\111\037\160\040\157\041\121" +
     "\044\156\047\151\050\144\051\116\001\001\000\002\001" +
+=======
+    "\054\305\001\001\000\002\001\001\000\004\055\307\001" +
+    "\001\000\036\024\137\030\310\031\112\032\142\034\131" +
+    "\035\120\036\111\037\160\040\157\041\121\044\156\047" +
+    "\151\050\144\051\116\001\001\000\004\033\312\001\001" +
+    "\000\036\024\137\030\313\031\112\032\142\034\131\035" +
+    "\120\036\111\037\160\040\157\041\121\044\156\047\151" +
+    "\050\144\051\116\001\001\000\002\001\001\000\002\001" +
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
     "\001\000\012\044\156\047\151\050\315\051\116\001\001" +
     "\000\002\001\001\000\004\046\317\001\001\000\002\001" +
     "\001\000\002\001\001\000\002\001\001\000\002\001\001" +
@@ -1416,8 +1455,15 @@ class CUP$parser$actions {
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 
                             int phase = ParserPhase.getInstance().getPhase();
+<<<<<<< HEAD
                             /*if ( phase == 0 ) {
                                 SymbolTable.getInstance().makeNextAndSwitch( "if" );
+=======
+                            if ( phase == 0 ) {
+                                SymbolTable.getInstance().makeNextAndSwitch(
+                                    SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if"
+                                );
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
                             }
                             else*/ if ( phase == 1 ) {
                                 //SymbolTable.getInstance().switchToNext();
@@ -1430,14 +1476,27 @@ class CUP$parser$actions {
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 61: // IfStmt ::= IF OPENPARENTHESIS Expr NT$2 CLOSEPARENTHESIS Stmt ElsePrime 
+          case 61: // NT$3 ::= 
+            {
+              Object RESULT =(Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+
+                         
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$3",43, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+            }
+          return CUP$parser$result;
+
+          /*. . . . . . . . . . . . . . . . . . . .*/
+          case 62: // IfStmt ::= IF OPENPARENTHESIS Expr NT$2 CLOSEPARENTHESIS NT$3 Stmt ElsePrime 
             {
               Object RESULT =null;
-              // propagate RESULT from NT$2
-                RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
-		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
-		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
-		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+              // propagate RESULT from NT$3
+                RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-5)).value;
 		int sleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		Object s = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
@@ -1459,13 +1518,22 @@ class CUP$parser$actions {
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                                 SemanticStack.getInstance().pushDescriptor(endLabel);
                             }
+                            SymbolTable.getInstance().goBack();
                         
+<<<<<<< HEAD
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$3",43, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+=======
+              CUP$parser$result = parser.getSymbolFactory().newSymbol("IfStmt",24, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
             }
           return CUP$parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
+<<<<<<< HEAD
           case 63: // ElsePrime ::= ELSE NT$3 Stmt 
+=======
+          case 63: // ElsePrime ::= ELSE Stmt 
+>>>>>>> 0edad1e9354afa604dfe6d9821dc49725037ab43
             {
               Object RESULT =null;
               // propagate RESULT from NT$3
@@ -2186,7 +2254,17 @@ class CUP$parser$actions {
           case 103: // Expr ::= ITOB OPENPARENTHESIS Expr CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                itobCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -2195,7 +2273,17 @@ class CUP$parser$actions {
           case 104: // Expr ::= BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                btoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
