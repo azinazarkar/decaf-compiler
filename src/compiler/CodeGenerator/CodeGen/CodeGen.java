@@ -18,6 +18,8 @@ public class CodeGen {
 		dataSeg += "\n";
 		dataSeg += "\t_dtoi_border_value: .word 0xbf000000\n";
 		dataSeg += "\n";
+		dataSeg += "\t_array_size_error_message: .asciiz \"array size less than zero\\n\"\n";
+		dataSeg += "\n";
 		addEmptyLine();
 		addBooleanPrintMethods();
 		addEmptyLine();

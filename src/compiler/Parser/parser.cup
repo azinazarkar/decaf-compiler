@@ -6,6 +6,7 @@ import compiler.CodeGenerator.Exceptions.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 import compiler.CodeGenerator.CodeGen.*;
+import compiler.CodeGenerator.SymbolTable.Utility.*;
 
 
 parser code {:
@@ -50,7 +51,7 @@ nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, FunctionDecl, F
 				Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
 				PrintCommaExpr, ActualsCommaExpr, Call, Actuals;
 // non-terminals with type
-nonterminal     String Type;
+nonterminal     Object Type;
 nonterminal     Descriptor LValue;
 nonterminal     Descriptor Expr;
 nonterminal     CompileTimeDescriptor Constant;
@@ -84,26 +85,44 @@ Decl ::=                VariableDecl
 
 VariableDecl ::=        Variable SEMICOLON;
 
-Variable ::=            Type:t IDENTIFIER:id {:
+Variable ::=            Type:type IDENTIFIER:id {:
 							if ( ParserPhase.getInstance().getPhase() == 0 ) {
-								String name = IDGenerator.getInstance().getNextID();
-								Type type = Descriptor.getType( t );
-								System.out.println( t );
-								SymbolTable.getInstance().getSymbolTable().addEntry(
-									id,
-									new Descriptor( name, type )
-								);
-								CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
+								if ( type instanceof Type ) {
+									Type t = (Type) type;
+									String name = IDGenerator.getInstance().getNextID();
+									SymbolTable.getInstance().getSymbolTable().addEntry(
+										id,
+										new Descriptor( name, t )
+									);
+									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
+								}
+								else if ( type instanceof ArrayType ) {
+									ArrayType t = (ArrayType) type;
+									String name = IDGenerator.getInstance().getNextID();
+									SymbolTable.getInstance().getSymbolTable().addEntry(
+										id,
+										new ArrayDescriptor( name, t )
+									);
+									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
+								}
 							}
 						:}
 						;
 
-Type ::=                INT {: RESULT = "INT"; :}
-						| DOUBLE {: RESULT = "DOUBLE"; :}
-						| BOOL {: RESULT = "BOOL"; :}
-						| STRING {: System.out.println( "HERE!" ); RESULT = "STRING"; :}
-						| IDENTIFIER:e {: RESULT = e; :}
-						| Type OPENCLOSEBRACKET {: RESULT = "ARRAY"; :}
+Type ::=                INT {: RESULT = Type.INT; :}
+						| DOUBLE {: RESULT = Type.DOUBLE; :}
+						| BOOL {: RESULT = Type.BOOL; :}
+						| STRING {: RESULT = Type.STRING; :}
+						| IDENTIFIER:e {: RESULT = Type.OBJECT; :}
+						| Type:t OPENCLOSEBRACKET {:
+							if ( t == Type.INT || t == Type.DOUBLE || t == Type.BOOL
+									|| t == Type.STRING || t == Type.OBJECT )
+								RESULT = new ArrayType( (Type) t, 1 );
+							else if ( t instanceof ArrayType ) {
+									ArrayType temp = (ArrayType) t;
+									RESULT = new ArrayType( temp.getSubType(), temp.getDimensionCount() + 1 );
+								}
+						:}
 						;
 
 FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
@@ -491,7 +510,17 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 						:}
 						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS
 						| NEW IDENTIFIER
-						| NEWARRAY OPENPARENTHESIS Expr COMMA Type CLOSEPARENTHESIS
+						| NEWARRAY OPENPARENTHESIS Expr:e COMMA Type:t CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								ValidArraySizeCheckerCodeGen.getInstance().cgen();
+								SemanticStack.getInstance().pushDescriptor( e );
+								SemanticStack.getInstance().pushDescriptor( t );
+								NewArrayCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
 						| ITOD OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
 								SemanticStack.getInstance().pushDescriptor( e );

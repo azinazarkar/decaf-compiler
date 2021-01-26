@@ -12,6 +12,7 @@ import compiler.CodeGenerator.Exceptions.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 import compiler.CodeGenerator.CodeGen.*;
+import compiler.CodeGenerator.SymbolTable.Utility.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -889,22 +890,32 @@ class CUP$parser$actions {
           case 9: // Variable ::= Type IDENTIFIER 
             {
               Object RESULT =null;
-		int tleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
-		int tright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
-		String t = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		int typeleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int typeright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Object type = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int idleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int idright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
 							if ( ParserPhase.getInstance().getPhase() == 0 ) {
-								String name = IDGenerator.getInstance().getNextID();
-								Type type = Descriptor.getType( t );
-								System.out.println( t );
-								SymbolTable.getInstance().getSymbolTable().addEntry(
-									id,
-									new Descriptor( name, type )
-								);
-								CodeGen.getInstance().addToData( name, Type.getMipsType( type ), Integer.toString( 0 ) );
+								if ( type instanceof Type ) {
+									Type t = (Type) type;
+									String name = IDGenerator.getInstance().getNextID();
+									SymbolTable.getInstance().getSymbolTable().addEntry(
+										id,
+										new Descriptor( name, t )
+									);
+									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
+								}
+								else if ( type instanceof ArrayType ) {
+									ArrayType t = (ArrayType) type;
+									String name = IDGenerator.getInstance().getNextID();
+									SymbolTable.getInstance().getSymbolTable().addEntry(
+										id,
+										new ArrayDescriptor( name, t )
+									);
+									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
+								}
 							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Variable",4, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -914,8 +925,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 10: // Type ::= INT 
             {
-              String RESULT =null;
-		 RESULT = "INT"; 
+              Object RESULT =null;
+		 RESULT = Type.INT; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -923,8 +934,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 11: // Type ::= DOUBLE 
             {
-              String RESULT =null;
-		 RESULT = "DOUBLE"; 
+              Object RESULT =null;
+		 RESULT = Type.DOUBLE; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -932,8 +943,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 12: // Type ::= BOOL 
             {
-              String RESULT =null;
-		 RESULT = "BOOL"; 
+              Object RESULT =null;
+		 RESULT = Type.BOOL; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -941,8 +952,8 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 13: // Type ::= STRING 
             {
-              String RESULT =null;
-		 System.out.println( "HERE!" ); RESULT = "STRING"; 
+              Object RESULT =null;
+		 RESULT = Type.STRING; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -950,11 +961,11 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 14: // Type ::= IDENTIFIER 
             {
-              String RESULT =null;
+              Object RESULT =null;
 		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String e = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
-		 RESULT = e; 
+		 RESULT = Type.OBJECT; 
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -962,8 +973,19 @@ class CUP$parser$actions {
           /*. . . . . . . . . . . . . . . . . . . .*/
           case 15: // Type ::= Type OPENCLOSEBRACKET 
             {
-              String RESULT =null;
-		 RESULT = "ARRAY"; 
+              Object RESULT =null;
+		int tleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int tright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Object t = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( t == Type.INT || t == Type.DOUBLE || t == Type.BOOL
+									|| t == Type.STRING || t == Type.OBJECT )
+								RESULT = new ArrayType( (Type) t, 1 );
+							else if ( t instanceof ArrayType ) {
+									ArrayType temp = (ArrayType) t;
+									RESULT = new ArrayType( temp.getSubType(), temp.getDimensionCount() + 1 );
+								}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Type",36, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -974,7 +996,7 @@ class CUP$parser$actions {
               Object RESULT =null;
 		int tleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int tright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
-		String t = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
+		Object t = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int nameleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
@@ -998,7 +1020,7 @@ class CUP$parser$actions {
               Object RESULT =(Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		int tleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).left;
 		int tright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)).right;
-		String t = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
+		Object t = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-4)).value;
 		int nameleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
@@ -1021,7 +1043,7 @@ class CUP$parser$actions {
                 RESULT = (Object) ((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
 		int tleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).left;
 		int tright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)).right;
-		String t = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-7)).value;
+		Object t = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-7)).value;
 		int nameleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
 		int nameright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
@@ -2168,7 +2190,23 @@ class CUP$parser$actions {
           case 101: // Expr ::= NEWARRAY OPENPARENTHESIS Expr COMMA Type CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
+		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
+		int tleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).left;
+		int tright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-1)).right;
+		Object t = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								ValidArraySizeCheckerCodeGen.getInstance().cgen();
+								SemanticStack.getInstance().pushDescriptor( e );
+								SemanticStack.getInstance().pushDescriptor( t );
+								NewArrayCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",38, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-5)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
