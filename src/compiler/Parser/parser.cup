@@ -214,13 +214,7 @@ IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                         :} CLOSEPARENTHESIS Stmt:s {:
                             System.out.println( IDGenerator.getInstance().getNextID() );
                             SymbolTable.getInstance().goBack();
-                        :}ElsePrime{:
-							int phase = ParserPhase.getInstance().getPhase();
-							if ( phase == 1 ) {
-								String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
-								CodeGen.getInstance().addToText(elseLabel + ":\n", true);
-							}
-                        :}
+                        :}ElsePrime
                         ;
 
 ElsePrime ::=           ELSE{:

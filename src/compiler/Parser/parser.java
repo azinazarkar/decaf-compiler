@@ -1466,13 +1466,7 @@ class CUP$parser$actions {
 		int sleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).left;
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)).right;
 		Object s = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-2)).value;
-		
-							int phase = ParserPhase.getInstance().getPhase();
-							if ( phase == 1 ) {
-								String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
-								CodeGen.getInstance().addToText(elseLabel + ":\n", true);
-							}
-                        
+
               CUP$parser$result = parser.getSymbolFactory().newSymbol("IfStmt",24, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-7)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
