@@ -1,0 +1,1 @@
+different line count in these files! : file out/t007-class1.out : #7 , file tests/t007-class1.out : #1 

@@ -1,0 +1,1 @@
+different line count in these files! : file out/t002-io2.out : #7 , file tests/t002-io2.out : #5 

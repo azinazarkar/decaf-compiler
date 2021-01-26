@@ -56,8 +56,8 @@ public class CodeGen {
 
 	}
 
-	public void writeToFile() throws IOException {
-		FileWriter out = new FileWriter( "out.asm" );
+	public void writeToFile( String outputFileName ) throws IOException {
+		FileWriter out = new FileWriter( outputFileName );
 		out.write( dataSeg + "\n" + textSeg);
 		out.close();
 	}
