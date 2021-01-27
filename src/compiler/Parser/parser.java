@@ -899,13 +899,18 @@ class CUP$parser$actions {
 		String id = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
 							if ( ParserPhase.getInstance().getPhase() == 0 ) {
+//								if ( ParserHelper.getInstance().insideFunctionFormals )
 								if ( type instanceof Type ) {
 									Type t = (Type) type;
 									String name = IDGenerator.getInstance().getNextID();
-									SymbolTable.getInstance().getSymbolTable().addEntry(
-										id,
-										new Descriptor( name, t )
-									);
+									Descriptor temp = new Descriptor( name, t );
+									SymbolTable.getInstance().getSymbolTable().addEntry( id, temp );
+									if ( ParserHelper.getInstance().insideFunctionFormals ) {
+										int prevCount = (int) SemanticStack.getInstance().popDescriptor();
+										SemanticStack.getInstance().pushDescriptor( temp );
+										SemanticStack.getInstance().pushDescriptor( id );
+										SemanticStack.getInstance().pushDescriptor( prevCount + 1 );
+									}
 									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
 								}
 								else if ( type instanceof ArrayType ) {
@@ -1004,12 +1009,24 @@ class CUP$parser$actions {
 
 							int phase = ParserPhase.getInstance().getPhase();
 							if ( phase == 0 ) {
+								SymbolTable.getInstance().getSymbolTable().addEntry(
+										name,
+										new FunctionDescriptor(
+												"__" + name,
+												(Type) t
+										)
+								);
 								SymbolTable.getInstance().makeNextAndSwitch( name );
 							}
 							else if ( phase == 1 ) {
-								CodeGen.getInstance().addToText( name + ":\n", true );
+								CodeGen.getInstance().addToText(
+										SymbolTable.getInstance().getSymbolTable().getDescriptor( name ).getName() + ":\n",
+										true
+								);
 								SymbolTable.getInstance().switchToNext();
 							}
+							ParserHelper.getInstance().insideFunctionFormals = true;
+							SemanticStack.getInstance().pushDescriptor( 0 );
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$0",40, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1027,10 +1044,19 @@ class CUP$parser$actions {
 		String name = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 
 							int phase = ParserPhase.getInstance().getPhase();
-							if ( phase == 0 )
+							if ( phase == 0 ) {
+								int formalsCount = (int) SemanticStack.getInstance().popDescriptor();
+								for ( int i = 0; i < formalsCount; i++ ) {
+									FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+									String argumentName = (String) SemanticStack.getInstance().popDescriptor();
+									Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
+									funcDscp.addArgument( argumentName, argumentDescriptor, true );
+								}
 								SymbolTable.getInstance().makeNextAndSwitch();
+							}
 							else if ( phase == 1 )
 								SymbolTable.getInstance().switchToNext();
+							ParserHelper.getInstance().insideFunctionFormals = false;
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$1",41, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1052,7 +1078,8 @@ class CUP$parser$actions {
 							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 )
 								if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
-										&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0 ) {
+										&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0
+										&& ( (Type) t ) == Type.INT ) {
 	                                CodeGen.getInstance().addToText( "# Exit!" );
 	                                CodeGen.getInstance().addToText( "li $v0, 10" );
 	                                CodeGen.getInstance().addToText( "syscall" );
