@@ -927,10 +927,14 @@ class CUP$parser$actions {
 								else if ( type instanceof ArrayType ) {
 									ArrayType t = (ArrayType) type;
 									String name = IDGenerator.getInstance().getNextID();
-									SymbolTable.getInstance().getSymbolTable().addEntry(
-										id,
-										new ArrayDescriptor( name, t )
-									);
+									Descriptor temp = new ArrayDescriptor( name, t );
+									SymbolTable.getInstance().getSymbolTable().addEntry( id, temp );
+									if ( ParserHelper.getInstance().insideFunctionFormals ) {
+                                        int prevCount = (int) SemanticStack.getInstance().popDescriptor();
+                                        SemanticStack.getInstance().pushDescriptor( temp );
+                                        SemanticStack.getInstance().pushDescriptor( id );
+                                        SemanticStack.getInstance().pushDescriptor( prevCount + 1 );
+                                    }
 									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
 								}
 							}
