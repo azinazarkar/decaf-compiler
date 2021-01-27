@@ -86,7 +86,10 @@ public class AssignmentCodeGen{
 					|| lv2.getSubType() != expr2.getSubType() )
 				throw new AssignmentTypeMismatch( Type.ARRAY, Type.ARRAY );
 			CodeGen.getInstance().addToText( "lw $s0, " + expr2.getName() );
-			CodeGen.getInstance().addToText( "la $s1, " + lv.getName() );
+			if ( lv.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $s1, " + lv.getName() );
+			else
+				CodeGen.getInstance().addToText( "la $s1, " + lv.getName() );
 			CodeGen.getInstance().addToText( "sw $s0, 0($s1)" );
 		}
 		CodeGen.getInstance().addEmptyLine();

@@ -40,7 +40,8 @@ public class ArrayGetIndexValueCodeGen {
 		else {
 			returnValue = new ArrayDescriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
-					new ArrayType( lv.getSubType(), lv.getDimensionCount() - 1 )
+					new ArrayType( lv.getSubType(), lv.getDimensionCount() - 1 ),
+					true
 			);
 		}
 
