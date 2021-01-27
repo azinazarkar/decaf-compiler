@@ -2432,6 +2432,7 @@ class CUP$parser$actions {
                                 FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( functionID );
                                 if ( actualsCount != funcDscp.getArgumentCount() )
                                     throw new FunctionInputMismatch( functionID );
+                                SaveLocalVariablesCodeGen.getInstance().cgen();
                                 for ( int i = 0; i < actualsCount; i++ ) {
                                     Descriptor actualDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                     Descriptor formalDescriptor = funcDscp.getArgumentDescriptor( actualsCount - i - 1 );
@@ -2447,6 +2448,7 @@ class CUP$parser$actions {
                                 SemanticStack.getInstance().pushDescriptor( funcDscp );
                                 FunctionValueRetrieveCodeGen.getInstance().cgen();
                                 FunctionCallEndedCodeGen.getInstance().cgen();
+                                LoadLocalVariablesCodeGen.getInstance().cgen();
                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
                             }
