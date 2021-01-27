@@ -15,10 +15,10 @@ public class FunctionCallCodeGen {
 
 	public void cgen() {
 		FunctionDescriptor funcDscp = (FunctionDescriptor) SemanticStack.getInstance().popDescriptor();
-		CodeGen.getInstance().addToText( "# calling " + funcDscp.getName() );
+		CodeGen.getInstance().addToText( "# calling " + funcDscp.getFunctionName() );
 		CodeGen.getInstance().addToText( "sub $sp, $sp, 4" );
 		CodeGen.getInstance().addToText( "sw $ra, 0($sp)" );
-		CodeGen.getInstance().addToText( "jal " + funcDscp.getName() );
+		CodeGen.getInstance().addToText( "jal " + funcDscp.getFunctionName() );
 		CodeGen.getInstance().addEmptyLine();
 	}
 

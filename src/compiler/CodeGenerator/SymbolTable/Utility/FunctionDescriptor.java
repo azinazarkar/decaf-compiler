@@ -5,13 +5,15 @@ import java.util.List;
 
 public class FunctionDescriptor extends Descriptor {
 
+	private String functionName;
 	private List<String> argumentsName;
 	private List<Descriptor> argumentsDescriptor;
 
-	public FunctionDescriptor( String name, Type returnType ) {
+	public FunctionDescriptor( String functionName, String name, Type returnType ) {
 		super( name, returnType );
 		this.argumentsName = new ArrayList<>( 0 );
 		this.argumentsDescriptor = new ArrayList<>( 0 );
+		this.functionName = functionName;
 	}
 
 	public void addArgument( String argumentName, Descriptor descriptor, boolean inFirst ) {
@@ -39,6 +41,14 @@ public class FunctionDescriptor extends Descriptor {
 
 	public int getArgumentCount() {
 		return argumentsName.size();
+	}
+
+	public String getFunctionName() {
+		return functionName;
+	}
+
+	public void setFunctionName(String functionName) {
+		this.functionName = functionName;
 	}
 
 	@Override

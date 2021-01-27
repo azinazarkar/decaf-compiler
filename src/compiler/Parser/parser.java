@@ -1021,14 +1021,16 @@ class CUP$parser$actions {
 										name,
 										new FunctionDescriptor(
 												name,
+												"_" + IDGenerator.getInstance().getNextID(),
 												(Type) t
 										)
 								);
 								SymbolTable.getInstance().makeNextAndSwitch( name );
 							}
 							else if ( phase == 1 ) {
+								FunctionDescriptor temp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
 								CodeGen.getInstance().addToText(
-										SymbolTable.getInstance().getSymbolTable().getDescriptor( name ).getName() + ":\n",
+										temp.getFunctionName() + ":\n",
 										true
 								);
 								SymbolTable.getInstance().switchToNext();
