@@ -22,7 +22,6 @@ public class SaveLocalVariablesCodeGen {
 
 	public void cgen() {
 		CodeGen.getInstance().addToText( "# storing local variables" );
-		System.out.println( "Saving" );
 		SymbolTableNode temp = SymbolTable.getInstance().getSymbolTable();
 		FunctionSavedVariables.getInstance().stack.push( new ArrayList<>() );
 		int level;
@@ -43,7 +42,6 @@ public class SaveLocalVariablesCodeGen {
 				CodeGen.getInstance().addToText( "lw $a0, " + i.getValue().getName() );
 				CodeGen.getInstance().addToText( "sw $a0, 0($sp)" );
 				FunctionSavedVariables.getInstance().stack.peek().add( i.getValue().getName() );
-				System.out.println( "\t" + i.getValue().getName() );
 			}
 		}
 	}

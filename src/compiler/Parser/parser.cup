@@ -656,7 +656,21 @@ Call ::=                IDENTIFIER:functionID OPENPARENTHESIS {:
                                 RESULT = temp;
                             }
 						:}
-						| Expr DOT IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
+						| Expr:e DOT IDENTIFIER:id OPENPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+                                SemanticStack.getInstance().pushDescriptor( 0 );
+						:} Actuals CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								int actualsCount = (int) SemanticStack.getInstance().topDescriptor();
+								if ( e.getType() == Type.ARRAY && actualsCount == 0 && id.equals( "length" ) ) {
+									SemanticStack.getInstance().popDescriptor();
+									SemanticStack.getInstance().pushDescriptor( e );
+									ArraySizeCodeGen.getInstance().cgen();
+									Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+									RESULT = temp;
+								}
+							}
+						:}
 						;
 
 Actuals ::=             Expr:e {:
