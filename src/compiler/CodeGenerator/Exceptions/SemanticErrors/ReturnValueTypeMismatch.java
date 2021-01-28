@@ -1,8 +1,9 @@
-package compiler.CodeGenerator.Exceptions;
+package compiler.CodeGenerator.Exceptions.SemanticErrors;
 
+import compiler.CodeGenerator.Exceptions.SemanticError;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
 
-public class ReturnValueTypeMismatch extends RuntimeException {
+public class ReturnValueTypeMismatch extends SemanticError {
 
 	private Type functionReturnType;
 	private Type returnedType;

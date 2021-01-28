@@ -1,8 +1,8 @@
 package compiler.CodeGenerator.SymbolTable;
 
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
-import compiler.CodeGenerator.Exceptions.NameAlreadyExistsException;
-import compiler.CodeGenerator.Exceptions.NameNotFoundException;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.NameAlreadyExistsException;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.NameNotFoundException;
 
 import java.util.*;
 

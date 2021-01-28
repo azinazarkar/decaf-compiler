@@ -1,8 +1,9 @@
-package compiler.CodeGenerator.Exceptions;
+package compiler.CodeGenerator.Exceptions.SemanticErrors;
 
+import compiler.CodeGenerator.Exceptions.SemanticError;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
 
-public class CalculationTypeMismatch extends RuntimeException {
+public class CalculationTypeMismatch extends SemanticError {
 
 	private String symbol;
 	private Type t1, t2;

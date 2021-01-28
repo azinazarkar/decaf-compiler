@@ -1,6 +1,8 @@
-package compiler.CodeGenerator.Exceptions;
+package compiler.CodeGenerator.Exceptions.SemanticErrors;
 
-public class FunctionInputMismatch extends RuntimeException{
+import compiler.CodeGenerator.Exceptions.SemanticError;
+
+public class FunctionInputMismatch extends SemanticError {
 
 	private String functionName;
 

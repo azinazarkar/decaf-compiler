@@ -24,6 +24,10 @@ public class CodeGen {
 		dataSeg += "\n";
 	}
 
+	public void reset() {
+		ourInstance = new CodeGen();
+	}
+
 	public void addToData( String in ) {
 		dataSeg = dataSeg + "\t" + in + "\n";
 	}

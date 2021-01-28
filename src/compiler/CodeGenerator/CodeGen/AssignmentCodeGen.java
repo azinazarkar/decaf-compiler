@@ -1,12 +1,10 @@
 package compiler.CodeGenerator.CodeGen;
 
-import compiler.CodeGenerator.Exceptions.AssignmentTypeMismatch;
-import compiler.CodeGenerator.Exceptions.InvalidOperator;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.AssignmentTypeMismatch;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.Utility.ArrayDescriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
-import compiler.Parser.Utility.ParserHelper;
 
 public class AssignmentCodeGen{
 	private static AssignmentCodeGen ourInstance = new AssignmentCodeGen();
@@ -23,8 +21,12 @@ public class AssignmentCodeGen{
 		Descriptor expr = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Assigning " + expr.getName() + " to " + lv.getName() );
 		if ( ! ( expr instanceof ArrayDescriptor ) ) {
-			if (lv.getType() != expr.getType() && (lv.getType() != Type.STRING && expr.getType() != Type.STRINGLITERAL))
-				throw new AssignmentTypeMismatch(lv.getType(), expr.getType());
+			if ( lv.getType() != expr.getType() ) {
+				if ( !( lv.getType() == Type.STRING && expr.getType() == Type.STRINGLITERAL ) )
+					throw new AssignmentTypeMismatch(lv.getType(), expr.getType());
+			}
+//			if (lv.getType() != expr.getType() || ! (lv.getType() == Type.STRING && expr.getType() != Type.STRINGLITERAL))
+//				throw new AssignmentTypeMismatch(lv.getType(), expr.getType());
 			if ( !lv.isFromArray() ) {
 //			if (!ParserHelper.getInstance().isLValueArray) {
 				if (expr.getType() == Type.INT || expr.getType() == Type.BOOL) {

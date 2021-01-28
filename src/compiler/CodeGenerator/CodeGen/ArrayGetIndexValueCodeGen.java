@@ -1,6 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
-import compiler.CodeGenerator.Exceptions.InvalidOperator;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -8,7 +8,6 @@ import compiler.CodeGenerator.SymbolTable.Utility.ArrayDescriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.ArrayType;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
-import compiler.Parser.Utility.ParserHelper;
 
 public class ArrayGetIndexValueCodeGen {
 	private static ArrayGetIndexValueCodeGen ourInstance = new ArrayGetIndexValueCodeGen();

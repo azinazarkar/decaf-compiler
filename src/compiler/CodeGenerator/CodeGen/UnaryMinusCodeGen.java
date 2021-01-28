@@ -1,7 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
-import compiler.CodeGenerator.Exceptions.AssignmentTypeMismatch;
-import compiler.CodeGenerator.Exceptions.InvalidOperator;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;

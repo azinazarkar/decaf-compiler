@@ -1,6 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
-import compiler.CodeGenerator.Exceptions.ReturnValueTypeMismatch;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.ReturnValueTypeMismatch;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 import compiler.CodeGenerator.SymbolTable.Utility.FunctionDescriptor;

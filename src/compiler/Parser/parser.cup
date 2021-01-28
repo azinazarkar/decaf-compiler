@@ -2,7 +2,7 @@ package compiler.Parser;
 import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
 import compiler.CodeGenerator.SymbolTable.*;
-import compiler.CodeGenerator.Exceptions.*;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.*;
 import compiler.CodeGenerator.SymbolTable.Utility.*;
 import compiler.CodeGenerator.*;
 import compiler.CodeGenerator.CodeGen.*;
