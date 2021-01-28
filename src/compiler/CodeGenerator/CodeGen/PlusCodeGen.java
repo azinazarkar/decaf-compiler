@@ -92,23 +92,206 @@ public class PlusCodeGen {
 			StringLiteralCodeGen.getInstance().cgen();
 			SemanticStack.getInstance().pushDescriptor( temp );
 		}
-		else if ( e1.getType() == Type.STRINGLITERAL && e2.getType() == Type.STRING ) {
+		else if ( e1.getType() == Type.STRING && e2.getType() == Type.STRING ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
 					Type.STRING
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
-			CodeGen.getInstance().addToText( "lw $a0, " + e2.getName() );
-			CodeGen.getInstance().addToText( "jal _get_string_size" );
-			Descriptor result = new Descriptor(
+
+			// get size of s1
+			String getStringSizeLoop = "_getting_string_size_loop_" + IDGenerator.getInstance().getNextID();
+			String getStringSizeEnd = "_getting_string_size_done_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "li $a0, 0" ); // $a0 will have the size of the string
+			CodeGen.getInstance().addToText( "lw $s0, " + e1.getName() );   // $s0 has address of the string
+			CodeGen.getInstance().addToText( getStringSizeLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of string
+			CodeGen.getInstance().addToText( "beqz $s1, " + getStringSizeEnd ); // if current char is \0, we're done
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );  // increase index by one
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );  // increase size by one
+			CodeGen.getInstance().addToText( "j " + getStringSizeLoop );    // continue loop
+			CodeGen.getInstance().addToText( getStringSizeEnd + ": ", true ); // now we have size of s1 in $a0
+
+			// get size of s2
+			getStringSizeLoop = "_getting_string_size_loop_" + IDGenerator.getInstance().getNextID();
+			getStringSizeEnd = "_getting_string_size_done_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "li $a1, 0" ); // $a1 will have the size of the string
+			CodeGen.getInstance().addToText( "lw $s0, " + e2.getName() );   // $s0 has address of the string
+			CodeGen.getInstance().addToText( getStringSizeLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of string
+			CodeGen.getInstance().addToText( "beqz $s1, " + getStringSizeEnd ); // if current char is \0, we're done
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );  // increase index by one
+			CodeGen.getInstance().addToText( "addi $a1, $a1, 1" );  // increase size by one
+			CodeGen.getInstance().addToText( "j " + getStringSizeLoop );    // continue loop
+			CodeGen.getInstance().addToText( getStringSizeEnd + ": ", true ); // now we have size of s2 in $a1
+
+			// allocate space for the new string
+			CodeGen.getInstance().addToText( "add $a0, $a0, $a1" ); // size of new string is sum of two strings' sizes
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );  // + a byte for \0
+			CodeGen.getInstance().addToText( "li $v0, 9" );
+			CodeGen.getInstance().addToText( "syscall" );
+			CodeGen.getInstance().addToText( "sw $v0, " + temp.getName() );
+
+			// copy s1 into the new space
+			String stringCopyLoop = "_copy_string_loop_" + IDGenerator.getInstance().getNextID();
+			String stringCopyLoopEnd = "_copy_string_loop_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $a0, " + temp.getName() ); // $a0 has the address of result string
+			CodeGen.getInstance().addToText( "lw $s0, " + e1.getName() );   // $s0 has the address of s1
+			CodeGen.getInstance().addToText( stringCopyLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of the string
+			CodeGen.getInstance().addToText( "beqz $s1, " + stringCopyLoopEnd );
+			CodeGen.getInstance().addToText( "sb $s1, 0($a0)" );    // saving the current char to corresponding index of result
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );
+			CodeGen.getInstance().addToText( "j " + stringCopyLoop );
+			CodeGen.getInstance().addToText( stringCopyLoopEnd + ": ", true );
+
+			// copy s2 into the new space
+			stringCopyLoop = "_copy_string_loop_" + IDGenerator.getInstance().getNextID();
+			stringCopyLoopEnd = "_copy_string_loop_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $s0, " + e2.getName() );   // $s0 has the address of s2
+			CodeGen.getInstance().addToText( stringCopyLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of the string
+			CodeGen.getInstance().addToText( "beqz $s1, " + stringCopyLoopEnd );
+			CodeGen.getInstance().addToText( "sb $s1, 0($a0)" );    // saving the current char to corresponding index of result
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );
+			CodeGen.getInstance().addToText( "j " + stringCopyLoop );
+			CodeGen.getInstance().addToText( stringCopyLoopEnd + ": ", true );
+
+			CodeGen.getInstance().addToText( "sb $zero, 0($a0)" ); // add \0 at the end of the string
+
+			CodeGen.getInstance().addEmptyLine();
+
+			SemanticStack.getInstance().pushDescriptor( temp );
+		}
+		else if ( e1.getType() == Type.STRINGLITERAL && e2.getType() == Type.STRING ) {
+			CompileTimeDescriptor s1 = (CompileTimeDescriptor) e1;
+			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
 					Type.STRING
 			);
-			SymbolTable.getInstance().getSymbolTable().addEntry(result.getName(), temp);
-			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(result.getType()), 0);
-			// TODO build the string
-			SemanticStack.getInstance().pushDescriptor( result );
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+
+			// get size of s1
+			CodeGen.getInstance().addToText( "li $a0, " + (s1.getValue().toString().length() - 1) );// now we have size of s1 in $a0
+
+			// get size of s2
+			String getStringSizeLoop = "_getting_string_size_loop_" + IDGenerator.getInstance().getNextID();
+			String getStringSizeEnd = "_getting_string_size_done_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "li $a1, 0" ); // $a1 will have the size of the string
+			CodeGen.getInstance().addToText( "lw $s0, " + e2.getName() );   // $s0 has address of the string
+			CodeGen.getInstance().addToText( getStringSizeLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of string
+			CodeGen.getInstance().addToText( "beqz $s1, " + getStringSizeEnd ); // if current char is \0, we're done
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );  // increase index by one
+			CodeGen.getInstance().addToText( "addi $a1, $a1, 1" );  // increase size by one
+			CodeGen.getInstance().addToText( "j " + getStringSizeLoop );    // continue loop
+			CodeGen.getInstance().addToText( getStringSizeEnd + ": ", true ); // now we have size of s2 in $a1
+
+			// allocate space for the new string
+			CodeGen.getInstance().addToText( "add $a0, $a0, $a1" ); // size of new string is sum of two strings' sizes
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );  // + a byte for \0
+			CodeGen.getInstance().addToText( "li $v0, 9" );
+			CodeGen.getInstance().addToText( "syscall" );
+			CodeGen.getInstance().addToText( "sw $v0, " + temp.getName() );
+
+			// copy s1 into the new space
+			CodeGen.getInstance().addToText( "lw $a0, " + temp.getName() ); // $a0 has the address of the result string
+			String s1Value = s1.getValue().toString();
+			int size = s1Value.length();
+			for ( int i = 0; i < size - 1; i++ ) {
+				char currentChar = s1Value.charAt( i );
+				CodeGen.getInstance().addToText( "li $s1, \'" + currentChar + "\'" );
+				CodeGen.getInstance().addToText( "sb $s1, 0($a0)" );
+				CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );
+			}
+
+			// copy s2 into the new space
+			String stringCopyLoop = "_copy_string_loop_" + IDGenerator.getInstance().getNextID();
+			String stringCopyLoopEnd = "_copy_string_loop_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $s0, " + e2.getName() );   // $s0 has the address of s2
+			CodeGen.getInstance().addToText( stringCopyLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of the string
+			CodeGen.getInstance().addToText( "beqz $s1, " + stringCopyLoopEnd );
+			CodeGen.getInstance().addToText( "sb $s1, 0($a0)" );    // saving the current char to corresponding index of result
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );
+			CodeGen.getInstance().addToText( "j " + stringCopyLoop );
+			CodeGen.getInstance().addToText( stringCopyLoopEnd + ": ", true );
+
+			CodeGen.getInstance().addToText( "sb $zero, 0($a0)" ); // add \0 at the end of the string
+
+			CodeGen.getInstance().addEmptyLine();
+
+			SemanticStack.getInstance().pushDescriptor( temp );
+
+		}
+		else if ( e1.getType() == Type.STRING && e2.getType() == Type.STRINGLITERAL ) {
+
+			CompileTimeDescriptor s2 = (CompileTimeDescriptor) e2;
+			Descriptor temp = new Descriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					Type.STRING
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+
+			// get size of s1
+			String getStringSizeLoop = "_getting_string_size_loop_" + IDGenerator.getInstance().getNextID();
+			String getStringSizeEnd = "_getting_string_size_done_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "li $a0, 0" ); // $a0 will have the size of the string
+			CodeGen.getInstance().addToText( "lw $s0, " + e1.getName() );   // $s0 has address of the string
+			CodeGen.getInstance().addToText( getStringSizeLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of string
+			CodeGen.getInstance().addToText( "beqz $s1, " + getStringSizeEnd ); // if current char is \0, we're done
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );  // increase index by one
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );  // increase size by one
+			CodeGen.getInstance().addToText( "j " + getStringSizeLoop );    // continue loop
+			CodeGen.getInstance().addToText( getStringSizeEnd + ": ", true ); // now we have size of s1 in $a0
+
+			// get size of s2
+			CodeGen.getInstance().addToText( "li $a1, " + (s2.getValue().toString().length() - 1) );// now we have size of s2 in $a1
+
+			// allocate space for the new string
+			CodeGen.getInstance().addToText( "add $a0, $a0, $a1" ); // size of new string is sum of two strings' sizes
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );  // + a byte for \0
+			CodeGen.getInstance().addToText( "li $v0, 9" );
+			CodeGen.getInstance().addToText( "syscall" );
+			CodeGen.getInstance().addToText( "sw $v0, " + temp.getName() );
+
+			// copy s1 into the new space
+			String stringCopyLoop = "_copy_string_loop_" + IDGenerator.getInstance().getNextID();
+			String stringCopyLoopEnd = "_copy_string_loop_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $a0, " + temp.getName() ); // $a0 has the address of result string
+			CodeGen.getInstance().addToText( "lw $s0, " + e1.getName() );   // $s0 has the address of s1
+			CodeGen.getInstance().addToText( stringCopyLoop + ": ", true );
+			CodeGen.getInstance().addToText( "lb $s1, 0($s0)" );    // $s1 has the current char of the string
+			CodeGen.getInstance().addToText( "beqz $s1, " + stringCopyLoopEnd );
+			CodeGen.getInstance().addToText( "sb $s1, 0($a0)" );    // saving the current char to corresponding index of result
+			CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 1" );
+			CodeGen.getInstance().addToText( "j " + stringCopyLoop );
+			CodeGen.getInstance().addToText( stringCopyLoopEnd + ": ", true );
+
+			// copy s2 into the new space
+			String s1Value = s2.getValue().toString();
+			int size = s1Value.length();
+			for ( int i = 0; i < size - 1; i++ ) {
+				char currentChar = s1Value.charAt( i );
+				CodeGen.getInstance().addToText( "li $s1, \'" + currentChar + "\'" );
+				CodeGen.getInstance().addToText( "sb $s1, 0($a0)" );
+				CodeGen.getInstance().addToText( "addi $a0, $a0, 1" );
+			}
+
+			CodeGen.getInstance().addToText( "sb $zero, 0($a0)" ); // add \0 at the end of the string
+
+			CodeGen.getInstance().addEmptyLine();
+
+			SemanticStack.getInstance().pushDescriptor( temp );
+
 		}
 	}
 

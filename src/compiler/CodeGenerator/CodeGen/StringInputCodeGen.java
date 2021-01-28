@@ -25,7 +25,7 @@ public class StringInputCodeGen {
 		SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
 		CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType( temp.getType() ), STRING_MAX_LEN + 1 );
 		String loopLabel = "_string_input_clean_loop_" + IDGenerator.getInstance().getNextID();
-		String stringInputEnd = "_string_input_end_" + IDGenerator.getInstance().getNextID();
+		String stringInputEnd = "_string_input_clean_end_" + IDGenerator.getInstance().getNextID();
 		CodeGen.getInstance().addToText( "# reading a string from input" );
 		CodeGen.getInstance().addToText( "li $v0, 8" );
 		CodeGen.getInstance().addToText( "la $a0, " + temp.getName() );
