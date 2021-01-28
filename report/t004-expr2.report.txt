@@ -1,1 +1,0 @@
-different line count in these files! : file out/t004-expr2.out : #6 , file tests/t004-expr2.out : #1 

@@ -1,1 +1,0 @@
-different line count in these files! : file out/t013-semantic-error.out : #7 , file tests/t013-semantic-error.out : #1 

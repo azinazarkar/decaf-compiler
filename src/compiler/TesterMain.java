@@ -18,7 +18,7 @@ public class TesterMain {
 			}
 		}
 		try {
-			Compiler.getInstance().compile( "tests/" + inputFileName, "out/" + outputFileName );
+			Compiler.getInstance().compile( inputFileName, outputFileName );
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
