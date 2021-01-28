@@ -28,8 +28,14 @@ public class PlusCodeGen {
 				&& ( e1.getType() != Type.STRING && e2.getType() != Type.STRINGLITERAL ) )
 		)
 			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
-		if ( e1.getType() == Type.BOOL)
-			throw new InvalidOperator("+", Type.BOOL);
+		if ( e1.getType() != e2.getType() ) {
+			boolean b1 = e1.getType() == Type.STRINGLITERAL && e2.getType() == Type.STRING;
+			boolean b2 = e1.getType() == Type.STRING && e2.getType() == Type.STRINGLITERAL;
+			if ( !b1 && !b2 )
+				throw new InvalidOperator("+", Type.BOOL);
+		}
+//		if ( e1.getType() == Type.BOOL)
+//			throw new InvalidOperator("+", Type.BOOL);
 		if ( e1.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
