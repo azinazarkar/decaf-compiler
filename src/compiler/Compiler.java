@@ -19,8 +19,8 @@ public class Compiler {
 	private Compiler() {
 	}
 
-	public void compile( String fileAddress ) throws IOException {
-		FileReader fileReader = new FileReader( fileAddress );
+	public void compile( String inputFileName, String outputFileName ) throws IOException {
+		FileReader fileReader = new FileReader( inputFileName );
 		MyScanner yylex = new MyScanner( fileReader );
 		parser p = new parser(yylex);
 		// first phase of parsing
@@ -34,7 +34,7 @@ public class Compiler {
 		// now, next phase
 		ParserPhase.getInstance().nextPhase();
 		fileReader.close();
-		fileReader = new FileReader( fileAddress );
+		fileReader = new FileReader( inputFileName );
 		p = new parser( new MyScanner( fileReader ) );
 		System.out.println( "Second phase." );
 		try {
@@ -43,7 +43,7 @@ public class Compiler {
 			e.printStackTrace();
 			System.exit( 1 );
 		}
-		CodeGen.getInstance().writeToFile();
+		CodeGen.getInstance().writeToFile( outputFileName );
 	}
 
 }
