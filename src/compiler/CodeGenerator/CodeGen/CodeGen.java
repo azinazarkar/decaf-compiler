@@ -53,14 +53,14 @@ public class CodeGen {
 	public void cgen() {
 	}
 
-	public void writeToFile() throws IOException {
+	public void writeToFile( String outputFileName ) throws IOException {
 		addEmptyLine();
 		addBooleanPrintMethods();
 		addEmptyLine();
 		addStringSizeMethod();
 		addEmptyLine();
 		addEmptyLine();
-		FileWriter out = new FileWriter( "out.asm" );
+		FileWriter out = new FileWriter( outputFileName );
 		out.write( dataSeg + "\n" + textSeg);
 		out.close();
 	}

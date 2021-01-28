@@ -2248,7 +2248,13 @@ class CUP$parser$actions {
           case 99: // Expr ::= READLINE OPENPARENTHESIS CLOSEPARENTHESIS 
             {
               Descriptor RESULT =null;
-
+		
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+	                            StringInputCodeGen.getInstance().cgen();
+	                            Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+	                            RESULT = temp;
+							}
+						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Expr",37, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;

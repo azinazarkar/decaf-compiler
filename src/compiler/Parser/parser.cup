@@ -566,7 +566,13 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								RESULT = temp;
 							}
 						:}
-						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS
+						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+	                            StringInputCodeGen.getInstance().cgen();
+	                            Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+	                            RESULT = temp;
+							}
+						:}
 						| NEW IDENTIFIER
 						| NEWARRAY OPENPARENTHESIS Expr:e COMMA Type:t CLOSEPARENTHESIS {:
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
