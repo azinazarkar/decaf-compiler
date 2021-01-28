@@ -1,13 +1,12 @@
 package compiler.CodeGenerator.CodeGen;
 
 import compiler.CodeGenerator.Exceptions.SemanticErrors.CalculationTypeMismatch;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidArrayConcat;
 import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
-import compiler.CodeGenerator.SymbolTable.Utility.CompileTimeDescriptor;
-import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
-import compiler.CodeGenerator.SymbolTable.Utility.Type;
+import compiler.CodeGenerator.SymbolTable.Utility.*;
 
 public class PlusCodeGen {
 	private static PlusCodeGen ourInstance = new PlusCodeGen();
@@ -34,8 +33,6 @@ public class PlusCodeGen {
 			if ( !b1 && !b2 )
 				throw new InvalidOperator("+", Type.BOOL);
 		}
-//		if ( e1.getType() == Type.BOOL)
-//			throw new InvalidOperator("+", Type.BOOL);
 		if ( e1.getType() == Type.INT ) {
 			Descriptor temp = new Descriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
@@ -292,6 +289,81 @@ public class PlusCodeGen {
 
 			SemanticStack.getInstance().pushDescriptor( temp );
 
+		}
+		else if ( e1.getType() == Type.ARRAY ) {
+			ArrayDescriptor ar1 = (ArrayDescriptor) e1;
+			ArrayDescriptor ar2 = (ArrayDescriptor) e2;
+			if ( ar1.getSubType() != ar2.getSubType() || ar1.getDimensionCount() != ar2.getDimensionCount() )
+				throw new InvalidArrayConcat( ar1, ar2 );
+			Descriptor temp = new ArrayDescriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					new ArrayType( ar1.getSubType(), ar1.getDimensionCount() )
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+
+			CodeGen.getInstance().addToText( "lw $a0, " + ar1.getName() );  // $a0 has the address of ar1
+			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );    // $a0 has the size of ar1
+			CodeGen.getInstance().addToText( "lw $a1, " + ar2.getName() );  // $a1 has the address of ar2
+			CodeGen.getInstance().addToText( "lw $a1, 0($a1)" );    // $a1 has the size of ar2
+			CodeGen.getInstance().addToText( "add $s0, $a0, $a1" ); // $s0 has the size of result array
+			CodeGen.getInstance().addToText( "addi $s1, $s0, 1" );  // $s1 has size + 1
+			CodeGen.getInstance().addToText( "li $t0, 4" ); // $t0 has 4, for multiplying size by 4
+			CodeGen.getInstance().addToText( "mult $s1, $t0" ); // multiply size by 4
+			CodeGen.getInstance().addToText( "mflo $a0" );  // number of bytes to allocate is in $a0
+			CodeGen.getInstance().addToText( "li $v0, 9" );         // 9 for allocating space in heap
+			CodeGen.getInstance().addToText( "syscall" );   // syscall
+			CodeGen.getInstance().addToText( "sw $v0, " + temp.getName() ); // store address of allocated memory in result
+			CodeGen.getInstance().addToText( "sw $s0, 0($v0)" );   // store size of new array in the first cell of new array
+
+			// allocation is finished, time for copying
+			// copy first array
+			String arrayCopyLoop = "_array_copy_loop_" + IDGenerator.getInstance().getNextID();
+			String arrayCopyLoopEnd = "_array_copy_loop_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $s7, " + temp.getName() ); // $s7 = address of result array
+			CodeGen.getInstance().addToText( "addi $s7, $s7, 4" );   // $s7 = $s7 + 4
+			CodeGen.getInstance().addToText( "lw $s0, " + ar1.getName() );  // $s0 has the address of ar1
+			CodeGen.getInstance().addToText( "lw $s1, 0($s0)" );    // $s1 has the size of ar1
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 4" );  // $s0 has the address of ar1's first element
+			CodeGen.getInstance().addToText( "li $s2, 0" ); // $s2: current index
+			CodeGen.getInstance().addToText( arrayCopyLoop + ": ", true );
+			CodeGen.getInstance().addToText( "beq $s2, $s1, " + arrayCopyLoopEnd ); // If reached end of array, exit loop
+			CodeGen.getInstance().addToText( "li $t0, 4" ); // $t0 = 4
+			CodeGen.getInstance().addToText( "mult $s2, $t0");  // multiply index by 4
+			CodeGen.getInstance().addToText( "mflo $t0" );      // and put it in $t0
+			CodeGen.getInstance().addToText( "add $t0, $s0, $t0" ); // $t0 = address + index * 4
+			CodeGen.getInstance().addToText( "lw $t0, 0($t0)" );
+			CodeGen.getInstance().addToText( "sw $t0, 0($s7)" );
+			CodeGen.getInstance().addToText( "addi $s7, $s7, 4" );
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 4" );
+			CodeGen.getInstance().addToText( "addi $s2, $s2, 1" );
+			CodeGen.getInstance().addToText( "j " + arrayCopyLoop );
+			CodeGen.getInstance().addToText( arrayCopyLoopEnd + ": ", true );
+
+			// copy second array
+			arrayCopyLoop = "_array_copy_loop_" + IDGenerator.getInstance().getNextID();
+			arrayCopyLoopEnd = "_array_copy_loop_end_" + IDGenerator.getInstance().getNextID();
+			CodeGen.getInstance().addToText( "lw $s0, " + ar2.getName() );  // $s0 has the address of ar2
+			CodeGen.getInstance().addToText( "lw $s1, 0($s0)" );    // $s1 has the size of ar2
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 4" );  // $s0 has the address of ar2's first element
+			CodeGen.getInstance().addToText( "li $s2, 0" ); // $s2: current index
+			CodeGen.getInstance().addToText( arrayCopyLoop + ": ", true );
+			CodeGen.getInstance().addToText( "beq $s2, $s1, " + arrayCopyLoopEnd ); // If reached end of array, exit loop
+			CodeGen.getInstance().addToText( "li $t0, 4" ); // $t0 = 4
+			CodeGen.getInstance().addToText( "mult $s2, $t0");  // multiply index by 4
+			CodeGen.getInstance().addToText( "mflo $t0" );      // and put it in $t0
+			CodeGen.getInstance().addToText( "add $t0, $s0, $t0" ); // $t0 = address + index * 4
+			CodeGen.getInstance().addToText( "lw $t0, 0($t0)" );
+			CodeGen.getInstance().addToText( "sw $t0, 0($s7)" );
+			CodeGen.getInstance().addToText( "addi $s7, $s7, 4" );
+			CodeGen.getInstance().addToText( "addi $s0, $s0, 4" );
+			CodeGen.getInstance().addToText( "addi $s2, $s2, 1" );
+			CodeGen.getInstance().addToText( "j " + arrayCopyLoop );
+			CodeGen.getInstance().addToText( arrayCopyLoopEnd + ": ", true );
+
+			CodeGen.getInstance().addEmptyLine();
+
+			SemanticStack.getInstance().pushDescriptor( temp );
 		}
 	}
 
