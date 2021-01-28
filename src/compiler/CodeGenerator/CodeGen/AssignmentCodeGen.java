@@ -53,7 +53,7 @@ public class AssignmentCodeGen{
 					CodeGen.getInstance().addToText("la $s1, " + lv.getName());
 					CodeGen.getInstance().addToText("sw $s0, 0($s1)");
 				} else
-					System.out.println("I DONT KNOW");
+					System.out.println("ASSIGNMENT - I DONT KNOW 01");
 			}
 			else {
 				if (expr.getType() == Type.INT || expr.getType() == Type.BOOL) {
@@ -75,7 +75,14 @@ public class AssignmentCodeGen{
 						CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 					CodeGen.getInstance().addToText("lw $s1, " + lv.getName());
 					CodeGen.getInstance().addToText("sw $s0, 0($s1)");
-				} else
+				} else if ( expr.getType() == Type.STRINGLITERAL ) {
+					CodeGen.getInstance().addToText( "la $s0, " + expr.getName() );
+//					if ( expr.isFromArray() )
+//						CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
+					CodeGen.getInstance().addToText("lw $s1, " + lv.getName());
+					CodeGen.getInstance().addToText("sw $s0, 0($s1)");
+				}
+				else
 					System.out.println("I DONT KNOW");
 			}
 		}
