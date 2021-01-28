@@ -203,24 +203,39 @@ ExprPrime ::=           Expr
 
 IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 0 ) {
+                            /*if ( phase == 0 ) {
                                 SymbolTable.getInstance().makeNextAndSwitch( "if" );
                             }
-                            else if ( phase == 1 ) {
-                                SymbolTable.getInstance().switchToNext();
+                            else*/ if ( phase == 1 ) {
+                                //SymbolTable.getInstance().switchToNext();
                                 SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
-                        :} CLOSEPARENTHESIS Stmt:s ElsePrime{:
+                        :} CLOSEPARENTHESIS Stmt:s ElsePrime;
+ElsePrime ::=           ELSE {:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                System.out.println("hey azin");
                                 String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                String endLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                CodeGen.getInstance().addToText("b " + endLabel);
+                                CodeGen.getInstance().addToText(elseLabel + ":\n", true);
+                                SemanticStack.getInstance().pushDescriptor(endLabel);
+                            }
+                        :} Stmt:s {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String endLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                CodeGen.getInstance().addToText(endLabel + ":\n", true);
+                            }
+                        :}
+						| /*epsilon*/ {:
+						    int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String elseLabel = (String)SemanticStack.getInstance().popDescriptor();
+                                String endLabel = (String)SemanticStack.getInstance().popDescriptor();
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                             }
-                        :};
-ElsePrime ::=           ELSE Stmt:s
-						| /*epsilon*/
+						:}
 						;
                         //azin is working here and she really has no idea what she's doing
 WhileStmt ::=           WHILE OPENPARENTHESIS Expr:e{:
