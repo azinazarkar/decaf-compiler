@@ -23,47 +23,29 @@ public class Compiler {
 	}
 
 	public void compile( String inputFileName, String outputFileName ) throws IOException {
-		FileReader fileReader = new FileReader( inputFileName );
-		MyScanner yylex = new MyScanner( fileReader );
-		parser p = new parser(yylex);
-		// first phase of parsing
-//		System.out.println( "First phase." );
-		try {
-			p.parse();
-		} catch (SemanticError e) {
-			System.out.println( 1 );
-			ErrorCodeGen.getInstance().cgen( "Semantic Error" );
-			CodeGen.getInstance().writeToFile( outputFileName );
-			System.exit( 0 );
+
+		for ( int i = 0; i < 2; i++ ) { // parsing is done in 2 phases
+			FileReader fileReader = new FileReader( inputFileName );
+			MyScanner yylex = new MyScanner( fileReader );
+			parser p = new parser(yylex);
+			try {
+				p.parse();
+			} catch (SemanticError e) {
+				ErrorCodeGen.getInstance().cgen( "Semantic Error" );
+				CodeGen.getInstance().writeToFile( outputFileName );
+				System.exit( 0 );
+			}
+			catch (Exception e) {
+				ErrorCodeGen.getInstance().cgen( "Syntax Error" );
+				CodeGen.getInstance().writeToFile( outputFileName );
+				System.exit( 0 );
+			}
+			ParserPhase.getInstance().nextPhase();
+			fileReader.close();
 		}
-		catch (Exception e) {
-			System.out.println( 2 );
-			ErrorCodeGen.getInstance().cgen( "Syntax Error" );
-			CodeGen.getInstance().writeToFile( outputFileName );
-			System.exit( 0 );
-		}
-		// now, next phase
-		ParserPhase.getInstance().nextPhase();
-		fileReader.close();
-		fileReader = new FileReader( inputFileName );
-		p = new parser( new MyScanner( fileReader ) );
-//		System.out.println( "Second phase." );
-		try {
-			p.parse();
-		} catch (SemanticError e) {
-			e.printStackTrace();
-			System.out.println( 3 );
-			ErrorCodeGen.getInstance().cgen( "Semantic Error" );
-			CodeGen.getInstance().writeToFile( outputFileName );
-			System.exit( 0 );
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.out.println( 4 );
-			ErrorCodeGen.getInstance().cgen( "Syntax Error" );
-			CodeGen.getInstance().writeToFile( outputFileName );
-			System.exit( 0 );
-		}
+
 		CodeGen.getInstance().writeToFile( outputFileName );
+
 	}
 
 }
