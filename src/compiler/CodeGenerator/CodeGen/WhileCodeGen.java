@@ -2,6 +2,9 @@ package compiler.CodeGenerator.CodeGen;
 
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
+import compiler.CodeGenerator.SymbolTable.LabelStack;
+import compiler.CodeGenerator.SymbolTable.SymbolTable;
+import compiler.CodeGenerator.SymbolTable.SymbolTableNode;
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
 
 public class WhileCodeGen {
@@ -10,15 +13,13 @@ public class WhileCodeGen {
     private WhileCodeGen(){}
     public void cgen(){
         Descriptor condition = (Descriptor) SemanticStack.getInstance().popDescriptor();
-        String endOfWhileLabel = IDGenerator.getInstance().getNextID();
-        String whileLabel = IDGenerator.getInstance().getNextID();
-        SemanticStack.getInstance().pushDescriptor(endOfWhileLabel);
-        SemanticStack.getInstance().pushDescriptor(whileLabel);
-        // TODO optimization (reloading can be omitted)
-        CodeGen.getInstance().addToText(whileLabel, true);
+        SymbolTableNode temp = SymbolTable.getInstance().getSymbolTable();
+        //TODO shitty label names
+        String endOfWhileLabel = "_" + temp.getScopeName() + "_whileEnd_" + temp.getLevel() + "_" + IDGenerator.getInstance().getNextID();
+        LabelStack.getInstance().pushLabel("while", endOfWhileLabel);
         CodeGen.getInstance().addToText("# while statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());
-        if ( condition.isFromArray() )
+        if (condition.isFromArray())
             CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
         CodeGen.getInstance().addToText("beq " +  "$a0, " + "0, " + endOfWhileLabel);
         CodeGen.getInstance().addEmptyLine();
