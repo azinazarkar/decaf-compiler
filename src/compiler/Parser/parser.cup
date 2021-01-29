@@ -170,16 +170,16 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 									Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
 									funcDscp.addArgument( argumentName, argumentDescriptor, true );
 								}
-								SymbolTable.getInstance().makeNextAndSwitch();
+//								SymbolTable.getInstance().makeNextAndSwitch();
 							}
 							else if ( phase == 1 ) {
 								FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
 								ParserHelper.getInstance().currentFunctionDscp = funcDscp;
-								SymbolTable.getInstance().switchToNext();
+//								SymbolTable.getInstance().switchToNext();
 							}
 							ParserHelper.getInstance().insideFunctionFormals = false;
 						:} CLOSEPARENTHESIS StmtBlock {:
-							SymbolTable.getInstance().goBack();
+//							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
 //								SemanticStack.getInstance().popDescriptor(); // was for return stmt
 								if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
@@ -242,7 +242,15 @@ Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS
 						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
 						;
 
-StmtBlock ::=           OPENCURLYBRACES InsideStmtBlock CLOSECURLYBRACES;
+StmtBlock ::=           OPENCURLYBRACES {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 0 )
+								SymbolTable.getInstance().makeNextAndSwitch();
+							else if ( phase == 1 )
+								SymbolTable.getInstance().switchToNext();
+						:} InsideStmtBlock {:
+							SymbolTable.getInstance().goBack();
+						:} CLOSECURLYBRACES;
 InsideStmtBlock ::=     VariableDecl InsideStmtBlock
 						| StmtStar
 						;
