@@ -199,7 +199,56 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 							}
 							SymbolTable.getInstance().goBack();
 						:}
-						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
+						| VOID IDENTIFIER:name OPENPARENTHESIS {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 0 ) {
+                                SymbolTable.getInstance().getSymbolTable().addEntry(
+                                        name,
+                                        new FunctionDescriptor(
+                                                name,
+                                                "_" + IDGenerator.getInstance().getNextID(),
+                                                Type.VOID
+                                        )
+                                );
+                                SymbolTable.getInstance().makeNextAndSwitch( name );
+                            }
+                            else if ( phase == 1 ) {
+                                FunctionDescriptor temp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+                                CodeGen.getInstance().addToText(
+                                        temp.getFunctionName() + ":\n",
+                                        true
+                                );
+                                SymbolTable.getInstance().switchToNext();
+                            }
+                            ParserHelper.getInstance().insideFunctionFormals = true;
+                            SemanticStack.getInstance().pushDescriptor( 0 );
+						:} Formals {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 0 ) {
+                                int formalsCount = (int) SemanticStack.getInstance().popDescriptor();
+                                for ( int i = 0; i < formalsCount; i++ ) {
+                                    FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+                                    String argumentName = (String) SemanticStack.getInstance().popDescriptor();
+                                    Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                    funcDscp.addArgument( argumentName, argumentDescriptor, true );
+                                }
+//								SymbolTable.getInstance().makeNextAndSwitch();
+                            }
+                            else if ( phase == 1 ) {
+                                FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+                                ParserHelper.getInstance().currentFunctionDscp = funcDscp;
+//								SymbolTable.getInstance().switchToNext();
+                            }
+                            ParserHelper.getInstance().insideFunctionFormals = false;
+						:} CLOSEPARENTHESIS StmtBlock {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+//								SemanticStack.getInstance().popDescriptor(); // was for return stmt
+                                CodeGen.getInstance().addToText( "# returning from function " + name );
+                                CodeGen.getInstance().addToText( "jr $ra" );
+                                CodeGen.getInstance().addEmptyLine();
+                            }
+                            SymbolTable.getInstance().goBack();
+						:}
 						;
 
 Formals ::=             Variable:v CommaVariables
@@ -354,7 +403,7 @@ ReturnStmt ::=          RETURN ExprPrime:e SEMICOLON {:
 //								System.out.println( SemanticStack.getInstance().topDescriptor() );
 //								FunctionDescriptor funcDscp = (FunctionDescriptor) SemanticStack.getInstance().topDescriptor();
 								FunctionDescriptor funcDscp = ParserHelper.getInstance().currentFunctionDscp;
-								if ( funcDscp == null )
+								if ( funcDscp == null || funcDscp.getType() == Type.VOID )
 									throw new InvalidReturnStatement();
 								SemanticStack.getInstance().pushDescriptor( e );
                                 SemanticStack.getInstance().pushDescriptor( funcDscp );
@@ -687,7 +736,9 @@ Call ::=                IDENTIFIER:functionID OPENPARENTHESIS {:
                                 FunctionValueRetrieveCodeGen.getInstance().cgen();
                                 FunctionCallEndedCodeGen.getInstance().cgen();
                                 LoadLocalVariablesCodeGen.getInstance().cgen();
-                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                Descriptor temp = null;
+                                if ( funcDscp.getType() != Type.VOID )
+                                    temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                 RESULT = temp;
                             }
 						:}

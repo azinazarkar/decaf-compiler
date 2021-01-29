@@ -19,16 +19,18 @@ public class FunctionValueRetrieveCodeGen {
 
 	public void cgen() {
 		FunctionDescriptor funcDscp = (FunctionDescriptor) SemanticStack.getInstance().popDescriptor();
-		CodeGen.getInstance().addToText( "# Retrieving value of function " + funcDscp.getFunctionName() + " call" );
-		Descriptor temp = new Descriptor(
-				"_" + IDGenerator.getInstance().getNextID(),
-				funcDscp.getType()
-		);
-		SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
-		CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType(temp.getType()), 0 );
-		CodeGen.getInstance().addToText( "sw $v0, " + temp.getName() );
-		CodeGen.getInstance().addEmptyLine();
-		SemanticStack.getInstance().pushDescriptor( temp );
+		if ( funcDscp.getType() != Type.VOID ) {
+			CodeGen.getInstance().addToText("# Retrieving value of function " + funcDscp.getFunctionName() + " call");
+			Descriptor temp = new Descriptor(
+					"_" + IDGenerator.getInstance().getNextID(),
+					funcDscp.getType()
+			);
+			SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
+			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
+			CodeGen.getInstance().addToText("sw $v0, " + temp.getName());
+			CodeGen.getInstance().addEmptyLine();
+			SemanticStack.getInstance().pushDescriptor(temp);
+		}
 	}
 
 }
