@@ -51,6 +51,8 @@ public class ArrayGetIndexValueCodeGen {
 		String fetchEnd = "_retrieve_array_value_" + IDGenerator.getInstance().getNextID();
 		CodeGen.getInstance().addToText( "# Getting " + index.getName() + "-th cell of array " + lv.getName() );
 		CodeGen.getInstance().addToText( "lw $s0, " + lv.getName() ); // load array address into $s0
+		if ( lv.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 		CodeGen.getInstance().addToText( "lw $s1, " + index.getName() ); // load index into $s1
 		CodeGen.getInstance().addToText( "lw $s2, 0($s0)" ); // size of array is in $s2
 		CodeGen.getInstance().addToText( "li $s4, 1" ); // load 1 into $s4 to sub from size (checking index)
@@ -61,12 +63,7 @@ public class ArrayGetIndexValueCodeGen {
 		CodeGen.getInstance().addToText( "mflo $s1" ); // $s1 now has index * 4
 		CodeGen.getInstance().addToText( "addi $s0, $s0, 4" ); // add 4 to $s0 to begin from the first cell (0-th cell is the size)
 		CodeGen.getInstance().addToText( "add $s0, $s0, $s1" ); // $s0 has address of the wanted byte
-//		if (ParserHelper.getInstance().isLValue() )
-			CodeGen.getInstance().addToText( "sw $s0, " + returnValue.getName() ); // save answer in returnValue address
-//		else {
-//			CodeGen.getInstance().addToText( "lw $s3, 0($s0)" ); // $s3 has the answer
-//			CodeGen.getInstance().addToText( "sw $s3, " + returnValue.getName() ); // save answer in returnValue address
-//		}
+		CodeGen.getInstance().addToText( "sw $s0, " + returnValue.getName() ); // save answer in returnValue address
 		CodeGen.getInstance().addToText( "j " + fetchEnd );
 		CodeGen.getInstance().addToText( invalidIndex + ": ", true );
 		CodeGen.getInstance().addToText( "li $v0, 4" );
