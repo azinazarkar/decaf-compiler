@@ -1,6 +1,8 @@
-package compiler.CodeGenerator.Exceptions;
+package compiler.CodeGenerator.Exceptions.SemanticErrors;
 
-public class NameNotFoundException extends RuntimeException {
+import compiler.CodeGenerator.Exceptions.SemanticError;
+
+public class NameNotFoundException extends SemanticError {
 
 	private String name;
 

@@ -4,10 +4,16 @@ public class Descriptor {
 
 	private String name;
 	private Type type;
+	private boolean isFromArray;
 
 	public Descriptor(String name, Type type) {
+		this( name, type, false );
+	}
+
+	public Descriptor(String name, Type type, boolean isFromArray) {
 		this.name = name;
 		this.type = type;
+		this.isFromArray = isFromArray;
 	}
 
 	public static Type getType( String in ) {
@@ -38,6 +44,14 @@ public class Descriptor {
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public boolean isFromArray() {
+		return isFromArray;
+	}
+
+	public void setFromArray(boolean fromArray) {
+		isFromArray = fromArray;
 	}
 
 	@Override

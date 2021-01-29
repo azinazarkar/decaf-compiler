@@ -18,6 +18,8 @@ public class WhileCodeGen {
         CodeGen.getInstance().addToText(whileLabel, true);
         CodeGen.getInstance().addToText("# while statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());
+        if ( condition.isFromArray() )
+            CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
         CodeGen.getInstance().addToText("beq " +  "$a0, " + "0, " + endOfWhileLabel);
         CodeGen.getInstance().addEmptyLine();
     }

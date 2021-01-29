@@ -1,13 +1,10 @@
 package compiler.CodeGenerator.SymbolTable;
 
 import compiler.CodeGenerator.SymbolTable.Utility.Descriptor;
-import compiler.CodeGenerator.Exceptions.NameAlreadyExistsException;
-import compiler.CodeGenerator.Exceptions.NameNotFoundException;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.NameAlreadyExistsException;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.NameNotFoundException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SymbolTableNode {
 
@@ -41,6 +38,10 @@ public class SymbolTableNode {
 		return table.size();
 	}
 
+	public Set<Map.Entry<String, Descriptor>> getAllEntries() {
+		return this.table.entrySet();
+	}
+
 	protected void addNext( String name ) {
 		next.add( new SymbolTableNode( this, name, level + 1 ) );
 		nextIndex++;
@@ -61,6 +62,10 @@ public class SymbolTableNode {
 			throw new NameNotFoundException( id );
 		else
 			return prev.getDescriptor( id );
+	}
+
+	public SymbolTableNode getPrev() {
+		return prev;
 	}
 
 	public int getLevel() {

@@ -1,6 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
-import compiler.CodeGenerator.Exceptions.InvalidOperator;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -29,6 +29,8 @@ public class itodCodeGen {
 		SymbolTable.getInstance().getSymbolTable().addEntry(temp.getName(), temp);
 		CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 		CodeGen.getInstance().addToText( "lw $s0, " + e.getName() );
+		if ( e.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 		CodeGen.getInstance().addToText( "mtc1 $s0, $f0" );
 		CodeGen.getInstance().addToText( "cvt.s.w $f0, $f0" );
 		CodeGen.getInstance().addToText( "la $s1, " + temp.getName() );

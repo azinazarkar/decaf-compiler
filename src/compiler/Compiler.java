@@ -1,6 +1,9 @@
 package compiler;
 
 import compiler.CodeGenerator.CodeGen.CodeGen;
+import compiler.CodeGenerator.CodeGen.ErrorCodeGen;
+import compiler.CodeGenerator.Exceptions.SemanticError;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.AssignmentTypeMismatch;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
 import compiler.Parser.ParserPhase;
 import compiler.Parser.parser;
@@ -19,31 +22,32 @@ public class Compiler {
 	private Compiler() {
 	}
 
-	public void compile( String fileAddress ) throws IOException {
-		FileReader fileReader = new FileReader( fileAddress );
-		MyScanner yylex = new MyScanner( fileReader );
-		parser p = new parser(yylex);
-		// first phase of parsing
-		System.out.println( "First phase." );
-		try {
-			p.parse();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit( 1 );
+	public void compile( String inputFileName, String outputFileName ) throws IOException {
+
+		for ( int i = 0; i < 2; i++ ) { // parsing is done in 2 phases
+			FileReader fileReader = new FileReader( inputFileName );
+			MyScanner yylex = new MyScanner( fileReader );
+			parser p = new parser(yylex);
+			try {
+				p.parse();
+			} catch (SemanticError e) {
+				e.printStackTrace();
+				ErrorCodeGen.getInstance().cgen( "Semantic Error" );
+				CodeGen.getInstance().writeToFile( outputFileName );
+				System.exit( 0 );
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				ErrorCodeGen.getInstance().cgen( "Syntax Error" );
+				CodeGen.getInstance().writeToFile( outputFileName );
+				System.exit( 0 );
+			}
+			ParserPhase.getInstance().nextPhase();
+			fileReader.close();
 		}
-		// now, next phase
-		ParserPhase.getInstance().nextPhase();
-		fileReader.close();
-		fileReader = new FileReader( fileAddress );
-		p = new parser( new MyScanner( fileReader ) );
-		System.out.println( "Second phase." );
-		try {
-			p.parse();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit( 1 );
-		}
-		CodeGen.getInstance().writeToFile();
+
+		CodeGen.getInstance().writeToFile( outputFileName );
+
 	}
 
 }

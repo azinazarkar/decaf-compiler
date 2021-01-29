@@ -1,7 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
-import compiler.CodeGenerator.Exceptions.AssignmentTypeMismatch;
-import compiler.CodeGenerator.Exceptions.InvalidOperator;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidOperator;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -34,6 +33,8 @@ public class UnaryMinusCodeGen {
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 			CodeGen.getInstance().addToText( "lw $s0, " + e.getName() );
+			if ( e.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 			CodeGen.getInstance().addToText( "neg $s1, $s0" );
 			CodeGen.getInstance().addToText( "sw $s1, " + temp.getName() );
 			CodeGen.getInstance().addEmptyLine();
@@ -46,7 +47,10 @@ public class UnaryMinusCodeGen {
 			);
 			SymbolTable.getInstance().getSymbolTable().addEntry( temp.getName(), temp );
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
-			CodeGen.getInstance().addToText( "lwc1 $f0, " + e.getName() );
+			CodeGen.getInstance().addToText( "lw $a0, " + e.getName() );
+			if ( e.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
+			CodeGen.getInstance().addToText( "mtc1 $a0, $f0" );
 			CodeGen.getInstance().addToText( "neg.s $f1, $f0" );
 			CodeGen.getInstance().addToText( "swc1 $f1, " + temp.getName() );
 			CodeGen.getInstance().addEmptyLine();

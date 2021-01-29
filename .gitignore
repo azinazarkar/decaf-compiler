@@ -1,5 +1,6 @@
 .idea/
 out/
+report/
 *.iml
 *.class
 *.java~

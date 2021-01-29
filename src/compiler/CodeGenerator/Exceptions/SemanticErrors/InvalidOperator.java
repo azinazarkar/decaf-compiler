@@ -1,8 +1,9 @@
-package compiler.CodeGenerator.Exceptions;
+package compiler.CodeGenerator.Exceptions.SemanticErrors;
 
+import compiler.CodeGenerator.Exceptions.SemanticError;
 import compiler.CodeGenerator.SymbolTable.Utility.Type;
 
-public class InvalidOperator extends RuntimeException {
+public class InvalidOperator extends SemanticError {
 
     private String operator;
     private Type t;

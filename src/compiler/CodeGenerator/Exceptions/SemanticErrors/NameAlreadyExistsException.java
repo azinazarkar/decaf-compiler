@@ -1,6 +1,8 @@
-package compiler.CodeGenerator.Exceptions;
+package compiler.CodeGenerator.Exceptions.SemanticErrors;
 
-public class NameAlreadyExistsException extends RuntimeException {
+import compiler.CodeGenerator.Exceptions.SemanticError;
+
+public class NameAlreadyExistsException extends SemanticError {
 
 	private String name;
 
