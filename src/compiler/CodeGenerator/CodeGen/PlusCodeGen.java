@@ -303,8 +303,12 @@ public class PlusCodeGen {
 			CodeGen.getInstance().addToData(temp.getName(), Type.getMipsType(temp.getType()), 0);
 
 			CodeGen.getInstance().addToText( "lw $a0, " + ar1.getName() );  // $a0 has the address of ar1
+			if ( ar1.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );    // $a0 has the size of ar1
 			CodeGen.getInstance().addToText( "lw $a1, " + ar2.getName() );  // $a1 has the address of ar2
+			if ( ar2.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $a1, 0($a1)" );
 			CodeGen.getInstance().addToText( "lw $a1, 0($a1)" );    // $a1 has the size of ar2
 			CodeGen.getInstance().addToText( "add $s0, $a0, $a1" ); // $s0 has the size of result array
 			CodeGen.getInstance().addToText( "addi $s1, $s0, 1" );  // $s1 has size + 1
@@ -323,6 +327,8 @@ public class PlusCodeGen {
 			CodeGen.getInstance().addToText( "lw $s7, " + temp.getName() ); // $s7 = address of result array
 			CodeGen.getInstance().addToText( "addi $s7, $s7, 4" );   // $s7 = $s7 + 4
 			CodeGen.getInstance().addToText( "lw $s0, " + ar1.getName() );  // $s0 has the address of ar1
+			if ( ar1.isFromArray() )
+				CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 			CodeGen.getInstance().addToText( "lw $s1, 0($s0)" );    // $s1 has the size of ar1
 			CodeGen.getInstance().addToText( "addi $s0, $s0, 4" );  // $s0 has the address of ar1's first element
 			CodeGen.getInstance().addToText( "li $s2, 0" ); // $s2: current index
@@ -344,6 +350,7 @@ public class PlusCodeGen {
 			arrayCopyLoop = "_array_copy_loop_" + IDGenerator.getInstance().getNextID();
 			arrayCopyLoopEnd = "_array_copy_loop_end_" + IDGenerator.getInstance().getNextID();
 			CodeGen.getInstance().addToText( "lw $s0, " + ar2.getName() );  // $s0 has the address of ar2
+			CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 			CodeGen.getInstance().addToText( "lw $s1, 0($s0)" );    // $s1 has the size of ar2
 			CodeGen.getInstance().addToText( "addi $s0, $s0, 4" );  // $s0 has the address of ar2's first element
 			CodeGen.getInstance().addToText( "li $s2, 0" ); // $s2: current index
