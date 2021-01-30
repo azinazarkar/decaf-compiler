@@ -15,7 +15,7 @@ public class WhileCodeGen {
         Descriptor condition = (Descriptor) SemanticStack.getInstance().popDescriptor();
         SymbolTableNode temp = SymbolTable.getInstance().getSymbolTable();
         //TODO shitty label names
-        String endOfWhileLabel = "_" + temp.getScopeName() + "_whileEnd_" + temp.getLevel() + "_" + IDGenerator.getInstance().getNextID();
+        String endOfWhileLabel = "endOfWhile" + "_" + IDGenerator.getInstance().getNextID();
         LabelStack.getInstance().pushLabel("while", endOfWhileLabel);
         CodeGen.getInstance().addToText("# while statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());

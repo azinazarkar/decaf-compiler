@@ -283,7 +283,6 @@ IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                                 IfCodeGen.getInstance().cgen();
                             }
                         :} CLOSEPARENTHESIS Stmt:s {:
-                            System.out.println( IDGenerator.getInstance().getNextID() );
                             SymbolTable.getInstance().goBack();
                         :}ElsePrime
                         ;
@@ -294,9 +293,8 @@ ElsePrime ::=           ELSE{:
                                 SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
                             else if ( phase == 1 ) {
                                 SymbolTable.getInstance().switchToNext();
-
-                                String elseLabel = (String)LabelStack.getInstance().popLabel("if");
-                                String endLabel = (String)LabelStack.getInstance().popLabel("if");
+                                String elseLabel = (String)LabelStack.getInstance().popLabel();
+                                String endLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText("b " + endLabel);
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                                 LabelStack.getInstance().pushLabel("if", endLabel);
@@ -304,7 +302,7 @@ ElsePrime ::=           ELSE{:
                         :} Stmt:s {:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                String endLabel = (String)LabelStack.getInstance().popLabel("if");
+                                String endLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText(endLabel + ":\n", true);
                             }
                             SymbolTable.getInstance().goBack();
@@ -312,8 +310,10 @@ ElsePrime ::=           ELSE{:
 						| /*epsilon*/ {:
 						    int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                String elseLabel = (String)LabelStack.getInstance().popLabel("if");
-                                String endLabel = (String)LabelStack.getInstance().popLabel("if");
+
+                                String elseLabel = (String)LabelStack.getInstance().popLabel();
+                                String endLabel = (String)LabelStack.getInstance().popLabel();
+                                System.out.println("elseLabel " + elseLabel);
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                             }
                         :}
@@ -326,7 +326,7 @@ WhileStmt ::=           WHILE {:
                                 SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
                             else if ( phase == 1 ) {
                                 SymbolTable.getInstance().switchToNext();
-                                String whileLabel = IDGenerator.getInstance().getNextID();
+                                String whileLabel = "while" + "_" + IDGenerator.getInstance().getNextID();
                                 LabelStack.getInstance().pushLabel("while", whileLabel);
                                 CodeGen.getInstance().addToText(whileLabel + ":\n", true);
                             }
@@ -339,15 +339,29 @@ WhileStmt ::=           WHILE {:
                         :} CLOSEPARENTHESIS Stmt:s{:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                String endWhileLabel = (String)LabelStack.getInstance().popLabel("while");
-                                String whileLabel = (String)LabelStack.getInstance().popLabel("while");
+                                String endWhileLabel = (String)LabelStack.getInstance().popLabel();
+                                String whileLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText("b " + whileLabel);
                                 CodeGen.getInstance().addToText(endWhileLabel + ":\n", true);
                             }
                             SymbolTable.getInstance().goBack();
                         :};
 
-ForStmt ::=             FOR OPENPARENTHESIS ExprPrime SEMICOLON Expr SEMICOLON ExprPrime CLOSEPARENTHESIS Stmt;
+ForStmt ::=             FOR OPENPARENTHESIS ExprPrime{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 0 )
+                                SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
+                            else if ( phase == 1 ) {
+                                SymbolTable.getInstance().switchToNext();
+                                String exprFor = IDGenerator.getInstance().getNextID();
+                                LabelStack.getInstance().pushLabel("for", exprFor);
+                                CodeGen.getInstance().addToText(exprFor + ":\n", true);
+                            }
+                        :} SEMICOLON Expr:e{:
+                            SemanticStack.getInstance().pushDescriptor(e);
+                        :} SEMICOLON ExprPrime {:
+
+                        :} CLOSEPARENTHESIS Stmt;
 
 ReturnStmt ::=          RETURN ExprPrime:e SEMICOLON {:
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
@@ -363,9 +377,23 @@ ReturnStmt ::=          RETURN ExprPrime:e SEMICOLON {:
 						:}
 						;
 
-BreakStmt ::=           BREAK SEMICOLON;
+BreakStmt ::=           BREAK {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String endWhileLabel = (String)LabelStack.getInstance().popLabel("while", 0);
+                                System.out.println("breakLabel " + endWhileLabel);
+                                CodeGen.getInstance().addToText("b " + endWhileLabel);
+                            }
+                        :} SEMICOLON;
 
-ContinueStmt ::=        CONTINUE SEMICOLON;
+ContinueStmt ::=        CONTINUE {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String whileBegin = (String)LabelStack.getInstance().popLabel("while", 1);
+                                System.out.println("whileBegin " + whileBegin);
+                                CodeGen.getInstance().addToText("b " + whileBegin);
+                            }
+                        :} SEMICOLON;
 
 PrintStmt ::=           PRINT OPENPARENTHESIS Expr:e
                         {:

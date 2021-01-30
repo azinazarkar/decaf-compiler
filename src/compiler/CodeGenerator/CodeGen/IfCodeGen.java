@@ -13,10 +13,9 @@ public class IfCodeGen {
     private IfCodeGen(){}
     public void cgen(){
         Descriptor condition = (Descriptor) SemanticStack.getInstance().popDescriptor();
-
         SymbolTableNode temp = SymbolTable.getInstance().getSymbolTable();
-        String elseLabel = "_" + temp.getScopeName() + "_else_" + temp.getLevel() + "_" + IDGenerator.getInstance().getNextID();
-        String endLabel = "_" + temp.getScopeName() + "_ifEnd_" + temp.getLevel() + "_" + IDGenerator.getInstance().getNextID();
+        String endLabel = "ifEnd" + "_" + IDGenerator.getInstance().getNextID();
+        String elseLabel = "ifElse" + "_" + IDGenerator.getInstance().getNextID();
         CodeGen.getInstance().addToText("# if statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());
         if ( condition.isFromArray() )
