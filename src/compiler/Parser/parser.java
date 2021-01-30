@@ -2752,12 +2752,18 @@ class CUP$parser$actions {
 		int dright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		String d = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
-							if ( ParserPhase.getInstance().getPhase() == 1 )
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								int value;
+								if ( d.startsWith( "0x" ) || d.startsWith( "0X" ) )
+									value = Integer.parseInt( d.substring( 2 ), 16 );
+								else
+									value = Integer.parseInt( d );
 								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.INT,
-									Integer.parseInt( d )
+									value
 								);
+							}
 						
               CUP$parser$result = parser.getSymbolFactory().newSymbol("Constant",38, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }

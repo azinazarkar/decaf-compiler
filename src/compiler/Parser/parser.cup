@@ -780,12 +780,18 @@ ActualsCommaExpr ::=    COMMA Expr:e {:
 						;
 
 Constant ::=            DECIMAL:d {:
-							if ( ParserPhase.getInstance().getPhase() == 1 )
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								int value;
+								if ( d.startsWith( "0x" ) || d.startsWith( "0X" ) )
+									value = Integer.parseInt( d.substring( 2 ), 16 );
+								else
+									value = Integer.parseInt( d );
 								RESULT = new CompileTimeDescriptor(
 									"_" + IDGenerator.getInstance().getNextID(),
 									Type.INT,
-									Integer.parseInt( d )
+									value
 								);
+							}
 						:}
 						| FLOATINGPOINT:f {:
 							if ( ParserPhase.getInstance().getPhase() == 1 )
