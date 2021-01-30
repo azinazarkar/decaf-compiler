@@ -1,5 +1,6 @@
 package compiler.CodeGenerator.CodeGen;
 
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidArrayType;
 import compiler.CodeGenerator.IDGenerator;
 import compiler.CodeGenerator.SemanticStack;
 import compiler.CodeGenerator.SymbolTable.SymbolTable;
@@ -23,6 +24,8 @@ public class NewArrayCodeGen {
 		Descriptor e = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		ArrayDescriptor temp = null;
 		if ( type instanceof Type ) {
+			if ( ((Type) type) == Type.VOID )
+				throw new InvalidArrayType( (Type) type );
 			temp = new ArrayDescriptor(
 					"_" + IDGenerator.getInstance().getNextID(),
 					new ArrayType((Type) type, 1)
