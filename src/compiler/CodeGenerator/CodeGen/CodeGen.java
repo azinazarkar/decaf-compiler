@@ -22,6 +22,8 @@ public class CodeGen {
 		dataSeg += "\n";
 		dataSeg += "\t_array_index_illegal: .asciiz \"index passed to array is more than its size\\n\"\n";
 		dataSeg += "\n";
+		dataSeg += "\t_division_by_zero_error_message: .asciiz \"division by zero\\n\"\n";
+		dataSeg += "\n";
 	}
 
 	public void reset() {

@@ -22,11 +22,11 @@ public class PlusCodeGen {
 		Descriptor e2 = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		Descriptor e1 = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Adding " + e1.getName() + " and " + e2.getName() );
-		if ( e1.getType() != e2.getType() &&
-				( ( e1.getType() != Type.STRINGLITERAL && e2.getType() != Type.STRING )
-				&& ( e1.getType() != Type.STRING && e2.getType() != Type.STRINGLITERAL ) )
-		)
-			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
+//		if ( e1.getType() != e2.getType() &&
+//				( ( e1.getType() != Type.STRINGLITERAL && e2.getType() != Type.STRING )
+//				&& ( e1.getType() != Type.STRING && e2.getType() != Type.STRINGLITERAL ) )
+//		)
+//			throw new CalculationTypeMismatch( "+", e1.getType(), e2.getType() );
 		if ( e1.getType() != e2.getType() ) {
 			boolean b1 = e1.getType() == Type.STRINGLITERAL && e2.getType() == Type.STRING;
 			boolean b2 = e1.getType() == Type.STRING && e2.getType() == Type.STRINGLITERAL;

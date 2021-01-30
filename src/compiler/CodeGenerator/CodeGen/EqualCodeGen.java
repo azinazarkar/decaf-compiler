@@ -144,7 +144,7 @@ public class EqualCodeGen {
 			);
 			CodeGen.getInstance().addToText( "la $s0, " + d1.getName() ); // $s0 has the address of s1
 			CodeGen.getInstance().addToText( "lw $s1, " + d2.getName() );
-			if ( d1.isFromArray() )
+			if ( d2.isFromArray() )
 				CodeGen.getInstance().addToText( "lw $s1, 0($s1)" );    // $s1 has the address of s2
 			String stringEqualLoop = "_string_equality_check_loop_" + IDGenerator.getInstance().getNextID();
 			String stringEqualYes = "_string_equality_check_yes_" + IDGenerator.getInstance().getNextID();

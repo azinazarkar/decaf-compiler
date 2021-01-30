@@ -1892,7 +1892,7 @@ class CUP$parser$actions {
 //								System.out.println( SemanticStack.getInstance().topDescriptor() );
 //								FunctionDescriptor funcDscp = (FunctionDescriptor) SemanticStack.getInstance().topDescriptor();
 								FunctionDescriptor funcDscp = ParserHelper.getInstance().currentFunctionDscp;
-								if ( funcDscp == null || funcDscp.getType() == Type.VOID )
+								if ( funcDscp == null )
 									throw new InvalidReturnStatement();
 								SemanticStack.getInstance().pushDescriptor( e );
                                 SemanticStack.getInstance().pushDescriptor( funcDscp );

@@ -54,6 +54,8 @@ public class ArrayGetIndexValueCodeGen {
 		if ( lv.isFromArray() )
 			CodeGen.getInstance().addToText( "lw $s0, 0($s0)" );
 		CodeGen.getInstance().addToText( "lw $s1, " + index.getName() ); // load index into $s1
+		if ( index.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $s1, 0($s1)" );
 		CodeGen.getInstance().addToText( "lw $s2, 0($s0)" ); // size of array is in $s2
 		CodeGen.getInstance().addToText( "li $s4, 1" ); // load 1 into $s4 to sub from size (checking index)
 		CodeGen.getInstance().addToText( "sub $s2, $s2, $s4" ); // decrease size of array by one (for index checking)

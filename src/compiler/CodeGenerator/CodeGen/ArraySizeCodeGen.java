@@ -27,6 +27,8 @@ public class ArraySizeCodeGen {
 		CodeGen.getInstance().addToData( temp.getName(), Type.getMipsType( temp.getType() ), 0 );
 		CodeGen.getInstance().addToText( "# getting size of array " + descriptor.getName() );
 		CodeGen.getInstance().addToText( "lw $a0, " + descriptor.getName() );
+		if ( descriptor.isFromArray() )
+			CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 		CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
 		CodeGen.getInstance().addToText( "sw $a0, " + temp.getName() );
 		CodeGen.getInstance().addEmptyLine();
