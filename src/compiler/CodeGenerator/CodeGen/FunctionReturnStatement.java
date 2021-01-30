@@ -29,6 +29,8 @@ public class FunctionReturnStatement {
 				throw new ReturnValueTypeMismatch( funcDscp.getType(), e.getType() );
 			else {
 				CodeGen.getInstance().addToText( "lw $v0, " + e.getName() );
+				if ( e.isFromArray() )
+					CodeGen.getInstance().addToText( "lw $v0, 0($v0)" );
 			}
 		}
 		CodeGen.getInstance().addToText( "jr $ra" );
