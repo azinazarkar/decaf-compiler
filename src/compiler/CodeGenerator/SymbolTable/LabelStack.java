@@ -1,5 +1,8 @@
 package compiler.CodeGenerator.SymbolTable;
 
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidBreakStatement;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.InvalidContinueStatement;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -7,6 +10,7 @@ import java.util.Stack;
 
 public class LabelStack {
     private static LabelStack instance = new LabelStack();
+
     public static LabelStack getInstance() {return instance;}
     private Stack<ArrayList> labels;
     private LabelStack(){labels = new Stack<>();}
@@ -46,7 +50,16 @@ public class LabelStack {
         res = labels.pop();
         while(!res.get(1).toString().startsWith(pattern)){
             temp.push(res);
-            res = labels.pop();
+            try{
+                res = labels.pop();
+            }
+            catch (Exception e){
+                if(isBreak)
+                    throw new InvalidBreakStatement();
+                else
+                    throw new InvalidContinueStatement();
+            }
+
         }
         labels.push(res);
         Iterator<ArrayList> iterator = temp.iterator();
