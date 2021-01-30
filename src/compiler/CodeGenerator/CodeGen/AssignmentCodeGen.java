@@ -20,6 +20,8 @@ public class AssignmentCodeGen{
 		Descriptor lv = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		Descriptor expr = (Descriptor) SemanticStack.getInstance().popDescriptor();
 		CodeGen.getInstance().addToText( "# Assigning " + expr.getName() + " to " + lv.getName() );
+		System.out.println(lv.getName());
+		System.out.println(expr.getName());
 		if ( ! ( expr instanceof ArrayDescriptor ) ) {
 			if ( lv.getType() != expr.getType() ) {
 				if ( !( lv.getType() == Type.STRING && expr.getType() == Type.STRINGLITERAL ) )

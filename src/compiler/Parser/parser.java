@@ -39,6 +39,7 @@ public class parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
+    "\000\206\000\002\002\004\000\002\002\004\000\002\003" +
     "\004\000\002\003\002\000\002\004\003\000\002\004\003" +
     "\000\002\004\003\000\002\004\003\000\002\005\004\000" +
     "\002\006\004\000\002\045\003\000\002\045\003\000\002" +
@@ -1625,10 +1626,10 @@ class CUP$parser$actions {
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 0 )
+                            /*if ( phase == 0 )
                                 SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else if ( phase == 1 ) {
-                                SymbolTable.getInstance().switchToNext();
+                            else*/ if ( phase == 1 ) {
+                                //SymbolTable.getInstance().switchToNext();
                                 SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
@@ -1648,7 +1649,7 @@ class CUP$parser$actions {
 		int sright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Object s = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 
-                            SymbolTable.getInstance().goBack();
+                           // SymbolTable.getInstance().goBack();
                         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$7",47, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1677,10 +1678,10 @@ class CUP$parser$actions {
               Object RESULT =null;
 
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 0 )
+                            /*if ( phase == 0 )
                                 SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else if ( phase == 1 ) {
-                                SymbolTable.getInstance().switchToNext();
+                            else */if ( phase == 1 ) {
+                             //   SymbolTable.getInstance().switchToNext();
                                 String elseLabel = (String)LabelStack.getInstance().popLabel();
                                 String endLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText("b " + endLabel);
@@ -1707,7 +1708,7 @@ class CUP$parser$actions {
                                 String endLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText(endLabel + ":\n", true);
                             }
-                            SymbolTable.getInstance().goBack();
+                            //SymbolTable.getInstance().goBack();
                         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ElsePrime",25, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1720,7 +1721,6 @@ class CUP$parser$actions {
 		
 						    int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-
                                 String elseLabel = (String)LabelStack.getInstance().popLabel();
                                 String endLabel = (String)LabelStack.getInstance().popLabel();
                                 System.out.println("elseLabel " + elseLabel);
@@ -1737,11 +1737,11 @@ class CUP$parser$actions {
               Object RESULT =null;
 
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 0 )
+                            /*if ( phase == 0 )
                                 SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else if ( phase == 1 ) {
-                                SymbolTable.getInstance().switchToNext();
-                                String whileLabel = "while" + "_" + IDGenerator.getInstance().getNextID();
+                            else*/ if ( phase == 1 ) {
+                                //SymbolTable.getInstance().switchToNext();
+                                String whileLabel = "_loop_cond_while_" + "_" + IDGenerator.getInstance().getNextID();
                                 LabelStack.getInstance().pushLabel("while", whileLabel);
                                 CodeGen.getInstance().addToText(whileLabel + ":\n", true);
                             }
@@ -1788,7 +1788,7 @@ class CUP$parser$actions {
                                 CodeGen.getInstance().addToText("b " + whileLabel);
                                 CodeGen.getInstance().addToText(endWhileLabel + ":\n", true);
                             }
-                            SymbolTable.getInstance().goBack();
+                            //SymbolTable.getInstance().goBack();
                         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("WhileStmt",26, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1800,11 +1800,11 @@ class CUP$parser$actions {
               Object RESULT =null;
 
                             int phase = ParserPhase.getInstance().getPhase();
-                            if ( phase == 0 )
+                            /*if ( phase == 0 )
                                 SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else if ( phase == 1 ) {
-                                SymbolTable.getInstance().switchToNext();
-                                String exprFor = IDGenerator.getInstance().getNextID();
+                            else*/ if ( phase == 1 ) {
+                                //SymbolTable.getInstance().switchToNext();
+                                String exprFor = "_loop_cond_for_" + IDGenerator.getInstance().getNextID();
                                 LabelStack.getInstance().pushLabel("for", exprFor);
                                 CodeGen.getInstance().addToText(exprFor + ":\n", true);
                             }
@@ -1821,7 +1821,17 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.peek()).right;
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 
-                            SemanticStack.getInstance().pushDescriptor(e);
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if (phase == 1){
+                                SemanticStack.getInstance().pushDescriptor(e);
+                                ForCodeGen.getInstance().cgen();
+                                String blockFor = "_for_block_" + IDGenerator.getInstance().getNextID();
+                                String forStmt = "_for_stmt_" + IDGenerator.getInstance().getNextID();
+                                LabelStack.getInstance().pushLabel("for", forStmt);
+                                LabelStack.getInstance().pushLabel("for",blockFor);
+                                CodeGen.getInstance().addToText("b " + blockFor);
+                                CodeGen.getInstance().addToText(forStmt + ":\n", true);
+                            }
                         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$12",52, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1835,7 +1845,13 @@ class CUP$parser$actions {
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-3)).right;
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 
-
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if (phase == 1){
+                                String condFor = LabelStack.getInstance().popLabel("for", 3);
+                                CodeGen.getInstance().addToText("b " + condFor);
+                                String forBlock = LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText(forBlock + ":\n", true);
+                            }
                         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("NT$13",53, ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
@@ -1850,7 +1866,16 @@ class CUP$parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-6)).right;
 		Descriptor e = (Descriptor)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-6)).value;
-
+		
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if (phase == 1){
+                                String forStmt = LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText("b " + forStmt);
+                                String endOfFor = LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText(endOfFor + ":\n", true);
+                                LabelStack.getInstance().popLabel();
+                            }
+                        
               CUP$parser$result = parser.getSymbolFactory().newSymbol("ForStmt",27, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-11)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
             }
           return CUP$parser$result;
@@ -1885,7 +1910,7 @@ class CUP$parser$actions {
 
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                String endWhileLabel = (String)LabelStack.getInstance().popLabel("while", 0);
+                                String endWhileLabel = (String)LabelStack.getInstance().popLabel(true);
                                 System.out.println("breakLabel " + endWhileLabel);
                                 CodeGen.getInstance().addToText("b " + endWhileLabel);
                             }
@@ -1912,7 +1937,7 @@ class CUP$parser$actions {
 
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
-                                String whileBegin = (String)LabelStack.getInstance().popLabel("while", 1);
+                                String whileBegin = (String)LabelStack.getInstance().popLabel(false);
                                 System.out.println("whileBegin " + whileBegin);
                                 CodeGen.getInstance().addToText("b " + whileBegin);
                             }

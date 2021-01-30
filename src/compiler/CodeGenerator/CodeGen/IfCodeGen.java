@@ -14,11 +14,11 @@ public class IfCodeGen {
     public void cgen(){
         Descriptor condition = (Descriptor) SemanticStack.getInstance().popDescriptor();
         SymbolTableNode temp = SymbolTable.getInstance().getSymbolTable();
-        String endLabel = "ifEnd" + "_" + IDGenerator.getInstance().getNextID();
-        String elseLabel = "ifElse" + "_" + IDGenerator.getInstance().getNextID();
+        String endLabel = "_if_end" + "_" + IDGenerator.getInstance().getNextID();
+        String elseLabel = "_if_else" + "_" + IDGenerator.getInstance().getNextID();
         CodeGen.getInstance().addToText("# if statement");
         CodeGen.getInstance().addToText("lw " + "$a0, " + condition.getName());
-        if ( condition.isFromArray() )
+        if (condition.isFromArray())
             CodeGen.getInstance().addToText( "lw $a0, 0($a0)" );
         CodeGen.getInstance().addToText("beq " +  "$a0, " + "0, " + elseLabel);
         CodeGen.getInstance().addEmptyLine();

@@ -39,4 +39,21 @@ public class LabelStack {
         }
         return (String) res.get(1);
     }
+    public String popLabel (boolean isBreak){
+        ArrayList res ;
+        String pattern = isBreak ? "_end_of_loop" : "_loop_cond_";
+        Stack<ArrayList> temp = new Stack();
+        res = labels.pop();
+        while(!res.get(1).toString().startsWith(pattern)){
+            temp.push(res);
+            res = labels.pop();
+        }
+        labels.push(res);
+        Iterator<ArrayList> iterator = temp.iterator();
+        while(iterator.hasNext()){
+            labels.push(temp.pop());
+        }
+        System.out.println(res.get(1));
+        return (String) res.get(1);
+    }
 }
