@@ -39,6 +39,7 @@ public class parser extends java_cup.runtime.lr_parser {
   /** Production table. */
   protected static final short _production_table[][] = 
     unpackFromStrings(new String[] {
+    "\000\206\000\002\002\004\000\002\002\004\000\002\003" +
     "\004\000\002\003\002\000\002\004\003\000\002\004\003" +
     "\000\002\004\003\000\002\004\003\000\002\005\004\000" +
     "\002\006\004\000\002\045\003\000\002\045\003\000\002" +
@@ -1867,7 +1868,7 @@ class CUP$parser$actions {
 //								System.out.println( SemanticStack.getInstance().topDescriptor() );
 //								FunctionDescriptor funcDscp = (FunctionDescriptor) SemanticStack.getInstance().topDescriptor();
 								FunctionDescriptor funcDscp = ParserHelper.getInstance().currentFunctionDscp;
-								if ( funcDscp == null || funcDscp.getType() == Type.VOID )
+								if ( funcDscp == null || ( funcDscp.getType() == Type.VOID && e != null ) )
 									throw new InvalidReturnStatement();
 								SemanticStack.getInstance().pushDescriptor( e );
                                 SemanticStack.getInstance().pushDescriptor( funcDscp );
