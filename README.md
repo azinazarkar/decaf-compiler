@@ -1,8 +1,10 @@
-# Decaf Language - Parser phase
+# Decaf Compiler 
 
-This program is a scanner made for Decaf programming language, a language made for educational purposes. You can find the language's description in *Scanner.pdf*.
+A compiler program made for Decaf language. This project is done for Compiler Design course in Shahid Beheshti University.
 
 ## Running the program 
+
+### Compiling one program 
 
 Run Main to parse the program in "src/compiler/program.txt" and see if it's OK or it has syntax errors.
 
@@ -20,3 +22,7 @@ Running the program:
 ```
 java -cp .:src/:lib/java-cup-11b.jar compiler.Main
 ```
+
+### Compiling and testing a bunch of codes
+
+run ```run.sh``` in the root folder. Your tests should be in ```tests/``` folder (as some tests that are there now).
