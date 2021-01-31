@@ -16,7 +16,6 @@ import java.io.*;
   String string = "";
 
   public Symbol token(int tokenType, String content) {
-      // System.out.println(content);
       return new Symbol(tokenType, content) ;
   }
 
