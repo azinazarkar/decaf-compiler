@@ -1,5 +1,8 @@
 .idea/
 out/
+report/
 *.iml
 *.class
 *.java~
+out.asm
+src/compiler/program.txt

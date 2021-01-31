@@ -1,6 +1,13 @@
 package compiler.Parser;
 import java_cup.runtime.*;
 import compiler.Scanner.MyScanner;
+import compiler.CodeGenerator.SymbolTable.*;
+import compiler.CodeGenerator.Exceptions.SemanticErrors.*;
+import compiler.CodeGenerator.SymbolTable.Utility.*;
+import compiler.CodeGenerator.*;
+import compiler.CodeGenerator.CodeGen.*;
+import compiler.CodeGenerator.SymbolTable.Utility.*;
+import compiler.Parser.Utility.ParserHelper;
 
 
 parser code {:
@@ -19,24 +26,37 @@ terminal	    AND, OR, NOT;
 // dot
 terminal        DOT;
 // types
-terminal        INT, DOUBLE, BOOL, STRING;
+terminal        String INT, DOUBLE, BOOL, STRING;
+
+// literals
+terminal        String DECIMAL;
+terminal        String FLOATINGPOINT;
+terminal        String BOOLEANLITERAL;
+terminal        String STRINGLITERAL;
+terminal        NULL;
+
 // signs
 terminal		OPENBRACKET, CLOSEBRACKET, OPENCLOSEBRACKET, WS, OPENPARENTHESIS,
 				CLOSEPARENTHESIS, OPENCURLYBRACES, CLOSECURLYBRACES;
 // keywords
 terminal        READINTEGER, READLINE, NEW, NEWARRAY, ITOD, DTOI, ITOB, BTOI,
-				DECIMAL, FLOATINGPOINT, BOOLEANLITERAL, NULL,
 				VOID, CLASS, INTERFACE,
 				EXTENDS, IMPLEMENTS, COMMA, SEMICOLON, PRIVATE, PROTECTED, PUBLIC, IF, ELSE, WHILE, FOR, RETURN,
 				BREAK, CONTINUE, PRINT, ASSIGN, THIS;
-terminal        String IDENTIFIER, STRINGLITERAL;
+terminal        String IDENTIFIER;
 
 // defining nonterminals
-nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, Type, FunctionDecl, Formals, CommaVariables,
+nonterminal     Program, DeclStar, Decl, VariableDecl, Variable, FunctionDecl, Formals, CommaVariables,
 				ClassDecl, ClassDeclExtends, ClassDeclImplements, CommaIdentifiers, FieldStar, Field,
 				AccessMode, InterfaceDecl, PrototypeStar, Prototype, StmtBlock, InsideStmtBlock, VariableDeclStar, StmtStar,
 				Stmt, ExprPrime, IfStmt, ElsePrime, WhileStmt, ForStmt, ReturnStmt, BreakStmt, ContinueStmt, PrintStmt,
-				CommaExpr, Expr, LValue, Call, Actuals, Constant;
+				PrintCommaExpr, ActualsCommaExpr, Actuals;
+// non-terminals with type
+nonterminal     Object Type;
+nonterminal     Descriptor LValue;
+nonterminal     Descriptor Expr;
+nonterminal     CompileTimeDescriptor Constant;
+nonterminal     Descriptor Call;
 
 // defining precedences
 precedence left     ELSE;
@@ -67,21 +87,163 @@ Decl ::=                VariableDecl
 
 VariableDecl ::=        Variable SEMICOLON;
 
-Variable ::=            Type IDENTIFIER;
-
-Type ::=                INT
-						| DOUBLE
-						| BOOL
-						| STRING
-						| IDENTIFIER
-						| Type OPENCLOSEBRACKET
+Variable ::=            Type:type IDENTIFIER:id {:
+							if ( ParserPhase.getInstance().getPhase() == 0 ) {
+								if ( type instanceof Type ) {
+									Type t = (Type) type;
+									String name = IDGenerator.getInstance().getNextID();
+									Descriptor temp = new Descriptor( name, t );
+									SymbolTable.getInstance().getSymbolTable().addEntry( id, temp );
+									if ( ParserHelper.getInstance().insideFunctionFormals ) {
+										int prevCount = (int) SemanticStack.getInstance().popDescriptor();
+										SemanticStack.getInstance().pushDescriptor( temp );
+										SemanticStack.getInstance().pushDescriptor( id );
+										SemanticStack.getInstance().pushDescriptor( prevCount + 1 );
+									}
+									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
+								}
+								else if ( type instanceof ArrayType ) {
+									ArrayType t = (ArrayType) type;
+									String name = IDGenerator.getInstance().getNextID();
+									Descriptor temp = new ArrayDescriptor( name, t );
+									SymbolTable.getInstance().getSymbolTable().addEntry( id, temp );
+									if ( ParserHelper.getInstance().insideFunctionFormals ) {
+                                        int prevCount = (int) SemanticStack.getInstance().popDescriptor();
+                                        SemanticStack.getInstance().pushDescriptor( temp );
+                                        SemanticStack.getInstance().pushDescriptor( id );
+                                        SemanticStack.getInstance().pushDescriptor( prevCount + 1 );
+                                    }
+									CodeGen.getInstance().addToData( name, Type.getMipsType( t ), Integer.toString( 0 ) );
+								}
+							}
+						:}
 						;
 
-FunctionDecl ::=        Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
-						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS StmtBlock
+Type ::=                INT {: RESULT = Type.INT; :}
+						| DOUBLE {: RESULT = Type.DOUBLE; :}
+						| BOOL {: RESULT = Type.BOOL; :}
+						| STRING {: RESULT = Type.STRING; :}
+						| IDENTIFIER:e {: RESULT = Type.OBJECT; :}
+						| Type:t OPENCLOSEBRACKET {:
+							if ( t == Type.INT || t == Type.DOUBLE || t == Type.BOOL
+									|| t == Type.STRING || t == Type.OBJECT )
+								RESULT = new ArrayType( (Type) t, 1 );
+							else if ( t instanceof ArrayType ) {
+									ArrayType temp = (ArrayType) t;
+									RESULT = new ArrayType( temp.getSubType(), temp.getDimensionCount() + 1 );
+								}
+						:}
 						;
 
-Formals ::=             Variable CommaVariables
+FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 0 ) {
+								SymbolTable.getInstance().getSymbolTable().addEntry(
+										name,
+										new FunctionDescriptor(
+												name,
+												"_" + IDGenerator.getInstance().getNextID(),
+												(Type) t
+										)
+								);
+								SymbolTable.getInstance().makeNextAndSwitch( name );
+							}
+							else if ( phase == 1 ) {
+								FunctionDescriptor temp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+								CodeGen.getInstance().addToText(
+										temp.getFunctionName() + ":\n",
+										true
+								);
+								SymbolTable.getInstance().switchToNext();
+							}
+							ParserHelper.getInstance().insideFunctionFormals = true;
+							SemanticStack.getInstance().pushDescriptor( 0 );
+						:}
+						Formals {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 0 ) {
+								int formalsCount = (int) SemanticStack.getInstance().popDescriptor();
+								for ( int i = 0; i < formalsCount; i++ ) {
+									FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+									String argumentName = (String) SemanticStack.getInstance().popDescriptor();
+									Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
+									funcDscp.addArgument( argumentName, argumentDescriptor, true );
+								}
+							}
+							else if ( phase == 1 ) {
+								FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+								ParserHelper.getInstance().currentFunctionDscp = funcDscp;
+							}
+							ParserHelper.getInstance().insideFunctionFormals = false;
+						:} CLOSEPARENTHESIS StmtBlock {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
+										&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0
+										&& ( (Type) t ) == Type.INT ) {
+	                                CodeGen.getInstance().addToText( "# Exit!" );
+	                                CodeGen.getInstance().addToText( "li $v0, 10" );
+	                                CodeGen.getInstance().addToText( "syscall" );
+	                                CodeGen.getInstance().addEmptyLine();
+	                                CodeGen.getInstance().addEmptyLine();
+                                }
+                                else {
+                                    CodeGen.getInstance().addToText( "# returning from function " + name );
+                                    CodeGen.getInstance().addToText( "jr $ra" );
+                                    CodeGen.getInstance().addEmptyLine();
+                                }
+							}
+							SymbolTable.getInstance().goBack();
+						:}
+						| VOID IDENTIFIER:name OPENPARENTHESIS {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 0 ) {
+                                SymbolTable.getInstance().getSymbolTable().addEntry(
+                                        name,
+                                        new FunctionDescriptor(
+                                                name,
+                                                "_" + IDGenerator.getInstance().getNextID(),
+                                                Type.VOID
+                                        )
+                                );
+                                SymbolTable.getInstance().makeNextAndSwitch( name );
+                            }
+                            else if ( phase == 1 ) {
+                                FunctionDescriptor temp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+                                CodeGen.getInstance().addToText(
+                                        temp.getFunctionName() + ":\n",
+                                        true
+                                );
+                                SymbolTable.getInstance().switchToNext();
+                            }
+                            ParserHelper.getInstance().insideFunctionFormals = true;
+                            SemanticStack.getInstance().pushDescriptor( 0 );
+						:} Formals {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 0 ) {
+                                int formalsCount = (int) SemanticStack.getInstance().popDescriptor();
+                                for ( int i = 0; i < formalsCount; i++ ) {
+                                    FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+                                    String argumentName = (String) SemanticStack.getInstance().popDescriptor();
+                                    Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                    funcDscp.addArgument( argumentName, argumentDescriptor, true );
+                                }
+                            }
+                            else if ( phase == 1 ) {
+                                FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
+                                ParserHelper.getInstance().currentFunctionDscp = funcDscp;
+                            }
+                            ParserHelper.getInstance().insideFunctionFormals = false;
+						:} CLOSEPARENTHESIS StmtBlock {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                CodeGen.getInstance().addToText( "# returning from function " + name );
+                                CodeGen.getInstance().addToText( "jr $ra" );
+                                CodeGen.getInstance().addEmptyLine();
+                            }
+                            SymbolTable.getInstance().goBack();
+						:}
+						;
+
+Formals ::=             Variable:v CommaVariables
 						| /*epsilon*/
 						;
 CommaVariables ::=      COMMA Variable CommaVariables
@@ -121,7 +283,15 @@ Prototype ::=           Type IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS
 						| VOID IDENTIFIER OPENPARENTHESIS Formals CLOSEPARENTHESIS SEMICOLON
 						;
 
-StmtBlock ::=           OPENCURLYBRACES InsideStmtBlock CLOSECURLYBRACES;
+StmtBlock ::=           OPENCURLYBRACES {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 0 )
+								SymbolTable.getInstance().makeNextAndSwitch();
+							else if ( phase == 1 )
+								SymbolTable.getInstance().switchToNext();
+						:} InsideStmtBlock {:
+							SymbolTable.getInstance().goBack();
+						:} CLOSECURLYBRACES;
 InsideStmtBlock ::=     VariableDecl InsideStmtBlock
 						| StmtStar
 						;
@@ -140,79 +310,534 @@ Stmt ::=                ExprPrime SEMICOLON
 						| StmtBlock
 						;
 
-ExprPrime ::=           Expr
+ExprPrime ::=           Expr:e {: RESULT = e; :}
 						| /*epsilon*/
 						;
 
-IfStmt ::=              IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePrime;
-ElsePrime ::=           ELSE Stmt
-						| /*epsilon*/
+IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                IfCodeGen.getInstance().cgen();
+                            }
+                        :} CLOSEPARENTHESIS Stmt ElsePrime
+                        ;
+
+ElsePrime ::=           ELSE{:
+                            int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+                                String elseLabel = (String)LabelStack.getInstance().popLabel();
+                                String endLabel = (String)LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText("b " + endLabel);
+                                CodeGen.getInstance().addToText(elseLabel + ":\n", true);
+                                LabelStack.getInstance().pushLabel("if", endLabel);
+                            }
+                        :} Stmt:s {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String endLabel = (String)LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText(endLabel + ":\n", true);
+                            }
+                        :}
+						| /*epsilon*/ {:
+						    int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String elseLabel = (String)LabelStack.getInstance().popLabel();
+                                String endLabel = (String)LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText(elseLabel + ":\n", true);
+                            }
+                        :}
+                        ;
+
+
+WhileStmt ::=           WHILE {:
+                            int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+                                String whileLabel = "_loop_cond_while_" + "_" + IDGenerator.getInstance().getNextID();
+                                LabelStack.getInstance().pushLabel("while", whileLabel);
+                                CodeGen.getInstance().addToText(whileLabel + ":\n", true);
+                            }
+                        :}OPENPARENTHESIS Expr:e{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor(e);
+                                WhileCodeGen.getInstance().cgen();
+                            }
+                        :} CLOSEPARENTHESIS Stmt:s{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String endWhileLabel = (String)LabelStack.getInstance().popLabel();
+                                String whileLabel = (String)LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText("b " + whileLabel);
+                                CodeGen.getInstance().addToText(endWhileLabel + ":\n", true);
+                            }
+                        :};
+
+ForStmt ::=             FOR OPENPARENTHESIS ExprPrime{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String exprFor = "_loop_cond_for_" + IDGenerator.getInstance().getNextID();
+                                LabelStack.getInstance().pushLabel("for", exprFor);
+                                CodeGen.getInstance().addToText(exprFor + ":\n", true);
+                            }
+                        :} SEMICOLON Expr:e{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if (phase == 1){
+                                SemanticStack.getInstance().pushDescriptor(e);
+                                ForCodeGen.getInstance().cgen();
+                                String blockFor = "_for_block_" + IDGenerator.getInstance().getNextID();
+                                String forStmt = "_for_stmt_" + IDGenerator.getInstance().getNextID();
+                                LabelStack.getInstance().pushLabel("for", forStmt);
+                                LabelStack.getInstance().pushLabel("for",blockFor);
+                                CodeGen.getInstance().addToText("b " + blockFor);
+                                CodeGen.getInstance().addToText(forStmt + ":\n", true);
+                            }
+                        :} SEMICOLON ExprPrime {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if (phase == 1){
+                                String condFor = LabelStack.getInstance().popLabel("for", 3);
+                                CodeGen.getInstance().addToText("b " + condFor);
+                                String forBlock = LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText(forBlock + ":\n", true);
+                            }
+                        :} CLOSEPARENTHESIS Stmt{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if (phase == 1){
+                                String forStmt = LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText("b " + forStmt);
+                                String endOfFor = LabelStack.getInstance().popLabel();
+                                CodeGen.getInstance().addToText(endOfFor + ":\n", true);
+                                LabelStack.getInstance().popLabel();
+                            }
+                        :};
+
+ReturnStmt ::=          RETURN ExprPrime:e SEMICOLON {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								FunctionDescriptor funcDscp = ParserHelper.getInstance().currentFunctionDscp;
+								if ( funcDscp == null )
+									throw new InvalidReturnStatement();
+								SemanticStack.getInstance().pushDescriptor( e );
+                                SemanticStack.getInstance().pushDescriptor( funcDscp );
+                                FunctionReturnStatement.getInstance().cgen();
+							}
+						:}
 						;
 
-WhileStmt ::=           WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt;
+BreakStmt ::=           BREAK {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String endWhileLabel = (String)LabelStack.getInstance().popLabel(true);
+                                CodeGen.getInstance().addToText("b " + endWhileLabel);
+                            }
+                        :} SEMICOLON;
 
-ForStmt ::=             FOR OPENPARENTHESIS ExprPrime SEMICOLON Expr SEMICOLON ExprPrime CLOSEPARENTHESIS Stmt;
+ContinueStmt ::=        CONTINUE {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                String whileBegin = (String)LabelStack.getInstance().popLabel(false);
+                                CodeGen.getInstance().addToText("b " + whileBegin);
+                            }
+                        :} SEMICOLON;
 
-ReturnStmt ::=          RETURN ExprPrime SEMICOLON;
-
-BreakStmt ::=           BREAK SEMICOLON;
-
-ContinueStmt ::=        CONTINUE SEMICOLON;
-
-PrintStmt ::=           PRINT OPENPARENTHESIS Expr CommaExpr CLOSEPARENTHESIS SEMICOLON;
-
-CommaExpr ::=           COMMA CommaExpr
-						| /*epsilon*/
+PrintStmt ::=           PRINT OPENPARENTHESIS Expr:e
+                        {:
+                            int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								PrintCodeGen.getInstance().cgen();
+							}
+                        :}
+                        PrintCommaExpr CLOSEPARENTHESIS SEMICOLON
 						;
 
-Expr ::=                LValue ASSIGN Expr
-						| Constant
-						| LValue
+PrintCommaExpr ::=      COMMA Expr:e
+						{:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								PrintCodeGen.getInstance().cgen();
+							}
+						:}
+						PrintCommaExpr
+						|
+						/*epsilon*/
+						{:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								PrintCodeGen.getInstance().printEnter();
+						:}
+						;
+
+Expr ::=                LValue:lv ASSIGN Expr:e {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								SemanticStack.getInstance().pushDescriptor( lv );
+								AssignmentCodeGen.getInstance().cgen();
+							}
+							RESULT = new Descriptor( "", Type.DUMMY );
+						:}
+						|
+						Constant:c {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SymbolTable.getInstance().getSymbolTable().addEntry( c.getName(), c );
+								Type type = c.getType();
+								if ( type == Type.INT || type == Type.DOUBLE || type == Type.BOOL )
+									CodeGen.getInstance().addToData(
+										c.getName(),
+										Type.getMipsType( type ),
+										c.getValue().toString()
+									);
+								else if ( type == Type.STRINGLITERAL ) {
+									CodeGen.getInstance().addToData(
+										c.getName(),
+										Type.getMipsType( type ),
+										Integer.toString( c.getValue().toString().length() )
+									);
+									SemanticStack.getInstance().pushDescriptor( c );
+									StringLiteralCodeGen.getInstance().cgen();
+								}
+							}
+							RESULT = c;
+						:}
+						| LValue:lv {: RESULT = lv; :}
 						| THIS
-						| Call
-						| OPENPARENTHESIS Expr CLOSEPARENTHESIS
-						| Expr PLUS Expr
-						| Expr MINUS Expr
-						| Expr MULTIPLY Expr
-						| Expr DIVIDE Expr
-						| Expr MOD Expr
-						| MINUS Expr %prec UMINUS
-						| Expr LESS Expr
-						| Expr LESSEQUAL Expr
-						| Expr GREATER Expr
-						| Expr GREATEREQUAL Expr
-						| Expr EQUAL Expr
-						| Expr NOTEQUAL Expr
-						| Expr AND Expr
-						| Expr OR Expr
-						| NOT Expr
-						| READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS
-						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS
+						| Call:c {: RESULT = c; :}
+						| OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {: RESULT = e; :}
+						| Expr:e1 PLUS Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								PlusCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| Expr:e1 MINUS Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								MinusCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| Expr:e1 MULTIPLY Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								MultiplyCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| Expr:e1 DIVIDE Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+							if ( phase == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								SemanticStack.getInstance().pushDescriptor( "quotient" );
+								DivideCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| Expr:e1 MOD Expr:e2 {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                SemanticStack.getInstance().pushDescriptor( "mod" );
+                                DivideCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
+						| MINUS Expr:e {:
+							int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                UnaryMinusCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:} %prec UMINUS
+
+                        | Expr:e1 LESS Expr:e2 {:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                LessCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+                        :}
+						| Expr:e1 LESSEQUAL Expr:e2{:
+                             int phase = ParserPhase.getInstance().getPhase();
+                             if ( phase == 1 ) {
+                                 SemanticStack.getInstance().pushDescriptor( e1 );
+                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                 LessEqualCodeGen.getInstance().cgen();
+                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                 RESULT = temp;
+                             }
+                         :}
+						| Expr:e1 GREATER Expr:e2{:
+                            int phase = ParserPhase.getInstance().getPhase();
+                            if ( phase == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e1 );
+                                SemanticStack.getInstance().pushDescriptor( e2 );
+                                GreaterCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+                        :}
+						| Expr:e1 GREATEREQUAL Expr:e2{:
+                             int phase = ParserPhase.getInstance().getPhase();
+                             if ( phase == 1 ) {
+                                 SemanticStack.getInstance().pushDescriptor( e1 );
+                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                 GreaterEqualCodeGen.getInstance().cgen();
+                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                 RESULT = temp;
+                             }
+                         :}
+						| Expr:e1 EQUAL Expr:e2{:
+                              int phase = ParserPhase.getInstance().getPhase();
+                              if ( phase == 1 ) {
+                                  SemanticStack.getInstance().pushDescriptor( e1 );
+                                  SemanticStack.getInstance().pushDescriptor( e2 );
+                                  EqualCodeGen.getInstance().cgen();
+                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                  RESULT = temp;
+                              }
+                          :}
+						| Expr:e1 NOTEQUAL Expr:e2{:
+                               int phase = ParserPhase.getInstance().getPhase();
+                               if ( phase == 1 ) {
+                                   SemanticStack.getInstance().pushDescriptor( e1 );
+                                   SemanticStack.getInstance().pushDescriptor( e2 );
+                                   NotEqualCodeGen.getInstance().cgen();
+                                   Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                   RESULT = temp;
+                               }
+                           :}
+						| Expr:e1 AND Expr:e2{:
+                              int phase = ParserPhase.getInstance().getPhase();
+                              if ( phase == 1 ) {
+                                  SemanticStack.getInstance().pushDescriptor( e1 );
+                                  SemanticStack.getInstance().pushDescriptor( e2 );
+                                  AndCodeGen.getInstance().cgen();
+                                  Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                  RESULT = temp;
+                              }
+                          :}
+						| Expr:e1 OR Expr:e2{:
+                             int phase = ParserPhase.getInstance().getPhase();
+                             if ( phase == 1 ) {
+                                 SemanticStack.getInstance().pushDescriptor( e1 );
+                                 SemanticStack.getInstance().pushDescriptor( e2 );
+                                 OrCodeGen.getInstance().cgen();
+                                 Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                 RESULT = temp;
+                             }
+                         :}
+						| NOT Expr:e {:
+                          int phase = ParserPhase.getInstance().getPhase();
+                          if ( phase == 1 ) {
+                              SemanticStack.getInstance().pushDescriptor( e );
+                              NotCodeGen.getInstance().cgen();
+                              Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                              RESULT = temp;
+                          }
+                      :}
+						| READINTEGER OPENPARENTHESIS CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								IntegerInputCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| READLINE OPENPARENTHESIS CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+	                            StringInputCodeGen.getInstance().cgen();
+	                            Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+	                            RESULT = temp;
+							}
+						:}
 						| NEW IDENTIFIER
-						| NEWARRAY OPENPARENTHESIS Expr COMMA Type CLOSEPARENTHESIS
-						| ITOD OPENPARENTHESIS Expr CLOSEPARENTHESIS
-						| DTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
-						| ITOB OPENPARENTHESIS Expr CLOSEPARENTHESIS
-						| BTOI OPENPARENTHESIS Expr CLOSEPARENTHESIS
+						| NEWARRAY OPENPARENTHESIS Expr:e COMMA Type:t CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								ValidArraySizeCheckerCodeGen.getInstance().cgen();
+								SemanticStack.getInstance().pushDescriptor( e );
+								SemanticStack.getInstance().pushDescriptor( t );
+								NewArrayCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| ITOD OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								SemanticStack.getInstance().pushDescriptor( e );
+								itodCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
+						| DTOI OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                dtoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
+						| ITOB OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                itobCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
+						| BTOI OPENPARENTHESIS Expr:e CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                btoiCodeGen.getInstance().cgen();
+                                Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
 						;
 
-LValue ::=              IDENTIFIER
+LValue ::=              IDENTIFIER:id {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = SymbolTable.getInstance().getSymbolTable().getDescriptor( id );
+						:}
 						| Expr DOT IDENTIFIER
-						| Expr OPENBRACKET Expr CLOSEBRACKET
+						| Expr:e1 OPENBRACKET Expr:e2 CLOSEBRACKET {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+//								ParserHelper.getInstance().isLValueArray = true;
+								SemanticStack.getInstance().pushDescriptor( e2 );
+								SemanticStack.getInstance().pushDescriptor( e1 );
+								ArrayGetIndexValueCodeGen.getInstance().cgen();
+								Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+								RESULT = temp;
+							}
+						:}
 						;
 
-Call ::=                IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
-						| Expr DOT IDENTIFIER OPENPARENTHESIS Actuals CLOSEPARENTHESIS
+Call ::=                IDENTIFIER:functionID OPENPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								SemanticStack.getInstance().pushDescriptor( 0 );
+						:} Actuals CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                int actualsCount = (int) SemanticStack.getInstance().popDescriptor();
+                                FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( functionID );
+                                if ( actualsCount != funcDscp.getArgumentCount() )
+                                    throw new FunctionInputMismatch( functionID );
+                                SaveLocalVariablesCodeGen.getInstance().cgen();
+                                for ( int i = 0; i < actualsCount; i++ ) {
+                                    Descriptor actualDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                    Descriptor formalDescriptor = funcDscp.getArgumentDescriptor( actualsCount - i - 1 );
+                                    if ( actualDescriptor.getType() != formalDescriptor.getType() )
+                                        throw new FunctionInputMismatch( functionID );
+                                    SemanticStack.getInstance().pushDescriptor( i );
+                                    SemanticStack.getInstance().pushDescriptor( actualDescriptor );
+                                    SemanticStack.getInstance().pushDescriptor( formalDescriptor );
+                                    FunctionArgumentCodeGen.getInstance().cgen();
+                                }
+                                SemanticStack.getInstance().pushDescriptor( funcDscp );
+                                FunctionCallCodeGen.getInstance().cgen();
+                                SemanticStack.getInstance().pushDescriptor( funcDscp );
+                                FunctionValueRetrieveCodeGen.getInstance().cgen();
+                                FunctionCallEndedCodeGen.getInstance().cgen();
+                                LoadLocalVariablesCodeGen.getInstance().cgen();
+                                Descriptor temp = null;
+                                if ( funcDscp.getType() != Type.VOID )
+                                    temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+                                RESULT = temp;
+                            }
+						:}
+						| Expr:e DOT IDENTIFIER:id OPENPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+                                SemanticStack.getInstance().pushDescriptor( 0 );
+						:} Actuals CLOSEPARENTHESIS {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								int actualsCount = (int) SemanticStack.getInstance().topDescriptor();
+								if ( e.getType() == Type.ARRAY && actualsCount == 0 && id.equals( "length" ) ) {
+									SemanticStack.getInstance().popDescriptor();
+									SemanticStack.getInstance().pushDescriptor( e );
+									ArraySizeCodeGen.getInstance().cgen();
+									Descriptor temp = (Descriptor) SemanticStack.getInstance().popDescriptor();
+									RESULT = temp;
+								}
+							}
+						:}
 						;
 
-Actuals ::=             Expr CommaExpr
+Actuals ::=             Expr:e {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+                                int prevCount = (int) SemanticStack.getInstance().popDescriptor();
+                                SemanticStack.getInstance().pushDescriptor( e );
+                                SemanticStack.getInstance().pushDescriptor( prevCount + 1 );
+                            }
+						:} ActualsCommaExpr
 						| /*epsilon*/
 						;
 
-Constant ::=            DECIMAL
-						| FLOATINGPOINT
-						| BOOLEANLITERAL
-						| STRINGLITERAL
-						| NULL
+ActualsCommaExpr ::=    COMMA Expr:e {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								int prevCount = (int) SemanticStack.getInstance().popDescriptor();
+	                            SemanticStack.getInstance().pushDescriptor( e );
+	                            SemanticStack.getInstance().pushDescriptor( prevCount + 1 );
+                            }
+						:} ActualsCommaExpr
+						| /*epsilon*/
+						;
+
+Constant ::=            DECIMAL:d {:
+							if ( ParserPhase.getInstance().getPhase() == 1 ) {
+								int value;
+								if ( d.startsWith( "0x" ) || d.startsWith( "0X" ) )
+									value = Integer.parseInt( d.substring( 2 ), 16 );
+								else
+									value = Integer.parseInt( d );
+								RESULT = new CompileTimeDescriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.INT,
+									value
+								);
+							}
+						:}
+						| FLOATINGPOINT:f {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new CompileTimeDescriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.DOUBLE,
+									Float.floatToIntBits( Float.parseFloat( f ) )
+								);
+						:}
+						| BOOLEANLITERAL:b {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new CompileTimeDescriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.BOOL,
+									( b.equals( "true" ) ) ? 1 : 0 );
+						:}
+						| STRINGLITERAL:s {:
+							if ( ParserPhase.getInstance().getPhase() == 1 )
+								RESULT = new CompileTimeDescriptor(
+									"_" + IDGenerator.getInstance().getNextID(),
+									Type.STRINGLITERAL,
+									s.substring( 1, s.length() - 1 ) + '\0'
+								);
+						:}
+						| NULL:n {: RESULT = new CompileTimeDescriptor( "_" + IDGenerator.getInstance().getNextID(), Type.NULL, 0 ); :}
 						;
 
