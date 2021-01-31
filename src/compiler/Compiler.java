@@ -31,13 +31,11 @@ public class Compiler {
 			try {
 				p.parse();
 			} catch (SemanticError e) {
-				e.printStackTrace();
 				ErrorCodeGen.getInstance().cgen( "Semantic Error" );
 				CodeGen.getInstance().writeToFile( outputFileName );
 				System.exit( 0 );
 			}
 			catch (Exception e) {
-				e.printStackTrace();
 				ErrorCodeGen.getInstance().cgen( "Syntax Error" );
 				CodeGen.getInstance().writeToFile( outputFileName );
 				System.exit( 0 );

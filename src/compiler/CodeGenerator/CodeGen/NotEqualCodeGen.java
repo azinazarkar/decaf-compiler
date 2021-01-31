@@ -48,7 +48,6 @@ public class NotEqualCodeGen {
             CodeGen.getInstance().addEmptyLine();
             SemanticStack.getInstance().pushDescriptor( operationResult );
         }
-        //TODO ADD NOT EQUALITY FOR OTHER TYPES
         else if ( d1.getType() == Type.STRING && d2.getType() == Type.STRING ) {
             Descriptor operationResult = new Descriptor(
                     "_" + IDGenerator.getInstance().getNextID(),

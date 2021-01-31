@@ -18,12 +18,10 @@ public class LabelStack {
         ArrayList typeLabel = new ArrayList();
         typeLabel.add(type);
         typeLabel.add(name);
-        System.out.println("push " + name);
         labels.push(typeLabel);
     }
     public String popLabel(){
         ArrayList arr = labels.pop();
-        System.out.println("pop " + arr.get(1));
         return (String) arr.get(1);
     }
     public String popLabel(String type, int depth){
@@ -66,7 +64,6 @@ public class LabelStack {
         while(iterator.hasNext()){
             labels.push(temp.pop());
         }
-        System.out.println(res.get(1));
         return (String) res.get(1);
     }
 }

@@ -12,7 +12,7 @@ public enum Type {
 		}
 		else if ( type instanceof ArrayType )
 			return ".word";
-		return "IDON'TKNOW";
+		return "";
 	}
 
 }

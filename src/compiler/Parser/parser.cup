@@ -89,7 +89,6 @@ VariableDecl ::=        Variable SEMICOLON;
 
 Variable ::=            Type:type IDENTIFIER:id {:
 							if ( ParserPhase.getInstance().getPhase() == 0 ) {
-//								if ( ParserHelper.getInstance().insideFunctionFormals )
 								if ( type instanceof Type ) {
 									Type t = (Type) type;
 									String name = IDGenerator.getInstance().getNextID();
@@ -170,18 +169,14 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
 									Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
 									funcDscp.addArgument( argumentName, argumentDescriptor, true );
 								}
-//								SymbolTable.getInstance().makeNextAndSwitch();
 							}
 							else if ( phase == 1 ) {
 								FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
 								ParserHelper.getInstance().currentFunctionDscp = funcDscp;
-//								SymbolTable.getInstance().switchToNext();
 							}
 							ParserHelper.getInstance().insideFunctionFormals = false;
 						:} CLOSEPARENTHESIS StmtBlock {:
-//							SymbolTable.getInstance().goBack();
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
-//								SemanticStack.getInstance().popDescriptor(); // was for return stmt
 								if ( SymbolTable.getInstance().getSymbolTable().getScopeName().equals( "main" )
 										&& SymbolTable.getInstance().getSymbolTable().getEntryCount() == 0
 										&& ( (Type) t ) == Type.INT ) {
@@ -232,17 +227,14 @@ FunctionDecl ::=        Type:t IDENTIFIER:name OPENPARENTHESIS {:
                                     Descriptor argumentDescriptor = (Descriptor) SemanticStack.getInstance().popDescriptor();
                                     funcDscp.addArgument( argumentName, argumentDescriptor, true );
                                 }
-//								SymbolTable.getInstance().makeNextAndSwitch();
                             }
                             else if ( phase == 1 ) {
                                 FunctionDescriptor funcDscp = (FunctionDescriptor) SymbolTable.getInstance().getSymbolTable().getDescriptor( name );
                                 ParserHelper.getInstance().currentFunctionDscp = funcDscp;
-//								SymbolTable.getInstance().switchToNext();
                             }
                             ParserHelper.getInstance().insideFunctionFormals = false;
 						:} CLOSEPARENTHESIS StmtBlock {:
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
-//								SemanticStack.getInstance().popDescriptor(); // was for return stmt
                                 CodeGen.getInstance().addToText( "# returning from function " + name );
                                 CodeGen.getInstance().addToText( "jr $ra" );
                                 CodeGen.getInstance().addEmptyLine();
@@ -324,24 +316,16 @@ ExprPrime ::=           Expr:e {: RESULT = e; :}
 
 IfStmt ::=              IF OPENPARENTHESIS Expr:e{:
                             int phase = ParserPhase.getInstance().getPhase();
-                            /*if ( phase == 0 )
-                                SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else*/ if ( phase == 1 ) {
-                                //SymbolTable.getInstance().switchToNext();
+                            if ( phase == 1 ) {
                                 SemanticStack.getInstance().pushDescriptor( e );
                                 IfCodeGen.getInstance().cgen();
                             }
-                        :} CLOSEPARENTHESIS Stmt:s {:
-                           // SymbolTable.getInstance().goBack();
-                        :}ElsePrime
+                        :} CLOSEPARENTHESIS Stmt ElsePrime
                         ;
 
 ElsePrime ::=           ELSE{:
                             int phase = ParserPhase.getInstance().getPhase();
-                            /*if ( phase == 0 )
-                                SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else */if ( phase == 1 ) {
-                             //   SymbolTable.getInstance().switchToNext();
+							if ( phase == 1 ) {
                                 String elseLabel = (String)LabelStack.getInstance().popLabel();
                                 String endLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText("b " + endLabel);
@@ -354,14 +338,12 @@ ElsePrime ::=           ELSE{:
                                 String endLabel = (String)LabelStack.getInstance().popLabel();
                                 CodeGen.getInstance().addToText(endLabel + ":\n", true);
                             }
-                            //SymbolTable.getInstance().goBack();
                         :}
 						| /*epsilon*/ {:
 						    int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
                                 String elseLabel = (String)LabelStack.getInstance().popLabel();
                                 String endLabel = (String)LabelStack.getInstance().popLabel();
-                                System.out.println("elseLabel " + elseLabel);
                                 CodeGen.getInstance().addToText(elseLabel + ":\n", true);
                             }
                         :}
@@ -370,10 +352,7 @@ ElsePrime ::=           ELSE{:
 
 WhileStmt ::=           WHILE {:
                             int phase = ParserPhase.getInstance().getPhase();
-                            /*if ( phase == 0 )
-                                SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else*/ if ( phase == 1 ) {
-                                //SymbolTable.getInstance().switchToNext();
+							if ( phase == 1 ) {
                                 String whileLabel = "_loop_cond_while_" + "_" + IDGenerator.getInstance().getNextID();
                                 LabelStack.getInstance().pushLabel("while", whileLabel);
                                 CodeGen.getInstance().addToText(whileLabel + ":\n", true);
@@ -392,15 +371,11 @@ WhileStmt ::=           WHILE {:
                                 CodeGen.getInstance().addToText("b " + whileLabel);
                                 CodeGen.getInstance().addToText(endWhileLabel + ":\n", true);
                             }
-                            //SymbolTable.getInstance().goBack();
                         :};
 
 ForStmt ::=             FOR OPENPARENTHESIS ExprPrime{:
                             int phase = ParserPhase.getInstance().getPhase();
-                            /*if ( phase == 0 )
-                                SymbolTable.getInstance().makeNextAndSwitch( SymbolTable.getInstance().getSymbolTable().getScopeName() + "_if");
-                            else*/ if ( phase == 1 ) {
-                                //SymbolTable.getInstance().switchToNext();
+                            if ( phase == 1 ) {
                                 String exprFor = "_loop_cond_for_" + IDGenerator.getInstance().getNextID();
                                 LabelStack.getInstance().pushLabel("for", exprFor);
                                 CodeGen.getInstance().addToText(exprFor + ":\n", true);
@@ -438,8 +413,6 @@ ForStmt ::=             FOR OPENPARENTHESIS ExprPrime{:
 
 ReturnStmt ::=          RETURN ExprPrime:e SEMICOLON {:
 							if ( ParserPhase.getInstance().getPhase() == 1 ) {
-//								System.out.println( SemanticStack.getInstance().topDescriptor() );
-//								FunctionDescriptor funcDscp = (FunctionDescriptor) SemanticStack.getInstance().topDescriptor();
 								FunctionDescriptor funcDscp = ParserHelper.getInstance().currentFunctionDscp;
 								if ( funcDscp == null )
 									throw new InvalidReturnStatement();
@@ -454,7 +427,6 @@ BreakStmt ::=           BREAK {:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
                                 String endWhileLabel = (String)LabelStack.getInstance().popLabel(true);
-                                System.out.println("breakLabel " + endWhileLabel);
                                 CodeGen.getInstance().addToText("b " + endWhileLabel);
                             }
                         :} SEMICOLON;
@@ -463,7 +435,6 @@ ContinueStmt ::=        CONTINUE {:
                             int phase = ParserPhase.getInstance().getPhase();
                             if ( phase == 1 ) {
                                 String whileBegin = (String)LabelStack.getInstance().popLabel(false);
-                                System.out.println("whileBegin " + whileBegin);
                                 CodeGen.getInstance().addToText("b " + whileBegin);
                             }
                         :} SEMICOLON;
@@ -502,7 +473,6 @@ Expr ::=                LValue:lv ASSIGN Expr:e {:
 								SemanticStack.getInstance().pushDescriptor( e );
 								SemanticStack.getInstance().pushDescriptor( lv );
 								AssignmentCodeGen.getInstance().cgen();
-//								ParserHelper.getInstance().isLValueArray = false;
 							}
 							RESULT = new Descriptor( "", Type.DUMMY );
 						:}
